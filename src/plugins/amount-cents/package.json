@@ -1,0 +1,58 @@
+{
+  "version": "0.0.0",
+  "keywords": [],
+  "type": "commonjs",
+  "exports": {
+    "./package.json": "./package.json",
+    "./strapi-server": {
+      "types": "./dist/server/src/index.d.ts",
+      "source": "./server/src/index.ts",
+      "import": "./dist/server/index.mjs",
+      "require": "./dist/server/index.js",
+      "default": "./dist/server/index.js"
+    },
+    "./strapi-admin": {
+      "types": "./dist/admin/src/index.d.ts",
+      "source": "./admin/src/index.ts",
+      "import": "./dist/admin/index.mjs",
+      "require": "./dist/admin/index.js",
+      "default": "./dist/admin/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "strapi-plugin build",
+    "watch": "strapi-plugin watch",
+    "watch:link": "strapi-plugin watch:link",
+    "verify": "strapi-plugin verify",
+    "test:ts:back": "run -T tsc -p server/tsconfig.json"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@strapi/strapi": "^5.33.3",
+    "@strapi/sdk-plugin": "^5.4.0",
+    "prettier": "^3.8.0",
+    "@strapi/typescript-utils": "^5.33.3",
+    "typescript": "^5.9.3"
+  },
+  "peerDependencies": {
+    "@strapi/strapi": "^5.33.3",
+    "@strapi/sdk-plugin": "^5.4.0",
+    "@strapi/design-system": "^2.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-intl": "^6.0.0"
+  },
+  "strapi": {
+    "kind": "plugin",
+    "name": "amount-cents",
+    "displayName": "Amount Cents",
+    "description": "Adds formatted input for cents"
+  },
+  "name": "amount-cents",
+  "description": "Adds formatted input for cents",
+  "license": "MIT",
+  "author": "Christian Albert <chrs.albert@gmail.com>"
+}

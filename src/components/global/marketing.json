@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_global_marketings",
+  "info": {
+    "displayName": "Marketing"
+  },
+  "options": {},
+  "attributes": {
+    "fiveStarReviewsCount": {
+      "type": "integer"
+    },
+    "customersCount": {
+      "type": "integer"
+    },
+    "newsletterDiscountPercentage": {
+      "type": "integer"
+    }
+  },
+  "config": {}
+}

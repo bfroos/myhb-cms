@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_shared_opening_hours_intervals",
+  "info": {
+    "displayName": "Opening Hours Interval"
+  },
+  "options": {},
+  "attributes": {
+    "opens": {
+      "type": "string",
+      "default": "opens",
+      "required": true,
+      "regex": "^(?:[01]\\d|2[0-3]):[0-5]\\d|24:00$"
+    },
+    "closes": {
+      "type": "string",
+      "required": true,
+      "regex": "^(?:[01]\\d|2[0-3]):[0-5]\\d|24:00$"
+    }
+  },
+  "config": {}
+}

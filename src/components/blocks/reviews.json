@@ -1,0 +1,70 @@
+{
+  "collectionName": "components_blocks_reviews",
+  "info": {
+    "displayName": "Reviews",
+    "icon": "star"
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string",
+      "required": false
+    },
+    "localReviews": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    },
+    "reviews": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::review.review",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "localReviews"
+            },
+            false
+          ]
+        }
+      }
+    },
+    "googlePlaceId": {
+      "type": "string",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "localReviews"
+            },
+            true
+          ]
+        }
+      }
+    },
+    "oddItemsTheme": {
+      "type": "enumeration",
+      "required": true,
+      "default": "neutral",
+      "enum": [
+        "light",
+        "soft",
+        "neutral",
+        "strong"
+      ]
+    },
+    "evenItemsTheme": {
+      "type": "enumeration",
+      "required": true,
+      "default": "soft",
+      "enum": [
+        "light",
+        "soft",
+        "neutral",
+        "strong"
+      ]
+    }
+  },
+  "config": {}
+}

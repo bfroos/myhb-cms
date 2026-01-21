@@ -1,0 +1,44 @@
+{
+  "kind": "collectionType",
+  "collectionName": "product_manufacturers",
+  "info": {
+    "singularName": "product-manufacturer",
+    "pluralName": "product-manufacturers",
+    "displayName": "Product Manufacturer"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "internalLabel": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      },
+      "required": true,
+      "unique": true
+    },
+    "name": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "logo": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "products": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product.product",
+      "mappedBy": "manufacturer"
+    }
+  }
+}

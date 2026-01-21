@@ -1,0 +1,45 @@
+{
+  "collectionName": "components_blocks_directions",
+  "info": {
+    "displayName": "Directions",
+    "icon": "train"
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string",
+      "required": false
+    },
+    "content": {
+      "type": "blocks"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "walkDirections": {
+      "type": "text"
+    },
+    "publicTransportDirections": {
+      "type": "text"
+    },
+    "carDirections": {
+      "type": "text"
+    },
+    "fixedImageAspectRatio": {
+      "type": "boolean",
+      "required": true,
+      "default": true
+    },
+    "cardSettings": {
+      "type": "component",
+      "component": "shared.card-design",
+      "repeatable": false,
+      "required": false
+    }
+  },
+  "config": {}
+}

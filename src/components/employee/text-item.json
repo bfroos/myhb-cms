@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_employee_text_items",
+  "info": {
+    "displayName": "Text Item",
+    "description": "Ein einzelner Texteintag (z.B. Sprache oder Spezialgebiet)."
+  },
+  "options": {},
+  "attributes": {
+    "text": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "required": true
+    }
+  }
+}

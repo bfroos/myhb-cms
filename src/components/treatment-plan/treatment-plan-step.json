@@ -1,0 +1,91 @@
+{
+  "collectionName": "components_treatment_plan_treatment_plan_steps",
+  "info": {
+    "displayName": "Step"
+  },
+  "options": {},
+  "attributes": {
+    "type": {
+      "type": "enumeration",
+      "required": true,
+      "default": "step",
+      "enum": [
+        "step",
+        "end-of-plan",
+        "follow-up-plan"
+      ]
+    },
+    "week": {
+      "type": "integer",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "type"
+            },
+            "step"
+          ]
+        }
+      },
+      "required": false,
+      "default": 1,
+      "unique": true
+    },
+    "description": {
+      "type": "text",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "type"
+            },
+            "step"
+          ]
+        }
+      }
+    },
+    "treatments": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::treatment.treatment",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "type"
+            },
+            "step"
+          ]
+        }
+      }
+    },
+    "followUpPlanText": {
+      "type": "string",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "type"
+            },
+            "follow-up-plan"
+          ]
+        }
+      },
+      "default": "Behandlung wiederholen"
+    },
+    "endOfPlanText": {
+      "type": "string",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "type"
+            },
+            "end-of-plan"
+          ]
+        }
+      }
+    }
+  },
+  "config": {}
+}

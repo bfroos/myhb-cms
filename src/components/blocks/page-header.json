@@ -1,0 +1,47 @@
+{
+  "collectionName": "components_blocks_page_headers",
+  "info": {
+    "displayName": "Page Header",
+    "icon": "crown"
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string"
+    },
+    "intro": {
+      "type": "text"
+    },
+    "layout": {
+      "type": "enumeration",
+      "enum": [
+        "split",
+        "compact"
+      ]
+    },
+    "media": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "videos"
+      ]
+    },
+    "fixedImageAspectRatio": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    },
+    "cardSettings": {
+      "type": "component",
+      "component": "shared.card-design",
+      "repeatable": false
+    },
+    "videoSettings": {
+      "type": "component",
+      "component": "shared.video-settings",
+      "repeatable": false
+    }
+  },
+  "config": {}
+}

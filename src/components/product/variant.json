@@ -1,0 +1,57 @@
+{
+  "collectionName": "components_product_variants",
+  "info": {
+    "displayName": "Variant"
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "string",
+      "required": true,
+      "unique": false
+    },
+    "description": {
+      "type": "blocks"
+    },
+    "volume": {
+      "type": "component",
+      "component": "product.volume",
+      "repeatable": false
+    },
+    "images": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "priceInEuroCent": {
+      "type": "customField",
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      },
+      "customField": "plugin::amount-cents.price"
+    },
+    "costPerItemInEuroCent": {
+      "type": "customField",
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      },
+      "customField": "plugin::amount-cents.price"
+    },
+    "isActive": {
+      "type": "boolean",
+      "required": false,
+      "default": true
+    }
+  },
+  "config": {}
+}

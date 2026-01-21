@@ -1,0 +1,42 @@
+{
+  "collectionName": "components_blocks_benefits_lists",
+  "info": {
+    "displayName": "Benefits List",
+    "icon": "check"
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string"
+    },
+    "items": {
+      "type": "component",
+      "component": "shared.icon-heading-content",
+      "repeatable": true
+    },
+    "links": {
+      "type": "component",
+      "component": "shared.button",
+      "repeatable": true
+    },
+    "media": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "videos"
+      ]
+    },
+    "videoSettings": {
+      "type": "component",
+      "component": "shared.video-settings",
+      "repeatable": false
+    },
+    "cardSettings": {
+      "type": "component",
+      "component": "shared.card-design",
+      "repeatable": false
+    }
+  },
+  "config": {}
+}

@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_shared_opening_hours",
+  "info": {
+    "displayName": "Opening Hours"
+  },
+  "options": {},
+  "attributes": {
+    "week": {
+      "type": "component",
+      "component": "shared.opening-hours-day",
+      "repeatable": true,
+      "required": true,
+      "max": 7
+    },
+    "exceptions": {
+      "type": "component",
+      "component": "shared.opening-hours-exceptions",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

@@ -1,0 +1,37 @@
+{
+  "collectionName": "components_blocks_text_contents",
+  "info": {
+    "displayName": "Text Content",
+    "icon": "bold"
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string"
+    },
+    "intro": {
+      "type": "text"
+    },
+    "content": {
+      "type": "blocks"
+    },
+    "columnCount": {
+      "type": "integer",
+      "required": true,
+      "default": 1,
+      "min": 1,
+      "max": 2
+    },
+    "links": {
+      "type": "component",
+      "component": "shared.button",
+      "repeatable": true
+    },
+    "cardSettings": {
+      "type": "component",
+      "component": "shared.card-design",
+      "repeatable": false
+    }
+  },
+  "config": {}
+}

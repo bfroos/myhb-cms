@@ -1,0 +1,38 @@
+{
+  "collectionName": "components_blocks_treatment_teasers",
+  "info": {
+    "displayName": "Treatment Teasers"
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string"
+    },
+    "treatmentPages": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::treatment-page.treatment-page"
+    },
+    "showShortDescriptions": {
+      "type": "boolean",
+      "required": true,
+      "default": true
+    },
+    "showPrices": {
+      "type": "boolean",
+      "required": true,
+      "default": true
+    },
+    "showDescriptions": {
+      "type": "boolean",
+      "required": true,
+      "default": true
+    },
+    "cardSettings": {
+      "type": "component",
+      "component": "shared.card-design",
+      "repeatable": false
+    }
+  },
+  "config": {}
+}

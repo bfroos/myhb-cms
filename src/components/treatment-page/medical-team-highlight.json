@@ -1,0 +1,25 @@
+{
+  "collectionName": "components_treatment_page_medical_team_highlights",
+  "info": {
+    "displayName": "Medical Team Highlight"
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string",
+      "required": false
+    },
+    "intro": {
+      "type": "text"
+    },
+    "content": {
+      "type": "blocks"
+    },
+    "employee": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::employee.employee"
+    }
+  },
+  "config": {}
+}

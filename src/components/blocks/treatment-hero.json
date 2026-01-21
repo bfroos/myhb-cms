@@ -1,0 +1,74 @@
+{
+  "collectionName": "components_blocks_treatment_heroes",
+  "info": {
+    "displayName": "Treatment Hero",
+    "icon": "crown"
+  },
+  "options": {},
+  "attributes": {
+    "announcementText": {
+      "type": "string"
+    },
+    "eyebrow": {
+      "type": "string"
+    },
+    "headlinePrefix": {
+      "type": "string"
+    },
+    "headline": {
+      "type": "string"
+    },
+    "headlineSuffix": {
+      "type": "string"
+    },
+    "subline": {
+      "type": "string"
+    },
+    "text": {
+      "type": "text"
+    },
+    "cover": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "showPrice": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    },
+    "showGlobalDiscount": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    },
+    "showReviews": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    },
+    "showCompanyLogos": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    },
+    "treatment": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::treatment.treatment"
+    },
+    "cta": {
+      "type": "component",
+      "component": "shared.button",
+      "repeatable": false
+    },
+    "cardSettings": {
+      "type": "component",
+      "component": "shared.card-design",
+      "repeatable": false
+    }
+  },
+  "config": {}
+}

@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_location_contacts",
+  "info": {
+    "displayName": "Contact"
+  },
+  "options": {},
+  "attributes": {
+    "phoneNumber": {
+      "type": "string"
+    },
+    "whatsAppNumber": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

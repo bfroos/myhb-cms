@@ -1,0 +1,39 @@
+{
+  "kind": "singleType",
+  "collectionName": "job_pages",
+  "info": {
+    "singularName": "job-page",
+    "pluralName": "job-pages",
+    "displayName": "Job Page"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "blocks": {
+      "type": "dynamiczone",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "components": [
+        "blocks.benefits-list",
+        "blocks.comparison-block",
+        "blocks.employee",
+        "blocks.faq",
+        "blocks.highlights-strip",
+        "blocks.media-bento",
+        "blocks.media-card",
+        "blocks.process-steps",
+        "blocks.text-content",
+        "blocks.trust-grid"
+      ]
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "collectionName": "components_blocks_comparison_blocks",
+  "info": {
+    "displayName": "Comparison"
+  },
+  "options": {},
+  "attributes": {
+    "firstItem": {
+      "type": "component",
+      "component": "shared.icon-heading-content",
+      "repeatable": false
+    },
+    "secondItem": {
+      "type": "component",
+      "component": "shared.icon-heading-content",
+      "repeatable": false,
+      "required": false
+    },
+    "cardSettings": {
+      "type": "component",
+      "component": "shared.card-design",
+      "repeatable": false
+    }
+  },
+  "config": {}
+}

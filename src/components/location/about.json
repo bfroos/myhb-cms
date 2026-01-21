@@ -1,0 +1,25 @@
+{
+  "collectionName": "components_location_abouts",
+  "info": {
+    "displayName": "About"
+  },
+  "options": {},
+  "attributes": {
+    "comingSoon": {
+      "type": "component",
+      "component": "location.about-item",
+      "repeatable": false
+    },
+    "openSoon": {
+      "type": "component",
+      "component": "location.about-item",
+      "repeatable": false
+    },
+    "open": {
+      "type": "component",
+      "component": "location.about-item",
+      "repeatable": false
+    }
+  },
+  "config": {}
+}

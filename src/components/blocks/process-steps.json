@@ -1,0 +1,31 @@
+{
+  "collectionName": "components_blocks_process_steps",
+  "info": {
+    "displayName": "Process Steps"
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string"
+    },
+    "content": {
+      "type": "blocks"
+    },
+    "steps": {
+      "type": "component",
+      "component": "shared.image-heading-text",
+      "repeatable": true
+    },
+    "links": {
+      "type": "component",
+      "component": "shared.button",
+      "repeatable": true
+    },
+    "cardSettings": {
+      "type": "component",
+      "component": "shared.card-design",
+      "repeatable": false
+    }
+  },
+  "config": {}
+}

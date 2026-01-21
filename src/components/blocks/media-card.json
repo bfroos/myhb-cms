@@ -1,0 +1,119 @@
+{
+  "collectionName": "components_blocks_media_cards",
+  "info": {
+    "displayName": "Media Card",
+    "icon": "landscape"
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string",
+      "required": false
+    },
+    "intro": {
+      "type": "text"
+    },
+    "content": {
+      "type": "blocks"
+    },
+    "links": {
+      "type": "component",
+      "component": "shared.button",
+      "repeatable": true
+    },
+    "media": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "videos"
+      ]
+    },
+    "fixedImageAspectRatio": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    },
+    "mediaCaption": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    },
+    "captionTitle": {
+      "type": "string",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "mediaCaption"
+            },
+            true
+          ]
+        }
+      }
+    },
+    "captionDescription": {
+      "type": "string",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "mediaCaption"
+            },
+            true
+          ]
+        }
+      }
+    },
+    "layout": {
+      "type": "enumeration",
+      "required": true,
+      "default": "media-left",
+      "enum": [
+        "media-left",
+        "media-right"
+      ]
+    },
+    "contentAlignment": {
+      "type": "enumeration",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "fixedImageAspectRatio"
+            },
+            true
+          ]
+        }
+      },
+      "required": false,
+      "default": "top",
+      "enum": [
+        "top",
+        "center",
+        "bottom"
+      ]
+    },
+    "mediaAlignment": {
+      "type": "enumeration",
+      "required": true,
+      "default": "top",
+      "enum": [
+        "top",
+        "center",
+        "bottom"
+      ]
+    },
+    "cardSettings": {
+      "type": "component",
+      "component": "shared.card-design",
+      "repeatable": false
+    },
+    "videoSettings": {
+      "type": "component",
+      "component": "shared.video-settings",
+      "repeatable": false
+    }
+  },
+  "config": {}
+}

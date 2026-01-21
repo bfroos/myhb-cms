@@ -1,0 +1,13 @@
+{
+  "collectionName": "components_blog_call_to_actions",
+  "info": {
+    "displayName": "Call to action"
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

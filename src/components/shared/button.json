@@ -1,0 +1,232 @@
+{
+  "collectionName": "components_shared_buttons",
+  "info": {
+    "displayName": "Button",
+    "icon": "cursor"
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "method": {
+      "type": "enumeration",
+      "required": true,
+      "default": "action",
+      "enum": [
+        "action",
+        "external-link",
+        "internal-link"
+      ]
+    },
+    "variant": {
+      "type": "enumeration",
+      "default": "primary",
+      "enum": [
+        "primary",
+        "secondary",
+        "tertiary",
+        "quaternary",
+        "link"
+      ]
+    },
+    "action": {
+      "type": "enumeration",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "method"
+            },
+            "action"
+          ]
+        }
+      },
+      "default": "appointment-booking",
+      "enum": [
+        "appointment-booking",
+        "newsletter-sign-up"
+      ]
+    },
+    "targetType": {
+      "type": "enumeration",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "method"
+            },
+            "internal-link"
+          ]
+        }
+      },
+      "required": false,
+      "default": "collection",
+      "enum": [
+        "collection",
+        "single-type"
+      ]
+    },
+    "singleType": {
+      "type": "enumeration",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "targetType"
+            },
+            "single-type"
+          ]
+        }
+      },
+      "required": false,
+      "default": "homepage",
+      "enum": [
+        "about-us",
+        "blog",
+        "career",
+        "doctors",
+        "homepage",
+        "prices",
+        "locations"
+      ]
+    },
+    "collection": {
+      "type": "enumeration",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "targetType"
+            },
+            "collection"
+          ]
+        }
+      },
+      "enum": [
+        "page",
+        "location",
+        "treatment",
+        "product"
+      ]
+    },
+    "page": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::page.page",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "collection"
+            },
+            "page"
+          ]
+        }
+      }
+    },
+    "treatment": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::treatment-page.treatment-page",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "collection"
+            },
+            "treatment"
+          ]
+        }
+      }
+    },
+    "location": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::location.location",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "collection"
+            },
+            "location"
+          ]
+        }
+      }
+    },
+    "product": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::product.product",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "collection"
+            },
+            "product"
+          ]
+        }
+      }
+    },
+    "url": {
+      "type": "string",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "method"
+            },
+            "external-link"
+          ]
+        }
+      }
+    },
+    "anchor": {
+      "type": "string",
+      "conditions": {
+        "visible": {
+          "!=": [
+            {
+              "var": "method"
+            },
+            "action"
+          ]
+        }
+      }
+    },
+    "openInNewWindow": {
+      "type": "boolean",
+      "conditions": {
+        "visible": {
+          "!=": [
+            {
+              "var": "method"
+            },
+            "action"
+          ]
+        }
+      },
+      "required": false,
+      "default": false
+    },
+    "noFollow": {
+      "type": "boolean",
+      "conditions": {
+        "visible": {
+          "!=": [
+            {
+              "var": "method"
+            },
+            "action"
+          ]
+        }
+      },
+      "required": false,
+      "default": false
+    }
+  },
+  "config": {}
+}

@@ -1,0 +1,13 @@
+{
+  "collectionName": "components_blog_newsletters",
+  "info": {
+    "displayName": "Newsletter"
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

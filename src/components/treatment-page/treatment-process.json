@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_treatment_page_treatment_processes",
+  "info": {
+    "displayName": "Treatment Process"
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string"
+    },
+    "content": {
+      "type": "blocks"
+    },
+    "steps": {
+      "type": "component",
+      "component": "shared.image-heading-text",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

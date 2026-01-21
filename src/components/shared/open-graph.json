@@ -1,0 +1,25 @@
+{
+  "collectionName": "components_shared_open_graphs",
+  "info": {
+    "displayName": "Open Graph",
+    "icon": "project-diagram"
+  },
+  "options": {},
+  "attributes": {
+    "ogTitle": {
+      "type": "string",
+      "required": false
+    },
+    "ogDescription": {
+      "type": "string",
+      "required": false
+    },
+    "ogImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    }
+  }
+}

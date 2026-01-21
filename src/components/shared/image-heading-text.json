@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_shared_image_heading_texts",
+  "info": {
+    "displayName": "Image Heading Text"
+  },
+  "options": {},
+  "attributes": {
+    "heading": {
+      "type": "string"
+    },
+    "text": {
+      "type": "text"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    }
+  },
+  "config": {}
+}

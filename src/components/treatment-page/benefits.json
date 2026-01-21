@@ -1,0 +1,27 @@
+{
+  "collectionName": "components_treatment_page_benefits",
+  "info": {
+    "displayName": "Benefits",
+    "icon": "check"
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string"
+    },
+    "items": {
+      "type": "component",
+      "component": "shared.heading-content-item",
+      "repeatable": true
+    },
+    "media": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "videos"
+      ]
+    }
+  },
+  "config": {}
+}

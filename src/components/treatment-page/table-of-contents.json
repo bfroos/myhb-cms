@@ -1,0 +1,20 @@
+{
+  "collectionName": "components_treatment_page_table_of_contents",
+  "info": {
+    "displayName": "Table Of Contents",
+    "icon": "bulletList"
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string"
+    },
+    "intro": {
+      "type": "text"
+    },
+    "content": {
+      "type": "blocks"
+    }
+  },
+  "config": {}
+}

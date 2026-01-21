@@ -1,0 +1,51 @@
+{
+  "collectionName": "components_treatment_page_treatment_details",
+  "info": {
+    "displayName": "Treatment Details"
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string",
+      "required": false
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "price": {
+      "type": "text"
+    },
+    "duration": {
+      "type": "text"
+    },
+    "effect": {
+      "type": "text"
+    },
+    "initialResults": {
+      "type": "text"
+    },
+    "finalResults": {
+      "type": "text"
+    },
+    "effectDuration": {
+      "type": "text"
+    },
+    "anesthesia": {
+      "type": "text"
+    },
+    "medication": {
+      "type": "text"
+    },
+    "aftercareSummary": {
+      "type": "text"
+    },
+    "followUpTreatments": {
+      "type": "text"
+    }
+  },
+  "config": {}
+}

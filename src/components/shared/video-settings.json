@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_shared_video_settings",
+  "info": {
+    "displayName": "Video Settings"
+  },
+  "options": {},
+  "attributes": {
+    "autoplay": {
+      "type": "boolean",
+      "required": false,
+      "default": false
+    },
+    "playsInline": {
+      "type": "boolean",
+      "default": true
+    },
+    "preload": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "config": {}
+}

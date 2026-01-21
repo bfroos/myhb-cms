@@ -1,0 +1,26 @@
+{
+  "collectionName": "components_blocks_product_category_price_overviews",
+  "info": {
+    "displayName": "Product Category Price Overview",
+    "icon": "priceTag"
+  },
+  "options": {},
+  "attributes": {
+    "productCategories": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product-category.product-category"
+    },
+    "showProducts": {
+      "type": "boolean",
+      "required": true,
+      "default": true
+    },
+    "showTreatments": {
+      "type": "boolean",
+      "required": true,
+      "default": true
+    }
+  },
+  "config": {}
+}

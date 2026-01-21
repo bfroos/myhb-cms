@@ -1,0 +1,29 @@
+{
+  "collectionName": "components_blocks_location_maps",
+  "info": {
+    "displayName": "Location Map",
+    "icon": "globe"
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string"
+    },
+    "list": {
+      "type": "component",
+      "component": "shared.icon-text-pair",
+      "repeatable": true
+    },
+    "links": {
+      "type": "component",
+      "component": "shared.button",
+      "repeatable": true
+    },
+    "cardSettings": {
+      "type": "component",
+      "component": "shared.card-design",
+      "repeatable": false
+    }
+  },
+  "config": {}
+}

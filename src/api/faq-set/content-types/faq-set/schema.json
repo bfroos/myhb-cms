@@ -1,0 +1,35 @@
+{
+  "kind": "collectionType",
+  "collectionName": "faq_sets",
+  "info": {
+    "singularName": "faq-set",
+    "pluralName": "faq-sets",
+    "displayName": "FAQ Set"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "internalLabel": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      },
+      "required": true,
+      "unique": true
+    },
+    "faqs": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::faq.faq",
+      "inversedBy": "faqSets"
+    }
+  }
+}

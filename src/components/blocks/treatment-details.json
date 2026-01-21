@@ -1,0 +1,61 @@
+{
+  "collectionName": "components_blocks_treatment_details",
+  "info": {
+    "displayName": "Treatment Details"
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string",
+      "required": false
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "price": {
+      "type": "text"
+    },
+    "duration": {
+      "type": "text"
+    },
+    "effect": {
+      "type": "text"
+    },
+    "initialResults": {
+      "type": "text"
+    },
+    "finalResults": {
+      "type": "text"
+    },
+    "effectDuration": {
+      "type": "text"
+    },
+    "anesthesia": {
+      "type": "text"
+    },
+    "medication": {
+      "type": "text"
+    },
+    "aftercareSummary": {
+      "type": "text"
+    },
+    "followUpTreatments": {
+      "type": "text"
+    },
+    "treatment": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::treatment.treatment"
+    },
+    "cardSettings": {
+      "type": "component",
+      "component": "shared.card-design",
+      "repeatable": false
+    }
+  },
+  "config": {}
+}

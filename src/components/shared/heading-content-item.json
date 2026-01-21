@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_shared_heading_content_items",
+  "info": {
+    "displayName": "Heading Content Item"
+  },
+  "options": {},
+  "attributes": {
+    "heading": {
+      "type": "string"
+    },
+    "content": {
+      "type": "blocks"
+    }
+  },
+  "config": {}
+}

@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_global_seos",
+  "info": {
+    "displayName": "SEO"
+  },
+  "options": {},
+  "attributes": {
+    "defaultTitle": {
+      "type": "string"
+    },
+    "defaultDescription": {
+      "type": "text"
+    },
+    "titleSuffix": {
+      "type": "string"
+    },
+    "titleSeparator": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

@@ -1,0 +1,38 @@
+{
+  "collectionName": "components_employee_vita_entries",
+  "info": {
+    "displayName": "Vita Entry",
+    "description": "Ein Eintrag im Werdegang (Jahresbereich + Text)."
+  },
+  "options": {},
+  "attributes": {
+    "fromYear": {
+      "type": "integer",
+      "required": true,
+      "min": 1900,
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    },
+    "toYear": {
+      "type": "integer",
+      "min": 1900,
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    },
+    "text": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  }
+}

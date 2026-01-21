@@ -1,0 +1,30 @@
+{
+  "collectionName": "components_shared_card_designs",
+  "info": {
+    "displayName": "Card Settings"
+  },
+  "options": {},
+  "attributes": {
+    "colorTheme": {
+      "type": "enumeration",
+      "required": false,
+      "default": "light",
+      "enum": [
+        "light",
+        "soft",
+        "neutral",
+        "strong"
+      ]
+    },
+    "elevation": {
+      "type": "enumeration",
+      "required": false,
+      "enum": [
+        "small",
+        "medium",
+        "large"
+      ]
+    }
+  },
+  "config": {}
+}

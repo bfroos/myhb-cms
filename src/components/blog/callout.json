@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_blog_callouts",
+  "info": {
+    "displayName": "Callout"
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string"
+    },
+    "label": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

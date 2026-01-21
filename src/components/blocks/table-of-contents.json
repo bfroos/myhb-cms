@@ -1,0 +1,35 @@
+{
+  "collectionName": "components_blocks_table_of_contents",
+  "info": {
+    "displayName": "Table Of Contents",
+    "icon": "bulletList"
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string"
+    },
+    "intro": {
+      "type": "text"
+    },
+    "content": {
+      "type": "blocks"
+    },
+    "index": {
+      "type": "component",
+      "component": "shared.key-value",
+      "repeatable": true
+    },
+    "links": {
+      "type": "component",
+      "component": "shared.button",
+      "repeatable": true
+    },
+    "cardSettings": {
+      "type": "component",
+      "component": "shared.card-design",
+      "repeatable": false
+    }
+  },
+  "config": {}
+}

@@ -1,0 +1,53 @@
+{
+  "collectionName": "components_blocks_treatment_plans",
+  "info": {
+    "displayName": "Treatment Plan"
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string",
+      "required": false
+    },
+    "content": {
+      "type": "blocks"
+    },
+    "additionalInfos": {
+      "type": "component",
+      "component": "shared.collabsible-item",
+      "repeatable": true
+    },
+    "personaPhoto": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "personaAge": {
+      "type": "integer",
+      "required": false
+    },
+    "personaTreatmentGoal": {
+      "type": "string",
+      "required": false
+    },
+    "steps": {
+      "type": "component",
+      "component": "treatment-plan.treatment-plan-step",
+      "repeatable": true
+    },
+    "links": {
+      "type": "component",
+      "component": "shared.button",
+      "repeatable": true
+    },
+    "cardSettings": {
+      "type": "component",
+      "component": "shared.card-design",
+      "repeatable": false
+    }
+  },
+  "config": {}
+}

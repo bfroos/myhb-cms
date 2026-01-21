@@ -1,0 +1,43 @@
+{
+  "collectionName": "components_blocks_trust_grids",
+  "info": {
+    "displayName": "Trust Grid",
+    "icon": "apps"
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string",
+      "required": false
+    },
+    "items": {
+      "type": "component",
+      "component": "shared.icon-heading-content",
+      "repeatable": true
+    },
+    "itemsPosition": {
+      "type": "enumeration",
+      "required": true,
+      "default": "aside",
+      "enum": [
+        "aside",
+        "below"
+      ]
+    },
+    "iconPosition": {
+      "type": "enumeration",
+      "required": true,
+      "default": "above",
+      "enum": [
+        "aside",
+        "above"
+      ]
+    },
+    "cardSettings": {
+      "type": "component",
+      "component": "shared.card-design",
+      "repeatable": false
+    }
+  },
+  "config": {}
+}

@@ -1,0 +1,44 @@
+{
+  "collectionName": "components_blocks_employees",
+  "info": {
+    "displayName": "Employee",
+    "icon": "user"
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string"
+    },
+    "intro": {
+      "type": "text"
+    },
+    "content": {
+      "type": "blocks"
+    },
+    "employee": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::employee.employee"
+    },
+    "layout": {
+      "type": "enumeration",
+      "required": true,
+      "default": "media-left",
+      "enum": [
+        "media-left",
+        "media-right"
+      ]
+    },
+    "links": {
+      "type": "component",
+      "component": "shared.button",
+      "repeatable": true
+    },
+    "cardSettings": {
+      "type": "component",
+      "component": "shared.card-design",
+      "repeatable": false
+    }
+  },
+  "config": {}
+}

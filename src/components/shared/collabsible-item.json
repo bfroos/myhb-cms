@@ -1,0 +1,31 @@
+{
+  "collectionName": "components_shared_collabsible_items",
+  "info": {
+    "displayName": "Collabsible Item"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "content": {
+      "type": "blocks",
+      "required": true
+    },
+    "isOpenByDefault": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    },
+    "icon": {
+      "type": "customField",
+      "customField": "plugin::strapi-plugin-iconhub.iconhub",
+      "options": {
+        "storeIconData": true,
+        "storeIconName": true
+      }
+    }
+  },
+  "config": {}
+}

@@ -1,0 +1,20 @@
+{
+  "collectionName": "components_treatment_page_suitabilities",
+  "info": {
+    "displayName": "Suitability"
+  },
+  "options": {},
+  "attributes": {
+    "notSuitableFor": {
+      "type": "component",
+      "component": "shared.heading-content-item",
+      "repeatable": false
+    },
+    "suitableFor": {
+      "type": "component",
+      "component": "shared.heading-content-item",
+      "repeatable": false
+    }
+  },
+  "config": {}
+}

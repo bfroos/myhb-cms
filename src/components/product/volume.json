@@ -1,0 +1,26 @@
+{
+  "collectionName": "components_product_volumes",
+  "info": {
+    "displayName": "Volume"
+  },
+  "options": {},
+  "attributes": {
+    "unit": {
+      "type": "enumeration",
+      "required": true,
+      "default": "ml",
+      "enum": [
+        "ie",
+        "ml",
+        "ampoule",
+        "session",
+        "package"
+      ]
+    },
+    "quantity": {
+      "type": "decimal",
+      "required": true
+    }
+  },
+  "config": {}
+}

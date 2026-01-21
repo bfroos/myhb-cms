@@ -1,0 +1,51 @@
+{
+  "kind": "singleType",
+  "collectionName": "doctors_pages",
+  "info": {
+    "singularName": "doctors-page",
+    "pluralName": "doctors-pages",
+    "displayName": "Doctors Page"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "blocks": {
+      "type": "dynamiczone",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "components": [
+        "blocks.employee-list",
+        "blocks.page-header",
+        "blocks.benefits-list",
+        "blocks.comparison-block",
+        "blocks.employee",
+        "blocks.faq",
+        "blocks.highlights-strip",
+        "blocks.media-bento",
+        "blocks.media-card",
+        "blocks.process-steps",
+        "blocks.text-content",
+        "blocks.trust-grid"
+      ]
+    },
+    "seo": {
+      "type": "component",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "shared.seo",
+      "repeatable": false
+    }
+  }
+}

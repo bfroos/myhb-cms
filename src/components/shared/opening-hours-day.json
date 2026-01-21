@@ -1,0 +1,34 @@
+{
+  "collectionName": "components_shared_opening_hours_days",
+  "info": {
+    "displayName": "Opening Hours Day"
+  },
+  "options": {},
+  "attributes": {
+    "day": {
+      "type": "enumeration",
+      "required": true,
+      "enum": [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+        "sunday"
+      ]
+    },
+    "closed": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    },
+    "intervals": {
+      "type": "component",
+      "component": "shared.opening-hours-interval",
+      "repeatable": true,
+      "required": false
+    }
+  },
+  "config": {}
+}

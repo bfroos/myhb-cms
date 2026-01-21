@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_global_brands",
+  "info": {
+    "displayName": "Brand"
+  },
+  "options": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "nameShort": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

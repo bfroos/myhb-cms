@@ -1,0 +1,62 @@
+{
+  "collectionName": "components_blocks_highlights_strips",
+  "info": {
+    "displayName": "Highlights Strip"
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string"
+    },
+    "type": {
+      "type": "enumeration",
+      "required": true,
+      "default": "numbers",
+      "enum": [
+        "numbers",
+        "icons"
+      ]
+    },
+    "numberItems": {
+      "type": "component",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "type"
+            },
+            "numbers"
+          ]
+        }
+      },
+      "component": "shared.key-value",
+      "repeatable": true
+    },
+    "iconItems": {
+      "type": "component",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "type"
+            },
+            "icons"
+          ]
+        }
+      },
+      "component": "shared.icon-text-pair",
+      "repeatable": true
+    },
+    "showDivider": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    },
+    "cardSettings": {
+      "type": "component",
+      "component": "shared.card-design",
+      "repeatable": false
+    }
+  },
+  "config": {}
+}

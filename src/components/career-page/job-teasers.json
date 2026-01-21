@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_career_page_job_teasers",
+  "info": {
+    "displayName": "Job Teasers"
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string"
+    },
+    "cardSettings": {
+      "type": "component",
+      "component": "shared.card-design",
+      "repeatable": false
+    }
+  },
+  "config": {}
+}

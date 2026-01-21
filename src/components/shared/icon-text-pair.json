@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_shared_icon_text_pairs",
+  "info": {
+    "displayName": "Icon Text Pair"
+  },
+  "options": {},
+  "attributes": {
+    "icon": {
+      "type": "customField",
+      "customField": "plugin::strapi-plugin-iconhub.iconhub",
+      "options": {
+        "storeIconData": true,
+        "storeIconName": true
+      }
+    },
+    "text": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

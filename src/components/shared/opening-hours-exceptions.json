@@ -1,0 +1,28 @@
+{
+  "collectionName": "components_shared_opening_hours_exceptions",
+  "info": {
+    "displayName": "Opening Hours Exceptions"
+  },
+  "options": {},
+  "attributes": {
+    "date": {
+      "type": "date",
+      "required": true,
+      "unique": true
+    },
+    "closedAllDay": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    },
+    "intervals": {
+      "type": "component",
+      "component": "shared.opening-hours-interval",
+      "repeatable": true
+    },
+    "note": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

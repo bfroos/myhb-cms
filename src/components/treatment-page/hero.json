@@ -1,0 +1,41 @@
+{
+  "collectionName": "components_treatment_page_heroes",
+  "info": {
+    "displayName": "Hero"
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string",
+      "required": false
+    },
+    "headlineSuffix": {
+      "type": "string"
+    },
+    "subline": {
+      "type": "string"
+    },
+    "intro": {
+      "type": "text"
+    },
+    "cover": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "showDiscount": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    },
+    "showPrice": {
+      "type": "boolean",
+      "required": true,
+      "default": true
+    }
+  },
+  "config": {}
+}
