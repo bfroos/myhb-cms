@@ -1356,6 +1356,8 @@ export interface ApiHomepageHomepage extends Struct.SingleTypeSchema {
   attributes: {
     blocks: Schema.Attribute.DynamicZone<
       [
+        'blocks.page-header',
+        'blocks.treatment-hero',
         'blocks.benefits-list',
         'blocks.comparison-block',
         'blocks.employee',

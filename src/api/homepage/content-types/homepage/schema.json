@@ -23,6 +23,8 @@
         }
       },
       "components": [
+        "blocks.page-header",
+        "blocks.treatment-hero",
         "blocks.benefits-list",
         "blocks.comparison-block",
         "blocks.employee",

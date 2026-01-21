@@ -416,6 +416,8 @@ export const doctorsBlocksPopulate = {
 
 export const homepageBlocksPopulate = {
   on: {
+    "blocks.treatment-hero": blockTreatmentHeroPopulate,
+    "blocks.page-header": blockPageHeaderPopulate,
     "blocks.benefits-list": blockBenefitsListPopulate,
     "blocks.comparison-block": blockComparisonBlockPopulate,
     "blocks.employee": blockEmployeePopulate,
