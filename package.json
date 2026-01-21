@@ -4,6 +4,7 @@
   "private": true,
   "description": "A Strapi application",
   "scripts": {
+    "prebuild": "npm -w amount-cents run build",
     "build": "strapi build",
     "console": "strapi console",
     "deploy": "strapi deploy",
@@ -14,6 +15,9 @@
     "upgrade": "npx @strapi/upgrade latest",
     "upgrade:dry": "npx @strapi/upgrade latest --dry"
   },
+  "workspaces": [
+    "src/plugins/*"
+  ],
   "dependencies": {
     "@arshiash80/strapi-plugin-iconhub": "^1.1.1",
     "@strapi/plugin-cloud": "5.32.0",
@@ -28,6 +32,8 @@
     "styled-components": "^6.0.0"
   },
   "devDependencies": {
+    "@strapi/sdk-plugin": "^5.4.0",
+    "@strapi/typescript-utils": "5.32.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
