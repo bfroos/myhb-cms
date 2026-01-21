@@ -1,16 +1,16 @@
-export default () => ({
+export default ({ env }) => ({
   upload: {
     config: {
       provider: "strapi-provider-cloudflare-r2",
       providerOptions: {
-        accessKeyId: process.env.CF_ACCESS_KEY_ID,
-        secretAccessKey: process.env.CF_ACCESS_SECRET,
+        accessKeyId: env("CF_ACCESS_KEY_ID"),
+        secretAccessKey: env("CF_ACCESS_SECRET"),
         /**
          * `https://<ACCOUNT_ID>.r2.cloudflarestorage.com`
          */
-        endpoint: process.env.CF_ENDPOINT,
+        endpoint: env("CF_ENDPOINT"),
         params: {
-          Bucket: process.env.CF_BUCKET,
+          Bucket: env("CF_BUCKET"),
         },
         /**
          * Set this Option to store the CDN URL of your files and not the R2 endpoint URL in your DB.
@@ -18,7 +18,7 @@ export default () => ({
          * This option is required to upload files larger than 5MB, and is highly recommended to be set.
          * Check the cloudflare docs for the setup: https://developers.cloudflare.com/r2/data-access/public-buckets/#enable-public-access-for-your-bucket
          */
-        cloudflarePublicAccessUrl: process.env.CF_PUBLIC_ACCESS_URL,
+        cloudflarePublicAccessUrl: env("CF_PUBLIC_ACCESS_URL"),
         /**
          * Sets if all assets should be uploaded in the root dir regardless the strapi folder.
          * It is useful because strapi sets folder names with numbers, not by user's input folder name
