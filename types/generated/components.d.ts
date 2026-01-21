@@ -833,7 +833,7 @@ export interface SharedCoordinates extends Struct.ComponentSchema {
     displayName: 'Coordinates';
   };
   attributes: {
-    lat: Schema.Attribute.Decimal &
+    lat: Schema.Attribute.Float &
       Schema.Attribute.Required &
       Schema.Attribute.SetMinMax<
         {
@@ -842,7 +842,7 @@ export interface SharedCoordinates extends Struct.ComponentSchema {
         },
         number
       >;
-    long: Schema.Attribute.Decimal &
+    long: Schema.Attribute.Float &
       Schema.Attribute.Required &
       Schema.Attribute.SetMinMax<
         {
