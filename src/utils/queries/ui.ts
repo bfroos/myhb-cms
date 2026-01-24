@@ -3,7 +3,7 @@ import { mediaPopulate } from "./strapi";
 export const reviewTeaserPopulate = {
   fields: ["text", "author", "rating", "source", "sourceUrl"],
   populate: {
-    relatedLocation: {
+    location: {
       fields: ["name"],
       populate: {
         address: {

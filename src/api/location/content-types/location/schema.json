@@ -124,8 +124,7 @@
     "reviews": {
       "type": "relation",
       "relation": "oneToMany",
-      "target": "api::review.review",
-      "mappedBy": "relatedLocation"
+      "target": "api::review.review"
     },
     "jobs": {
       "type": "relation",

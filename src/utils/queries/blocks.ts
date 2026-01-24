@@ -217,7 +217,7 @@ export const blockReviewsPopulate = {
     reviews: {
       fields: ["rating", "text", "author", "source", "sourceUrl"],
       populate: {
-        relatedLocation: {
+        location: {
           fields: ["name"],
           populate: {
             city: {

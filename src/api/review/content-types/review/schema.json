@@ -86,11 +86,10 @@
       "target": "api::treatment.treatment",
       "mappedBy": "reviews"
     },
-    "relatedLocation": {
+    "location": {
       "type": "relation",
-      "relation": "manyToOne",
-      "target": "api::location.location",
-      "inversedBy": "reviews"
+      "relation": "oneToOne",
+      "target": "api::location.location"
     }
   }
 }

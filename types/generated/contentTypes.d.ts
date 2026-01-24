@@ -2292,6 +2292,7 @@ export interface ApiReviewReview extends Struct.CollectionTypeSchema {
       }>;
     locale: Schema.Attribute.String;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::review.review'>;
+    location: Schema.Attribute.Relation<'oneToOne', 'api::location.location'>;
     publishedAt: Schema.Attribute.DateTime;
     rating: Schema.Attribute.Integer &
       Schema.Attribute.Required &
@@ -2308,10 +2309,6 @@ export interface ApiReviewReview extends Struct.CollectionTypeSchema {
         number
       > &
       Schema.Attribute.DefaultTo<5>;
-    relatedLocation: Schema.Attribute.Relation<
-      'manyToOne',
-      'api::location.location'
-    >;
     relatedTreatments: Schema.Attribute.Relation<
       'manyToMany',
       'api::treatment.treatment'
