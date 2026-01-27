@@ -97,7 +97,30 @@ export const Input = React.forwardRef<HTMLInputElement, any>((props, ref) => {
     });
   };
 
-  const placeholderText = placeholder ? formatMessage(placeholder) : '0,00';
+  // formatMessage requires a MessageDescriptor with an "id". Without an id, @formatjs/intl throws in production.
+  const safeFormat = (descriptor: unknown): string | undefined => {
+    if (descriptor == null) return undefined;
+    if (typeof descriptor === 'string') return descriptor;
+    if (
+      typeof descriptor === 'object' &&
+      descriptor !== null &&
+      'id' in descriptor &&
+      typeof (descriptor as { id: string }).id === 'string'
+    ) {
+      return formatMessage(descriptor as { id: string; defaultMessage?: string });
+    }
+    if (
+      typeof descriptor === 'object' &&
+      descriptor !== null &&
+      'defaultMessage' in descriptor &&
+      typeof (descriptor as { defaultMessage: string }).defaultMessage === 'string'
+    ) {
+      return (descriptor as { defaultMessage: string }).defaultMessage;
+    }
+    return undefined;
+  };
+
+  const placeholderText = placeholder ? (safeFormat(placeholder) ?? '0,00') : '0,00';
   // Verwende label Prop (falls vorhanden), sonst intlLabel, sonst name
   const fieldLabel = label || (intlLabel && intlLabel.id ? formatMessage(intlLabel) : name);
   const errorMessage = error ? (typeof error === 'string' ? error : error.message) : undefined;
@@ -107,7 +130,7 @@ export const Input = React.forwardRef<HTMLInputElement, any>((props, ref) => {
       name={name}
       required={required}
       error={errorMessage}
-      hint={hint ? formatMessage(hint) : undefined}
+      hint={hint ? safeFormat(hint) : undefined}
     >
       <Field.Label>{fieldLabel}</Field.Label>
       <TextInput
