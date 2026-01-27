@@ -1118,7 +1118,6 @@ export interface TreatmentPageHero extends Struct.ComponentSchema {
     cover: Schema.Attribute.Media<'images'>;
     headline: Schema.Attribute.String;
     headlineSuffix: Schema.Attribute.String;
-    intro: Schema.Attribute.Text;
     showDiscount: Schema.Attribute.Boolean &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<false>;
@@ -1126,6 +1125,7 @@ export interface TreatmentPageHero extends Struct.ComponentSchema {
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<true>;
     subline: Schema.Attribute.String;
+    text: Schema.Attribute.Text;
   };
 }
 

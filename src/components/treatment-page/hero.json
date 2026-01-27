@@ -15,7 +15,7 @@
     "subline": {
       "type": "string"
     },
-    "intro": {
+    "text": {
       "type": "text"
     },
     "cover": {
