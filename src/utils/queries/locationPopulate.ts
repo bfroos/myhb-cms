@@ -30,7 +30,7 @@ export const locationPopulateForPage = {
     ],
     populate: {
       image: {
-        fields: ["url", "formats"],
+        fields: ["url"],
       },
     },
   },
@@ -76,7 +76,7 @@ export const locationPopulateForPage = {
         fields: ["headline", "intro", "content"],
         populate: {
           media: {
-            fields: ["mime", "url", "formats"],
+            fields: ["mime", "url"],
           },
         },
       },
@@ -84,7 +84,7 @@ export const locationPopulateForPage = {
         fields: ["headline", "intro", "content"],
         populate: {
           media: {
-            fields: ["mime", "url", "formats"],
+            fields: ["mime", "url"],
           },
         },
       },
@@ -92,7 +92,7 @@ export const locationPopulateForPage = {
         fields: ["headline", "intro", "content"],
         populate: {
           media: {
-            fields: ["mime", "url", "formats"],
+            fields: ["mime", "url"],
           },
         },
       },

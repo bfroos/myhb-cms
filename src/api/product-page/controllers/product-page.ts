@@ -69,7 +69,7 @@ export default factories.createCoreController(
                 fields: ["quantity", "unit"],
               },
               images: {
-                fields: ["url", "formats"],
+                fields: ["url"],
               },
             },
           },
