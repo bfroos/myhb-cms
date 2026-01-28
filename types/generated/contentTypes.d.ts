@@ -1530,15 +1530,17 @@ export interface ApiJobJob extends Struct.CollectionTypeSchema {
           localized: true;
         };
       }>;
-    contractType: Schema.Attribute.Enumeration<
-      ['permanent', 'fixed-term', 'freelance']
-    > &
+    contractTypes: Schema.Attribute.JSON &
+      Schema.Attribute.CustomField<
+        'plugin::multi-select.multi-select',
+        ['permanent', 'fixed-term', 'freelance']
+      > &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: false;
         };
       }> &
-      Schema.Attribute.DefaultTo<'permanent'>;
+      Schema.Attribute.DefaultTo<'[]'>;
     cover: Schema.Attribute.Media<'images'> &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
@@ -1555,15 +1557,17 @@ export interface ApiJobJob extends Struct.CollectionTypeSchema {
         };
       }> &
       Schema.Attribute.DefaultTo<'r.mrouki@myhb.app'>;
-    employmentType: Schema.Attribute.Enumeration<
-      ['full-time', 'part-time', 'full-time-or-part-time']
-    > &
+    employmentTypes: Schema.Attribute.JSON &
+      Schema.Attribute.CustomField<
+        'plugin::multi-select.multi-select',
+        ['full-time', 'part-time']
+      > &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: false;
         };
       }> &
-      Schema.Attribute.DefaultTo<'full-time'>;
+      Schema.Attribute.DefaultTo<'[]'>;
     genderHint: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.SetPluginOptions<{

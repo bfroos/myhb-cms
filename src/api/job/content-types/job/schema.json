@@ -80,33 +80,33 @@
       },
       "customField": "plugin::amount-cents.price"
     },
-    "employmentType": {
-      "type": "enumeration",
+    "contractTypes": {
+      "type": "customField",
       "pluginOptions": {
         "i18n": {
           "localized": false
         }
       },
-      "required": false,
-      "default": "full-time",
-      "enum": [
-        "full-time",
-        "part-time",
-        "full-time-or-part-time"
-      ]
-    },
-    "contractType": {
-      "type": "enumeration",
-      "pluginOptions": {
-        "i18n": {
-          "localized": false
-        }
-      },
-      "default": "permanent",
-      "enum": [
+      "customField": "plugin::multi-select.multi-select",
+      "default": "[]",
+      "options": [
         "permanent",
         "fixed-term",
         "freelance"
+      ]
+    },
+    "employmentTypes": {
+      "type": "customField",
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      },
+      "customField": "plugin::multi-select.multi-select",
+      "default": "[]",
+      "options": [
+        "full-time",
+        "part-time"
       ]
     },
     "applyTarget": {
