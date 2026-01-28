@@ -15,6 +15,15 @@
     }
   },
   "attributes": {
+    "internalLabel": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      },
+      "required": true
+    },
     "blocks": {
       "type": "dynamiczone",
       "pluginOptions": {
