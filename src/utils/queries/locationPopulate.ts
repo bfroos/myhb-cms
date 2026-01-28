@@ -29,9 +29,7 @@ export const locationPopulateForPage = {
       "carDirections",
     ],
     populate: {
-      image: {
-        fields: ["url"],
-      },
+      image: mediaPopulate as object,
     },
   },
   coordinates: {
@@ -75,25 +73,19 @@ export const locationPopulateForPage = {
       comingSoon: {
         fields: ["headline", "intro", "content"],
         populate: {
-          media: {
-            fields: ["mime", "url"],
-          },
+          media: mediaPopulate as object,
         },
       },
       openSoon: {
         fields: ["headline", "intro", "content"],
         populate: {
-          media: {
-            fields: ["mime", "url"],
-          },
+          media: mediaPopulate as object,
         },
       },
       open: {
         fields: ["headline", "intro", "content"],
         populate: {
-          media: {
-            fields: ["mime", "url"],
-          },
+          media: mediaPopulate as object,
         },
       },
     },

@@ -6,6 +6,7 @@ import { factories } from "@strapi/strapi";
 import type { Context } from "koa";
 import { treatmentTeaserPopulate } from "../../../utils/queries/ui";
 import { allBlocksPopulate } from "../../../utils/queries/blocks";
+import { mediaPopulate } from "../../../utils/queries/strapi";
 
 export default factories.createCoreController(
   "api::product-page.product-page",
@@ -68,9 +69,7 @@ export default factories.createCoreController(
               volume: {
                 fields: ["quantity", "unit"],
               },
-              images: {
-                fields: ["url"],
-              },
+              images: mediaPopulate as object,
             },
           },
         },
