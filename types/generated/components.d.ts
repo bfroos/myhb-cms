@@ -785,8 +785,7 @@ export interface SharedButton extends Struct.ComponentSchema {
       ]
     > &
       Schema.Attribute.DefaultTo<'homepage'>;
-    targetType: Schema.Attribute.Enumeration<['collection', 'single-type']> &
-      Schema.Attribute.DefaultTo<'collection'>;
+    targetType: Schema.Attribute.Enumeration<['collection', 'single-type']>;
     treatment: Schema.Attribute.Relation<
       'oneToOne',
       'api::treatment-page.treatment-page'

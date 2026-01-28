@@ -62,7 +62,6 @@
         }
       },
       "required": false,
-      "default": "collection",
       "enum": [
         "collection",
         "single-type"
