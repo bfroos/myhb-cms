@@ -1,7 +1,8 @@
 {
   "collectionName": "components_blocks_highlights_strips",
   "info": {
-    "displayName": "Highlights Strip"
+    "displayName": "Highlights Strip",
+    "icon": "thumbUp"
   },
   "options": {},
   "attributes": {

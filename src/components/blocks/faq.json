@@ -1,7 +1,8 @@
 {
   "collectionName": "components_blocks_faqs",
   "info": {
-    "displayName": "FAQ"
+    "displayName": "FAQ",
+    "icon": "question"
   },
   "options": {},
   "attributes": {

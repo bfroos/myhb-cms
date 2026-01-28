@@ -1,7 +1,8 @@
 {
   "collectionName": "components_blocks_employee_lists",
   "info": {
-    "displayName": "Employee List"
+    "displayName": "Employee List",
+    "icon": "user"
   },
   "options": {},
   "attributes": {

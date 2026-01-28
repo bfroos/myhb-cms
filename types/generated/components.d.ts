@@ -20,6 +20,7 @@ export interface BlocksComparisonBlock extends Struct.ComponentSchema {
   collectionName: 'components_blocks_comparison_blocks';
   info: {
     displayName: 'Comparison';
+    icon: 'emotionHappy';
   };
   attributes: {
     cardSettings: Schema.Attribute.Component<'shared.card-design', false>;
@@ -74,6 +75,7 @@ export interface BlocksEmployeeList extends Struct.ComponentSchema {
   collectionName: 'components_blocks_employee_lists';
   info: {
     displayName: 'Employee List';
+    icon: 'user';
   };
   attributes: {
     cardSettings: Schema.Attribute.Component<'shared.card-design', false>;
@@ -87,6 +89,7 @@ export interface BlocksFaq extends Struct.ComponentSchema {
   collectionName: 'components_blocks_faqs';
   info: {
     displayName: 'FAQ';
+    icon: 'question';
   };
   attributes: {
     cardSettings: Schema.Attribute.Component<'shared.card-design', false>;
@@ -100,6 +103,7 @@ export interface BlocksHighlightsStrip extends Struct.ComponentSchema {
   collectionName: 'components_blocks_highlights_strips';
   info: {
     displayName: 'Highlights Strip';
+    icon: 'thumbUp';
   };
   attributes: {
     cardSettings: Schema.Attribute.Component<'shared.card-design', false>;
@@ -207,6 +211,7 @@ export interface BlocksProcessSteps extends Struct.ComponentSchema {
   collectionName: 'components_blocks_process_steps';
   info: {
     displayName: 'Process Steps';
+    icon: 'bulletList';
   };
   attributes: {
     cardSettings: Schema.Attribute.Component<'shared.card-design', false>;
@@ -281,7 +286,7 @@ export interface BlocksTableOfContents extends Struct.ComponentSchema {
   collectionName: 'components_blocks_table_of_contents';
   info: {
     displayName: 'Table Of Contents';
-    icon: 'bulletList';
+    icon: 'stack';
   };
   attributes: {
     cardSettings: Schema.Attribute.Component<'shared.card-design', false>;
@@ -322,6 +327,7 @@ export interface BlocksTreatmentDetails extends Struct.ComponentSchema {
   collectionName: 'components_blocks_treatment_details';
   info: {
     displayName: 'Treatment Details';
+    icon: 'doctor';
   };
   attributes: {
     aftercareSummary: Schema.Attribute.Text;
@@ -384,6 +390,7 @@ export interface BlocksTreatmentPlan extends Struct.ComponentSchema {
   collectionName: 'components_blocks_treatment_plans';
   info: {
     displayName: 'Treatment Plan';
+    icon: 'file';
   };
   attributes: {
     additionalInfos: Schema.Attribute.Component<
@@ -408,6 +415,7 @@ export interface BlocksTreatmentTeasers extends Struct.ComponentSchema {
   collectionName: 'components_blocks_treatment_teasers';
   info: {
     displayName: 'Treatment Teasers';
+    icon: 'store';
   };
   attributes: {
     cardSettings: Schema.Attribute.Component<'shared.card-design', false>;

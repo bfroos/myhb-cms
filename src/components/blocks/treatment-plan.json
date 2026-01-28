@@ -1,7 +1,8 @@
 {
   "collectionName": "components_blocks_treatment_plans",
   "info": {
-    "displayName": "Treatment Plan"
+    "displayName": "Treatment Plan",
+    "icon": "file"
   },
   "options": {},
   "attributes": {

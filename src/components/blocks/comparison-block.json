@@ -1,7 +1,8 @@
 {
   "collectionName": "components_blocks_comparison_blocks",
   "info": {
-    "displayName": "Comparison"
+    "displayName": "Comparison",
+    "icon": "emotionHappy"
   },
   "options": {},
   "attributes": {

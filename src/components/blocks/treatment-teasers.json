@@ -1,7 +1,8 @@
 {
   "collectionName": "components_blocks_treatment_teasers",
   "info": {
-    "displayName": "Treatment Teasers"
+    "displayName": "Treatment Teasers",
+    "icon": "store"
   },
   "options": {},
   "attributes": {

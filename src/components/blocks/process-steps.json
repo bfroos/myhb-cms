@@ -1,7 +1,8 @@
 {
   "collectionName": "components_blocks_process_steps",
   "info": {
-    "displayName": "Process Steps"
+    "displayName": "Process Steps",
+    "icon": "bulletList"
   },
   "options": {},
   "attributes": {
