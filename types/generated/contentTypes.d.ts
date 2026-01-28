@@ -1885,11 +1885,12 @@ export interface ApiPagePage extends Struct.CollectionTypeSchema {
         'blocks.location-map',
         'blocks.media-bento',
         'blocks.media-card',
+        'blocks.page-header',
         'blocks.process-steps',
-        'blocks.product-category-price-overview',
         'blocks.reviews',
         'blocks.stories',
         'blocks.text-content',
+        'blocks.treatment-hero',
         'blocks.treatment-teasers',
         'blocks.trust-grid',
       ]

@@ -381,6 +381,31 @@ export const allBlocksPopulate = {
   },
 };
 
+export const generalPageBlocksPopulate = {
+  on: {
+    "blocks.benefits-list": blockBenefitsListPopulate,
+    "blocks.comparison-block": blockComparisonBlockPopulate,
+    "blocks.employee": blockEmployeePopulate,
+    "blocks.employee-list": blockEmployeeListPopulate,
+    "blocks.faq": blockFaqBlockPopulate,
+    "blocks.highlights-strip": blockHighlightsStripPopulate,
+    "blocks.location-map": blockLocationMapPopulate,
+    "blocks.media-bento": blockMediaBentoPopulate,
+    "blocks.media-card": mediaCardPopulate,
+    "blocks.page-header": blockPageHeaderPopulate,
+    "blocks.process-steps": blockProcessStepsPopulate,
+    "blocks.product-category-price-overview":
+      blockProductCategoryPriceOverviewPopulate,
+    "blocks.reviews": blockReviewsPopulate,
+    "blocks.stories": blockStoriesPopulate,
+    "blocks.text-content": blockTextContentPopulate,
+    "blocks.treatment-hero": blockTreatmentHeroPopulate,
+    "blocks.treatment-plan": blockTreatmentPlanPopulate,
+    "blocks.treatment-teasers": blockTreatmentTeasersPopulate,
+    "blocks.trust-grid": blockTrustGridPopulate,
+  },
+};
+
 export const customPageBlocksPopulate = {
   on: {
     "blocks.page-header": blockPageHeaderPopulate,
