@@ -1172,7 +1172,7 @@ export interface ApiEmployeeEmployee extends Struct.CollectionTypeSchema {
           localized: true;
         };
       }>;
-    slug: Schema.Attribute.UID & Schema.Attribute.Required;
+    slug: Schema.Attribute.UID<'internalLabel'> & Schema.Attribute.Required;
     treatmentSpecialties: Schema.Attribute.Relation<
       'oneToMany',
       'api::treatment-page.treatment-page'

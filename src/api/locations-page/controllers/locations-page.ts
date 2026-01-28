@@ -5,7 +5,7 @@
 import { factories } from "@strapi/strapi";
 import type { Context } from "koa";
 import { getLocationStatus } from "../../../utils/locationStatus";
-import { editorialBlocksPopulate } from "../../../utils/queries/blocks";
+import { locationsPageBlocksPopulate } from "../../../utils/queries/blocks";
 import { locationTeaserPopulate } from "../../../utils/queries/ui";
 import { seoPopulate } from "../../../utils/queries/components";
 export default factories.createCoreController(
@@ -21,7 +21,7 @@ export default factories.createCoreController(
             seo: {
               ...(seoPopulate as object),
             },
-            blocks: editorialBlocksPopulate,
+            blocks: locationsPageBlocksPopulate as object,
           },
         });
 

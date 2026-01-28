@@ -381,6 +381,22 @@ export const allBlocksPopulate = {
   },
 };
 
+export const locationsPageBlocksPopulate = {
+  on: {
+    "blocks.directions": blockDirectionsPopulate,
+    "blocks.benefits-list": blockBenefitsListPopulate,
+    "blocks.comparison-block": blockComparisonBlockPopulate,
+    "blocks.employee": blockEmployeePopulate,
+    "blocks.faq": blockFaqBlockPopulate,
+    "blocks.highlights-strip": blockHighlightsStripPopulate,
+    "blocks.media-bento": blockMediaBentoPopulate,
+    "blocks.media-card": mediaCardPopulate,
+    "blocks.process-steps": blockProcessStepsPopulate,
+    "blocks.text-content": blockTextContentPopulate,
+    "blocks.trust-grid": blockTrustGridPopulate,
+  },
+};
+
 export const generalPageBlocksPopulate = {
   on: {
     "blocks.benefits-list": blockBenefitsListPopulate,

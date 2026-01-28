@@ -10,6 +10,7 @@ import {
   locationPopulateForPage,
 } from "../../../utils/queries/locationPopulate";
 import { treatmentTeaserPopulate } from "../../../utils/queries/ui";
+import { mediaPopulate } from "../../../utils/queries/strapi";
 
 // Mapping von LocationType zu erlaubten TreatmentTypes
 const locationTypeToTreatmentTypes: Record<
@@ -52,7 +53,7 @@ export default factories.createCoreController(
               fields: ["name", "slug", "federalState"],
             },
             address: true,
-            buildingImage: true,
+            buildingImage: mediaPopulate as object,
           },
         });
 

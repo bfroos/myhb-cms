@@ -45,6 +45,7 @@
     },
     "slug": {
       "type": "uid",
+      "targetField": "internalLabel",
       "required": true
     },
     "academicTitle": {

@@ -1041,9 +1041,7 @@ export interface SharedOpeningHoursInterval extends Struct.ComponentSchema {
   };
   attributes: {
     closes: Schema.Attribute.String & Schema.Attribute.Required;
-    opens: Schema.Attribute.String &
-      Schema.Attribute.Required &
-      Schema.Attribute.DefaultTo<'opens'>;
+    opens: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
 
