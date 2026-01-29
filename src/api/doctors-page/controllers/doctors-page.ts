@@ -32,7 +32,7 @@ export default factories.createCoreController(
                 ...headerPageBlocksPopulate.on,
               },
             },
-          } as any,
+          },
         });
 
       return { data: page || null };
