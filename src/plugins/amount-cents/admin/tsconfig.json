@@ -1,8 +1,15 @@
 {
-  "extends": "@strapi/typescript-utils/tsconfigs/admin",
-  "include": ["./src"],
   "compilerOptions": {
-    "rootDir": "../",
-    "baseUrl": "."
-  }
+    "target": "ES2017",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "lib": ["ES2017", "DOM"],
+    "declaration": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "outDir": "./dist",
+    "rootDir": "./"
+  },
+  "include": ["admin/src/**/*", "server/src/**/*"]
 }
