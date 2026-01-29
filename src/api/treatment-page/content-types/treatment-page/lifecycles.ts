@@ -363,8 +363,9 @@ async function updateDescendants(
       } as any
     );
 
-    // Update each child for this locale
-    for (const child of children) {
+    // Update each child for this locale (findMany may be typed as single or array)
+    const childrenArray = Array.isArray(children) ? children : children ? [children] : [];
+    for (const child of childrenArray) {
       const newAncestorSlugs = [...pageAncestorSlugs, pageSlug];
       const childSlug =
         typeof (child as any).slug === "string" ? (child as any).slug : null;
@@ -420,7 +421,7 @@ async function updateDescendants(
           await strapi.entityService.update(
             "api::treatment-page.treatment-page",
             child.id,
-            { data: dataToUpdate, locale }
+            { data: dataToUpdate as any, locale }
           );
         }
       } finally {

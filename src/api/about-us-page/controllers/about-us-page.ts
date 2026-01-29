@@ -30,7 +30,7 @@ export default factories.createCoreController(
                 ...editorialBlocksPopulate.on,
               },
             },
-          },
+          } as any,
         });
 
       return { data: page || null };
