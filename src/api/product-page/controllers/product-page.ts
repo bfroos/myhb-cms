@@ -69,9 +69,9 @@ export default factories.createCoreController(
               volume: {
                 fields: ["quantity", "unit"],
               },
-              images: mediaPopulate as object,
             },
           },
+          images: mediaPopulate as object,
         },
       });
 
