@@ -20,15 +20,6 @@
         "images"
       ]
     },
-    "walkDirections": {
-      "type": "text"
-    },
-    "publicTransportDirections": {
-      "type": "text"
-    },
-    "carDirections": {
-      "type": "text"
-    },
     "fixedImageAspectRatio": {
       "type": "boolean",
       "required": true,
