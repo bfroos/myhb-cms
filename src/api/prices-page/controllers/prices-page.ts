@@ -27,11 +27,15 @@ export default factories.createCoreController(
               ...(seoPopulate as object),
             },
             topBlocks: {
-              ...(headerPageBlocksPopulate as object),
-              ...(editorialBlocksPopulate as object),
+              on: {
+                ...(headerPageBlocksPopulate.on as object),
+                ...(editorialBlocksPopulate.on as object),
+              },
             },
             bottomBlocks: {
-              ...(editorialBlocksPopulate as object),
+              on: {
+                ...(editorialBlocksPopulate.on as object),
+              },
             },
           },
         });
