@@ -39,7 +39,6 @@ export interface BlocksDirections extends Struct.ComponentSchema {
     icon: 'train';
   };
   attributes: {
-    carDirections: Schema.Attribute.Text;
     cardSettings: Schema.Attribute.Component<'shared.card-design', false>;
     content: Schema.Attribute.Blocks;
     fixedImageAspectRatio: Schema.Attribute.Boolean &
@@ -47,8 +46,6 @@ export interface BlocksDirections extends Struct.ComponentSchema {
       Schema.Attribute.DefaultTo<true>;
     headline: Schema.Attribute.String;
     image: Schema.Attribute.Media<'images'>;
-    publicTransportDirections: Schema.Attribute.Text;
-    walkDirections: Schema.Attribute.Text;
   };
 }
 
