@@ -13,6 +13,15 @@
     "content": {
       "type": "blocks"
     },
+    "walkDirections": {
+      "type": "blocks"
+    },
+    "publicTransportDirections": {
+      "type": "blocks"
+    },
+    "carDirections": {
+      "type": "blocks"
+    },
     "image": {
       "type": "media",
       "multiple": false,
