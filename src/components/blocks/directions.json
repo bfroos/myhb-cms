@@ -13,21 +13,21 @@
     "content": {
       "type": "blocks"
     },
+    "walkDirections": {
+      "type": "blocks"
+    },
+    "publicTransportDirections": {
+      "type": "blocks"
+    },
+    "carDirections": {
+      "type": "blocks"
+    },
     "image": {
       "type": "media",
       "multiple": false,
       "allowedTypes": [
         "images"
       ]
-    },
-    "walkDirections": {
-      "type": "text"
-    },
-    "publicTransportDirections": {
-      "type": "text"
-    },
-    "carDirections": {
-      "type": "text"
     },
     "fixedImageAspectRatio": {
       "type": "boolean",
