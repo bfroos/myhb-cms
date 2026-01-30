@@ -22,13 +22,6 @@
       "component": "product.volume",
       "repeatable": false
     },
-    "images": {
-      "type": "media",
-      "multiple": true,
-      "allowedTypes": [
-        "images"
-      ]
-    },
     "priceInEuroCent": {
       "type": "customField",
       "pluginOptions": {

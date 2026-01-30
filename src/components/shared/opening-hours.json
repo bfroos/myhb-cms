@@ -9,7 +9,7 @@
       "type": "component",
       "component": "shared.opening-hours-day",
       "repeatable": true,
-      "required": true,
+      "required": false,
       "max": 7
     },
     "exceptions": {

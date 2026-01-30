@@ -702,7 +702,6 @@ export interface ProductVariant extends Struct.ComponentSchema {
         };
       }>;
     description: Schema.Attribute.Blocks;
-    images: Schema.Attribute.Media<'images', true>;
     isActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     label: Schema.Attribute.String & Schema.Attribute.Required;
     priceInEuroCent: Schema.Attribute.Integer &
@@ -975,7 +974,6 @@ export interface SharedOpeningHours extends Struct.ComponentSchema {
       true
     >;
     week: Schema.Attribute.Component<'shared.opening-hours-day', true> &
-      Schema.Attribute.Required &
       Schema.Attribute.SetMinMax<
         {
           max: 7;
@@ -1022,9 +1020,7 @@ export interface SharedOpeningHoursExceptions extends Struct.ComponentSchema {
     closedAllDay: Schema.Attribute.Boolean &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<false>;
-    date: Schema.Attribute.Date &
-      Schema.Attribute.Required &
-      Schema.Attribute.Unique;
+    date: Schema.Attribute.Date & Schema.Attribute.Required;
     intervals: Schema.Attribute.Component<
       'shared.opening-hours-interval',
       true
