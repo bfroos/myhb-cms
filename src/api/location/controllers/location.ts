@@ -102,7 +102,6 @@ export default factories.createCoreController(
         return;
       }
 
-      // Get allowed treatment types based on location type
       const allowedTreatmentTypes =
         locationTypeToTreatmentTypes[
           location.type as "lounge" | "center" | "clinic"
@@ -140,12 +139,10 @@ export default factories.createCoreController(
           },
         });
 
-      // Extract treatmentPages from treatments
       const treatmentPages = (treatments || [])
         .map((treatment: any) => treatment.treatmentPage)
         .filter((page: any) => page !== null && page !== undefined);
 
-      // Get location status
       const locationOpenStatus = getLocationStatus(
         location.newOpeningDate,
         location.timezone || "Europe/Berlin"
@@ -156,6 +153,37 @@ export default factories.createCoreController(
           location,
           locationOpenStatus,
           treatmentPages,
+        },
+      };
+    },
+
+    async getCounts(ctx: Context) {
+      const { locale } = ctx.query as { locale?: string };
+      const activeLocale = locale || "de";
+
+      const [loungeCount, clinicCount, doctorCount] = await Promise.all([
+        strapi.documents("api::location.location").count({
+          locale: activeLocale,
+          filters: { type: { $eq: "lounge" } },
+        }),
+        strapi.documents("api::location.location").count({
+          locale: activeLocale,
+          filters: { type: { $eq: "clinic" } },
+        }),
+        strapi.documents("api::employee.employee").count({
+          locale: activeLocale,
+          filters: {
+            isActive: { $eq: true },
+            employeeType: { $eq: "doctor" },
+          },
+        }),
+      ]);
+
+      return {
+        data: {
+          loungeCount: loungeCount ?? 0,
+          clinicCount: clinicCount ?? 0,
+          doctorCount: doctorCount ?? 0,
         },
       };
     },
