@@ -55,11 +55,7 @@
       },
       "required": true,
       "default": "lounge",
-      "enum": [
-        "lounge",
-        "center",
-        "clinic"
-      ]
+      "enum": ["lounge", "center", "clinic"]
     },
     "googlePlaceId": {
       "type": "string",
@@ -96,9 +92,7 @@
         }
       },
       "multiple": false,
-      "allowedTypes": [
-        "images"
-      ]
+      "allowedTypes": ["images"]
     },
     "newOpeningDate": {
       "type": "date",

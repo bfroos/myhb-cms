@@ -275,11 +275,7 @@ export interface BlocksReviews extends Struct.ComponentSchema {
     > &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<'soft'>;
-    googlePlaceId: Schema.Attribute.String;
     headline: Schema.Attribute.String;
-    localReviews: Schema.Attribute.Boolean &
-      Schema.Attribute.Required &
-      Schema.Attribute.DefaultTo<false>;
     oddItemsTheme: Schema.Attribute.Enumeration<
       ['light', 'soft', 'neutral', 'strong']
     > &

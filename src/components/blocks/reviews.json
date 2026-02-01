@@ -10,38 +10,10 @@
       "type": "string",
       "required": false
     },
-    "localReviews": {
-      "type": "boolean",
-      "required": true,
-      "default": false
-    },
     "reviews": {
       "type": "relation",
       "relation": "oneToMany",
-      "target": "api::review.review",
-      "conditions": {
-        "visible": {
-          "==": [
-            {
-              "var": "localReviews"
-            },
-            false
-          ]
-        }
-      }
-    },
-    "googlePlaceId": {
-      "type": "string",
-      "conditions": {
-        "visible": {
-          "==": [
-            {
-              "var": "localReviews"
-            },
-            true
-          ]
-        }
-      }
+      "target": "api::review.review"
     },
     "oddItemsTheme": {
       "type": "enumeration",

@@ -136,20 +136,6 @@ function sanitizeMediaCard(component: any) {
   }
 }
 
-function sanitizeReviews(component: any) {
-  if (!isObject(component)) return;
-
-  // reviews is only visible when localReviews === false
-  if (component.localReviews === true) {
-    component.reviews = null;
-  }
-
-  // googlePlaceId is only visible when localReviews === true
-  if (component.localReviews !== true) {
-    component.googlePlaceId = null;
-  }
-}
-
 function sanitizeTreatmentPlanStep(component: any) {
   if (!isObject(component)) return;
 
@@ -194,7 +180,6 @@ const COMPONENT_SANITIZERS: Record<string, (component: any) => void> = {
   "blocks.highlights-strip": sanitizeHighlightsStrip,
   "blog.image": sanitizeBlogImage,
   "blocks.media-card": sanitizeMediaCard,
-  "blocks.reviews": sanitizeReviews,
   "treatment-plan.treatment-plan-step": sanitizeTreatmentPlanStep,
   // Add more component sanitizers here as needed:
   // "blocks.my-component": sanitizeMyComponent,

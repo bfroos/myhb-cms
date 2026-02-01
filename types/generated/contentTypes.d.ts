@@ -1293,44 +1293,6 @@ export interface ApiFaqFaq extends Struct.CollectionTypeSchema {
   };
 }
 
-export interface ApiGbpReviewCacheGbpReviewCache
-  extends Struct.CollectionTypeSchema {
-  collectionName: 'gbp_review_caches';
-  info: {
-    displayName: 'GBP Review Cache';
-    pluralName: 'gbp-review-caches';
-    singularName: 'gbp-review-cache';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  pluginOptions: {
-    i18n: {
-      localized: false;
-    };
-  };
-  attributes: {
-    cacheKey: Schema.Attribute.String &
-      Schema.Attribute.Required &
-      Schema.Attribute.Unique;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    expiresAt: Schema.Attribute.DateTime & Schema.Attribute.Required;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::gbp-review-cache.gbp-review-cache'
-    > &
-      Schema.Attribute.Private;
-    payload: Schema.Attribute.JSON & Schema.Attribute.Required;
-    publishedAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
 export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
   collectionName: 'globals';
   info: {
@@ -3312,7 +3274,6 @@ declare module '@strapi/strapi' {
       'api::employee.employee': ApiEmployeeEmployee;
       'api::faq-set.faq-set': ApiFaqSetFaqSet;
       'api::faq.faq': ApiFaqFaq;
-      'api::gbp-review-cache.gbp-review-cache': ApiGbpReviewCacheGbpReviewCache;
       'api::global.global': ApiGlobalGlobal;
       'api::homepage.homepage': ApiHomepageHomepage;
       'api::job-page.job-page': ApiJobPageJobPage;
