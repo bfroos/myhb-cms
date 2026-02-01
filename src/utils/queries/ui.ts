@@ -25,6 +25,9 @@ export const locationTeaserPopulate = {
     address: {
       populate: "*",
     },
+    coordinates: {
+      populate: "*",
+    },
     buildingImage: mediaPopulate as object,
     city: {
       fields: ["name", "slug", "federalState"],
