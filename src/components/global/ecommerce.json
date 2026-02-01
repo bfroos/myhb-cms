@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_global_ecommerces",
+  "info": {
+    "displayName": "Ecommerce"
+  },
+  "options": {},
+  "attributes": {
+    "grouponUrl": {
+      "type": "string"
+    },
+    "clubUrl": {
+      "type": "string"
+    },
+    "newsletterDiscountPercentage": {
+      "type": "integer"
+    }
+  },
+  "config": {}
+}

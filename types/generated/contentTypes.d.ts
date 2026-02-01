@@ -493,6 +493,7 @@ export interface ApiAboutUsPageAboutUsPage extends Struct.SingleTypeSchema {
         'blocks.highlights-strip',
         'blocks.media-bento',
         'blocks.media-card',
+        'blocks.my-club',
         'blocks.process-steps',
         'blocks.text-content',
         'blocks.trust-grid',
@@ -705,6 +706,7 @@ export interface ApiBlogPageBlogPage extends Struct.SingleTypeSchema {
         'blocks.highlights-strip',
         'blocks.media-bento',
         'blocks.media-card',
+        'blocks.my-club',
         'blocks.process-steps',
         'blocks.text-content',
         'blocks.trust-grid',
@@ -815,6 +817,7 @@ export interface ApiCareerPageCareerPage extends Struct.SingleTypeSchema {
         'blocks.highlights-strip',
         'blocks.media-bento',
         'blocks.media-card',
+        'blocks.my-club',
         'blocks.process-steps',
         'blocks.text-content',
         'blocks.trust-grid',
@@ -898,6 +901,7 @@ export interface ApiCityPageCityPage extends Struct.SingleTypeSchema {
         'blocks.highlights-strip',
         'blocks.media-bento',
         'blocks.media-card',
+        'blocks.my-club',
         'blocks.process-steps',
         'blocks.text-content',
         'blocks.trust-grid',
@@ -1019,6 +1023,7 @@ export interface ApiDoctorsPageDoctorsPage extends Struct.SingleTypeSchema {
         'blocks.highlights-strip',
         'blocks.media-bento',
         'blocks.media-card',
+        'blocks.my-club',
         'blocks.process-steps',
         'blocks.text-content',
         'blocks.trust-grid',
@@ -1351,6 +1356,12 @@ export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    ecommerce: Schema.Attribute.Component<'global.ecommerce', false> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     locale: Schema.Attribute.String;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::global.global'>;
     marketing: Schema.Attribute.Component<'global.marketing', false> &
@@ -1401,6 +1412,7 @@ export interface ApiHomepageHomepage extends Struct.SingleTypeSchema {
         'blocks.location-map',
         'blocks.media-bento',
         'blocks.media-card',
+        'blocks.my-club',
         'blocks.process-steps',
         'blocks.product-category-price-overview',
         'blocks.reviews',
@@ -1889,6 +1901,7 @@ export interface ApiPagePage extends Struct.CollectionTypeSchema {
         'blocks.location-map',
         'blocks.media-bento',
         'blocks.media-card',
+        'blocks.my-club',
         'blocks.page-header',
         'blocks.process-steps',
         'blocks.reviews',
@@ -1969,6 +1982,7 @@ export interface ApiPricesPagePricesPage extends Struct.SingleTypeSchema {
         'blocks.highlights-strip',
         'blocks.media-bento',
         'blocks.media-card',
+        'blocks.my-club',
         'blocks.process-steps',
         'blocks.text-content',
         'blocks.trust-grid',
@@ -2011,6 +2025,7 @@ export interface ApiPricesPagePricesPage extends Struct.SingleTypeSchema {
         'blocks.highlights-strip',
         'blocks.media-bento',
         'blocks.media-card',
+        'blocks.my-club',
         'blocks.process-steps',
         'blocks.text-content',
         'blocks.trust-grid',
@@ -2153,6 +2168,7 @@ export interface ApiProductPageProductPage extends Struct.SingleTypeSchema {
         'blocks.highlights-strip',
         'blocks.media-bento',
         'blocks.media-card',
+        'blocks.my-club',
         'blocks.process-steps',
         'blocks.text-content',
         'blocks.trust-grid',

@@ -10,9 +10,6 @@
     },
     "customersCount": {
       "type": "integer"
-    },
-    "newsletterDiscountPercentage": {
-      "type": "integer"
     }
   },
   "config": {}

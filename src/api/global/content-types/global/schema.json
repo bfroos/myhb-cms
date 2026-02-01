@@ -44,6 +44,16 @@
       },
       "component": "global.seo",
       "repeatable": false
+    },
+    "ecommerce": {
+      "type": "component",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "global.ecommerce",
+      "repeatable": false
     }
   }
 }

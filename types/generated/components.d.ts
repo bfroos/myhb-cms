@@ -188,6 +188,26 @@ export interface BlocksMediaCard extends Struct.ComponentSchema {
   };
 }
 
+export interface BlocksMyClub extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_my_clubs';
+  info: {
+    displayName: 'My Club';
+    icon: 'handHeart';
+  };
+  attributes: {
+    clubBenefits: Schema.Attribute.Component<'shared.icon-text-pair', true>;
+    clubCardSettings: Schema.Attribute.Component<'shared.card-design', false>;
+    clubContent: Schema.Attribute.Blocks;
+    grouponCardSettings: Schema.Attribute.Component<
+      'shared.card-design',
+      false
+    >;
+    grouponContent: Schema.Attribute.Blocks;
+    grouponImage: Schema.Attribute.Media<'images'>;
+    headline: Schema.Attribute.String;
+  };
+}
+
 export interface BlocksPageHeader extends Struct.ComponentSchema {
   collectionName: 'components_blocks_page_headers';
   info: {
@@ -627,6 +647,18 @@ export interface GlobalBrand extends Struct.ComponentSchema {
   };
 }
 
+export interface GlobalEcommerce extends Struct.ComponentSchema {
+  collectionName: 'components_global_ecommerces';
+  info: {
+    displayName: 'Ecommerce';
+  };
+  attributes: {
+    clubUrl: Schema.Attribute.String;
+    grouponUrl: Schema.Attribute.String;
+    newsletterDiscountPercentage: Schema.Attribute.Integer;
+  };
+}
+
 export interface GlobalMarketing extends Struct.ComponentSchema {
   collectionName: 'components_global_marketings';
   info: {
@@ -635,7 +667,6 @@ export interface GlobalMarketing extends Struct.ComponentSchema {
   attributes: {
     customersCount: Schema.Attribute.Integer;
     fiveStarReviewsCount: Schema.Attribute.Integer;
-    newsletterDiscountPercentage: Schema.Attribute.Integer;
   };
 }
 
@@ -1305,6 +1336,7 @@ declare module '@strapi/strapi' {
       'blocks.location-map': BlocksLocationMap;
       'blocks.media-bento': BlocksMediaBento;
       'blocks.media-card': BlocksMediaCard;
+      'blocks.my-club': BlocksMyClub;
       'blocks.page-header': BlocksPageHeader;
       'blocks.process-steps': BlocksProcessSteps;
       'blocks.product-category-price-overview': BlocksProductCategoryPriceOverview;
@@ -1328,6 +1360,7 @@ declare module '@strapi/strapi' {
       'employee.text-item': EmployeeTextItem;
       'employee.vita-entry': EmployeeVitaEntry;
       'global.brand': GlobalBrand;
+      'global.ecommerce': GlobalEcommerce;
       'global.marketing': GlobalMarketing;
       'global.seo': GlobalSeo;
       'location.about': LocationAbout;

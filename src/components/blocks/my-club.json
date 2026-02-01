@@ -1,0 +1,42 @@
+{
+  "collectionName": "components_blocks_my_clubs",
+  "info": {
+    "displayName": "My Club",
+    "icon": "handHeart"
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string"
+    },
+    "clubContent": {
+      "type": "blocks"
+    },
+    "grouponContent": {
+      "type": "blocks"
+    },
+    "grouponImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "clubBenefits": {
+      "type": "component",
+      "component": "shared.icon-text-pair",
+      "repeatable": true
+    },
+    "clubCardSettings": {
+      "type": "component",
+      "component": "shared.card-design",
+      "repeatable": false
+    },
+    "grouponCardSettings": {
+      "type": "component",
+      "component": "shared.card-design",
+      "repeatable": false
+    }
+  },
+  "config": {}
+}

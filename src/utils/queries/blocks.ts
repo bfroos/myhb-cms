@@ -152,6 +152,21 @@ export const mediaCardPopulate = {
   },
 };
 
+export const blockMyClubPopulate = {
+  populate: {
+    clubBenefits: {
+      populate: "*",
+    },
+    clubCardSettings: {
+      populate: "*",
+    },
+    grouponCardSettings: {
+      populate: "*",
+    },
+    grouponImage: mediaPopulate,
+  },
+} as const;
+
 export const blockPageHeaderPopulate = {
   populate: {
     media: mediaPopulate,
@@ -365,6 +380,7 @@ export const allBlocksPopulate = {
     "blocks.location-map": blockLocationMapPopulate,
     "blocks.media-bento": blockMediaBentoPopulate,
     "blocks.media-card": mediaCardPopulate,
+    "blocks.my-club": blockMyClubPopulate,
     "blocks.page-header": blockPageHeaderPopulate,
     "blocks.process-steps": blockProcessStepsPopulate,
     "blocks.product-category-price-overview":
@@ -391,6 +407,7 @@ export const locationsPageBlocksPopulate = {
     "blocks.highlights-strip": blockHighlightsStripPopulate,
     "blocks.media-bento": blockMediaBentoPopulate,
     "blocks.media-card": mediaCardPopulate,
+    "blocks.my-club": blockMyClubPopulate,
     "blocks.process-steps": blockProcessStepsPopulate,
     "blocks.text-content": blockTextContentPopulate,
     "blocks.trust-grid": blockTrustGridPopulate,
@@ -419,6 +436,7 @@ export const generalPageBlocksPopulate = {
     "blocks.treatment-plan": blockTreatmentPlanPopulate,
     "blocks.treatment-teasers": blockTreatmentTeasersPopulate,
     "blocks.trust-grid": blockTrustGridPopulate,
+    "blocks.my-club": blockMyClubPopulate,
   },
 };
 
@@ -443,6 +461,7 @@ export const editorialBlocksPopulate = {
     "blocks.highlights-strip": blockHighlightsStripPopulate,
     "blocks.media-bento": blockMediaBentoPopulate,
     "blocks.media-card": mediaCardPopulate,
+    "blocks.my-club": blockMyClubPopulate,
     "blocks.process-steps": blockProcessStepsPopulate,
     "blocks.text-content": blockTextContentPopulate,
     "blocks.trust-grid": blockTrustGridPopulate,
@@ -468,6 +487,7 @@ export const homepageBlocksPopulate = {
     "blocks.location-map": blockLocationMapPopulate,
     "blocks.media-bento": blockMediaBentoPopulate,
     "blocks.media-card": mediaCardPopulate,
+    "blocks.my-club": blockMyClubPopulate,
     "blocks.process-steps": blockProcessStepsPopulate,
     "blocks.product-category-price-overview":
       blockProductCategoryPriceOverviewPopulate,
