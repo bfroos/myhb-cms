@@ -449,6 +449,7 @@ export const customPageBlocksPopulate = {
 export const headerPageBlocksPopulate = {
   on: {
     "blocks.page-header": blockPageHeaderPopulate,
+    "blocks.treatment-hero": blockTreatmentHeroPopulate,
   },
 };
 

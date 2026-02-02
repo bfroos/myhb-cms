@@ -486,6 +486,7 @@ export interface ApiAboutUsPageAboutUsPage extends Struct.SingleTypeSchema {
     blocks: Schema.Attribute.DynamicZone<
       [
         'blocks.page-header',
+        'blocks.treatment-hero',
         'blocks.benefits-list',
         'blocks.comparison-block',
         'blocks.employee',
@@ -810,6 +811,7 @@ export interface ApiCareerPageCareerPage extends Struct.SingleTypeSchema {
     topBlocks: Schema.Attribute.DynamicZone<
       [
         'blocks.page-header',
+        'blocks.treatment-hero',
         'blocks.benefits-list',
         'blocks.comparison-block',
         'blocks.employee',
@@ -894,6 +896,7 @@ export interface ApiCityPageCityPage extends Struct.SingleTypeSchema {
     topBlocks: Schema.Attribute.DynamicZone<
       [
         'blocks.page-header',
+        'blocks.treatment-hero',
         'blocks.benefits-list',
         'blocks.comparison-block',
         'blocks.employee',
@@ -1016,6 +1019,7 @@ export interface ApiDoctorsPageDoctorsPage extends Struct.SingleTypeSchema {
       [
         'blocks.employee-list',
         'blocks.page-header',
+        'blocks.treatment-hero',
         'blocks.benefits-list',
         'blocks.comparison-block',
         'blocks.employee',
@@ -1312,7 +1316,7 @@ export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
     brand: Schema.Attribute.Component<'global.brand', false> &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
-          localized: true;
+          localized: false;
         };
       }>;
     createdAt: Schema.Attribute.DateTime;
@@ -1329,7 +1333,7 @@ export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
     marketing: Schema.Attribute.Component<'global.marketing', false> &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
-          localized: true;
+          localized: false;
         };
       }>;
     publishedAt: Schema.Attribute.DateTime;
@@ -1980,6 +1984,7 @@ export interface ApiPricesPagePricesPage extends Struct.SingleTypeSchema {
     topBlocks: Schema.Attribute.DynamicZone<
       [
         'blocks.page-header',
+        'blocks.treatment-hero',
         'blocks.benefits-list',
         'blocks.comparison-block',
         'blocks.employee',
