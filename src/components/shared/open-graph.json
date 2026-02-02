@@ -11,7 +11,7 @@
       "required": false
     },
     "ogDescription": {
-      "type": "string",
+      "type": "text",
       "required": false
     },
     "ogImage": {

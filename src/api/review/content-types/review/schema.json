@@ -90,6 +90,25 @@
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::location.location"
+    },
+    "consentNote": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      },
+      "regex": "Dokumentation der Zustimmung (Manuell gepflegte Reviews benötigen eine Zustimmung des Urhebers)"
+    },
+    "consentGiven": {
+      "type": "boolean",
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      },
+      "required": true,
+      "default": true
     }
   }
 }

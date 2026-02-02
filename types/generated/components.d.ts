@@ -984,7 +984,7 @@ export interface SharedOpenGraph extends Struct.ComponentSchema {
     icon: 'project-diagram';
   };
   attributes: {
-    ogDescription: Schema.Attribute.String;
+    ogDescription: Schema.Attribute.Text;
     ogImage: Schema.Attribute.Media<'images'>;
     ogTitle: Schema.Attribute.String;
   };

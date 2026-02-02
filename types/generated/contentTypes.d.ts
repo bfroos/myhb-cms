@@ -1374,10 +1374,9 @@ export interface ApiHomepageHomepage extends Struct.SingleTypeSchema {
   attributes: {
     blocks: Schema.Attribute.DynamicZone<
       [
-        'blocks.page-header',
-        'blocks.treatment-hero',
         'blocks.benefits-list',
         'blocks.comparison-block',
+        'blocks.directions',
         'blocks.employee',
         'blocks.employee-list',
         'blocks.faq',
@@ -1386,14 +1385,18 @@ export interface ApiHomepageHomepage extends Struct.SingleTypeSchema {
         'blocks.media-bento',
         'blocks.media-card',
         'blocks.my-club',
+        'blocks.page-header',
         'blocks.process-steps',
         'blocks.product-category-price-overview',
         'blocks.reviews',
         'blocks.stories',
+        'blocks.table-of-contents',
         'blocks.text-content',
+        'blocks.treatment-details',
+        'blocks.treatment-hero',
+        'blocks.treatment-plan',
         'blocks.treatment-teasers',
         'blocks.trust-grid',
-        'blocks.location-map',
       ]
     > &
       Schema.Attribute.SetPluginOptions<{
@@ -2345,6 +2348,20 @@ export interface ApiReviewReview extends Struct.CollectionTypeSchema {
   attributes: {
     author: Schema.Attribute.String &
       Schema.Attribute.Required &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    consentGiven: Schema.Attribute.Boolean &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<true>;
+    consentNote: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: false;
