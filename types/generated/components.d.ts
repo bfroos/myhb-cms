@@ -1075,7 +1075,7 @@ export interface SharedSeo extends Struct.ComponentSchema {
   };
   attributes: {
     keywords: Schema.Attribute.Text;
-    metaDescription: Schema.Attribute.String &
+    metaDescription: Schema.Attribute.Text &
       Schema.Attribute.SetMinMaxLength<{
         maxLength: 160;
       }>;
