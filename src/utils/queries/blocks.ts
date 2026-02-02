@@ -59,6 +59,14 @@ export const blockEmployeePopulate = {
 export const blockEmployeeListPopulate = {
   populate: {
     employees: {
+      filters: {
+        hideFromPublic: {
+          $eq: false,
+        },
+        isActive: {
+          $eq: true,
+        },
+      },
       fields: [
         "firstName",
         "lastName",
