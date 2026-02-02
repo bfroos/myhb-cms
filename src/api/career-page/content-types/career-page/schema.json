@@ -43,7 +43,8 @@
         "blocks.my-club",
         "blocks.process-steps",
         "blocks.text-content",
-        "blocks.trust-grid"
+        "blocks.trust-grid",
+        "blocks.location-map"
       ]
     },
     "jobTeasers": {
@@ -73,7 +74,8 @@
         "blocks.media-card",
         "blocks.process-steps",
         "blocks.text-content",
-        "blocks.trust-grid"
+        "blocks.trust-grid",
+        "blocks.location-map"
       ]
     },
     "seo": {

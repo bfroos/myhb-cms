@@ -44,7 +44,8 @@
         "blocks.my-club",
         "blocks.process-steps",
         "blocks.text-content",
-        "blocks.trust-grid"
+        "blocks.trust-grid",
+        "blocks.location-map"
       ]
     },
     "bottomBlocks": {
@@ -65,7 +66,8 @@
         "blocks.my-club",
         "blocks.process-steps",
         "blocks.text-content",
-        "blocks.trust-grid"
+        "blocks.trust-grid",
+        "blocks.location-map"
       ]
     },
     "seo": {

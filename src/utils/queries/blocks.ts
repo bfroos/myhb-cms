@@ -474,6 +474,7 @@ export const editorialBlocksPopulate = {
     "blocks.process-steps": blockProcessStepsPopulate,
     "blocks.text-content": blockTextContentPopulate,
     "blocks.trust-grid": blockTrustGridPopulate,
+    "blocks.location-map": blockLocationMapPopulate,
   },
 };
 

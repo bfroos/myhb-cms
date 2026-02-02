@@ -50,7 +50,8 @@
         "blocks.stories",
         "blocks.text-content",
         "blocks.treatment-teasers",
-        "blocks.trust-grid"
+        "blocks.trust-grid",
+        "blocks.location-map"
       ]
     },
     "seo": {

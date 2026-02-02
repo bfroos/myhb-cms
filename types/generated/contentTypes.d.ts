@@ -498,6 +498,7 @@ export interface ApiAboutUsPageAboutUsPage extends Struct.SingleTypeSchema {
         'blocks.process-steps',
         'blocks.text-content',
         'blocks.trust-grid',
+        'blocks.location-map',
       ]
     > &
       Schema.Attribute.SetPluginOptions<{
@@ -711,6 +712,7 @@ export interface ApiBlogPageBlogPage extends Struct.SingleTypeSchema {
         'blocks.process-steps',
         'blocks.text-content',
         'blocks.trust-grid',
+        'blocks.location-map',
       ]
     > &
       Schema.Attribute.SetPluginOptions<{
@@ -774,6 +776,7 @@ export interface ApiCareerPageCareerPage extends Struct.SingleTypeSchema {
         'blocks.process-steps',
         'blocks.text-content',
         'blocks.trust-grid',
+        'blocks.location-map',
       ]
     > &
       Schema.Attribute.SetPluginOptions<{
@@ -823,6 +826,7 @@ export interface ApiCareerPageCareerPage extends Struct.SingleTypeSchema {
         'blocks.process-steps',
         'blocks.text-content',
         'blocks.trust-grid',
+        'blocks.location-map',
       ]
     > &
       Schema.Attribute.SetPluginOptions<{
@@ -864,6 +868,7 @@ export interface ApiCityPageCityPage extends Struct.SingleTypeSchema {
         'blocks.process-steps',
         'blocks.text-content',
         'blocks.trust-grid',
+        'blocks.location-map',
       ]
     > &
       Schema.Attribute.SetPluginOptions<{
@@ -908,6 +913,7 @@ export interface ApiCityPageCityPage extends Struct.SingleTypeSchema {
         'blocks.process-steps',
         'blocks.text-content',
         'blocks.trust-grid',
+        'blocks.location-map',
       ]
     > &
       Schema.Attribute.SetPluginOptions<{
@@ -1031,6 +1037,7 @@ export interface ApiDoctorsPageDoctorsPage extends Struct.SingleTypeSchema {
         'blocks.process-steps',
         'blocks.text-content',
         'blocks.trust-grid',
+        'blocks.location-map',
       ]
     > &
       Schema.Attribute.SetPluginOptions<{
@@ -1386,6 +1393,7 @@ export interface ApiHomepageHomepage extends Struct.SingleTypeSchema {
         'blocks.text-content',
         'blocks.treatment-teasers',
         'blocks.trust-grid',
+        'blocks.location-map',
       ]
     > &
       Schema.Attribute.SetPluginOptions<{
@@ -1449,6 +1457,7 @@ export interface ApiJobPageJobPage extends Struct.SingleTypeSchema {
         'blocks.process-steps',
         'blocks.text-content',
         'blocks.trust-grid',
+        'blocks.location-map',
       ]
     > &
       Schema.Attribute.SetPluginOptions<{
@@ -1805,6 +1814,7 @@ export interface ApiLocationsPageLocationsPage extends Struct.SingleTypeSchema {
         'blocks.media-card',
         'blocks.text-content',
         'blocks.trust-grid',
+        'blocks.location-map',
       ]
     > &
       Schema.Attribute.SetPluginOptions<{
@@ -1876,6 +1886,7 @@ export interface ApiPagePage extends Struct.CollectionTypeSchema {
         'blocks.treatment-hero',
         'blocks.treatment-teasers',
         'blocks.trust-grid',
+        'blocks.location-map',
       ]
     > &
       Schema.Attribute.SetPluginOptions<{
@@ -1952,6 +1963,7 @@ export interface ApiPricesPagePricesPage extends Struct.SingleTypeSchema {
         'blocks.process-steps',
         'blocks.text-content',
         'blocks.trust-grid',
+        'blocks.location-map',
       ]
     > &
       Schema.Attribute.SetPluginOptions<{
@@ -1996,6 +2008,7 @@ export interface ApiPricesPagePricesPage extends Struct.SingleTypeSchema {
         'blocks.process-steps',
         'blocks.text-content',
         'blocks.trust-grid',
+        'blocks.location-map',
       ]
     > &
       Schema.Attribute.SetPluginOptions<{
@@ -2139,6 +2152,7 @@ export interface ApiProductPageProductPage extends Struct.SingleTypeSchema {
         'blocks.process-steps',
         'blocks.text-content',
         'blocks.trust-grid',
+        'blocks.location-map',
       ]
     > &
       Schema.Attribute.SetPluginOptions<{
@@ -2510,6 +2524,7 @@ export interface ApiTreatmentPageTreatmentPage
         'blocks.process-steps',
         'blocks.text-content',
         'blocks.trust-grid',
+        'blocks.location-map',
       ]
     > &
       Schema.Attribute.SetPluginOptions<{
