@@ -33,6 +33,15 @@
         "media-right"
       ]
     },
+    "mediaItemAlignment": {
+      "type": "enumeration",
+      "required": true,
+      "default": "vertical",
+      "enum": [
+        "horizontal",
+        "vertical"
+      ]
+    },
     "links": {
       "type": "component",
       "component": "shared.button",

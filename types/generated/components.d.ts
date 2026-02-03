@@ -148,6 +148,11 @@ export interface BlocksMediaBento extends Struct.ComponentSchema {
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<'media-left'>;
     links: Schema.Attribute.Component<'shared.button', true>;
+    mediaItemAlignment: Schema.Attribute.Enumeration<
+      ['horizontal', 'vertical']
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'vertical'>;
     mediaItems: Schema.Attribute.Media<'images' | 'videos', true>;
     videoSettings: Schema.Attribute.Component<'shared.video-settings', false>;
   };
