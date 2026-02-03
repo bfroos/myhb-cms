@@ -4,10 +4,7 @@
 
 import { factories } from "@strapi/strapi";
 import type { Context } from "koa";
-import {
-  editorialBlocksPopulate,
-  headerPageBlocksPopulate,
-} from "../../../utils/queries/blocks";
+import { allBlocksPopulate } from "../../../utils/queries/blocks";
 import { mediaPopulate } from "../../../utils/queries/strapi";
 import { locationTeaserPopulate } from "../../../utils/queries/ui";
 import { seoPopulate } from "../../../utils/queries/components";
@@ -24,20 +21,9 @@ export default factories.createCoreController(
         .findFirst({
           locale,
           populate: {
-            topBlocks: {
-              on: {
-                ...(headerPageBlocksPopulate.on as object),
-                ...(editorialBlocksPopulate.on as object),
-              },
-            },
-            bottomBlocks: {
-              on: {
-                ...(editorialBlocksPopulate.on as object),
-              },
-            },
-            seo: {
-              ...(seoPopulate as object),
-            },
+            topBlocks: allBlocksPopulate as object,
+            bottomBlocks: allBlocksPopulate as object,
+            seo: seoPopulate as object,
             jobTeasers: {
               populate: {
                 cardSettings: {
@@ -56,13 +42,31 @@ export default factories.createCoreController(
             $eq: true,
           },
         },
+        fields: [
+          "title",
+          "slug",
+          "genderHint",
+          "employmentTypes",
+          "hourlyRateMinInEuroCent",
+          "hourlyRateMaxInEuroCent",
+        ],
         populate: {
           localizations: {
             fields: ["locale", "slug"],
           },
           cover: mediaPopulate as object,
           locations: {
-            ...(locationTeaserPopulate as any),
+            fields: ["name"],
+            filters: {
+              city: {
+                id: { $notNull: true },
+              },
+            },
+            populate: {
+              city: {
+                fields: ["name"],
+              },
+            },
           },
         },
       });

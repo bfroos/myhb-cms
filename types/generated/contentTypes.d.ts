@@ -777,15 +777,27 @@ export interface ApiCareerPageCareerPage extends Struct.SingleTypeSchema {
       [
         'blocks.benefits-list',
         'blocks.comparison-block',
+        'blocks.directions',
         'blocks.employee',
+        'blocks.employee-list',
         'blocks.faq',
         'blocks.highlights-strip',
+        'blocks.location-map',
         'blocks.media-bento',
         'blocks.media-card',
+        'blocks.my-club',
+        'blocks.page-header',
         'blocks.process-steps',
+        'blocks.product-category-price-overview',
+        'blocks.reviews',
+        'blocks.stories',
+        'blocks.table-of-contents',
         'blocks.text-content',
+        'blocks.treatment-details',
+        'blocks.treatment-hero',
+        'blocks.treatment-plan',
+        'blocks.treatment-teasers',
         'blocks.trust-grid',
-        'blocks.location-map',
       ]
     > &
       Schema.Attribute.SetPluginOptions<{
@@ -822,20 +834,29 @@ export interface ApiCareerPageCareerPage extends Struct.SingleTypeSchema {
       }>;
     topBlocks: Schema.Attribute.DynamicZone<
       [
-        'blocks.page-header',
-        'blocks.treatment-hero',
         'blocks.benefits-list',
         'blocks.comparison-block',
+        'blocks.directions',
         'blocks.employee',
+        'blocks.employee-list',
         'blocks.faq',
         'blocks.highlights-strip',
+        'blocks.location-map',
         'blocks.media-bento',
         'blocks.media-card',
         'blocks.my-club',
+        'blocks.page-header',
         'blocks.process-steps',
+        'blocks.product-category-price-overview',
+        'blocks.reviews',
+        'blocks.stories',
+        'blocks.table-of-contents',
         'blocks.text-content',
+        'blocks.treatment-details',
+        'blocks.treatment-hero',
+        'blocks.treatment-plan',
+        'blocks.treatment-teasers',
         'blocks.trust-grid',
-        'blocks.location-map',
       ]
     > &
       Schema.Attribute.SetPluginOptions<{
