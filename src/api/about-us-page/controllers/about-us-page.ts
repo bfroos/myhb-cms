@@ -4,10 +4,7 @@
 
 import { factories } from "@strapi/strapi";
 import type { Context } from "koa";
-import {
-  customPageBlocksPopulate,
-  editorialBlocksPopulate,
-} from "../../../utils/queries/blocks";
+import { allBlocksPopulate } from "../../../utils/queries/blocks";
 import { seoPopulate } from "../../../utils/queries/components";
 
 export default factories.createCoreController(
@@ -21,19 +18,12 @@ export default factories.createCoreController(
         .findFirst({
           locale,
           populate: {
-            seo: {
-              ...(seoPopulate as object),
-            },
-            blocks: {
-              on: {
-                ...customPageBlocksPopulate.on,
-                ...editorialBlocksPopulate.on,
-              },
-            },
+            seo: seoPopulate as object,
+            blocks: allBlocksPopulate as object,
           },
         });
 
       return { data: page || null };
     },
-  }),
+  })
 );
