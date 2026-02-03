@@ -72,6 +72,11 @@ export default factories.createCoreController(
             },
           },
           treatments: {
+            filters: {
+              treatmentPage: {
+                id: { $notNull: true },
+              },
+            },
             fields: ["name"],
             populate: {
               treatmentPage: treatmentTeaserPopulate as object,
