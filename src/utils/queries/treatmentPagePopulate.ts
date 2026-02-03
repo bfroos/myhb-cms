@@ -65,7 +65,7 @@ export const treatmentPagePopulateCommon = {
             fields: ["label"],
             populate: {
               treatmentPage: {
-                fields: ["slug", "ancestorSlugs"],
+                fields: ["pathKey"],
               },
             },
           },

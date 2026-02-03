@@ -330,7 +330,7 @@ export const blockTreatmentPlanPopulate = {
           fields: ["label"],
           populate: {
             treatmentPage: {
-              fields: ["slug", "ancestorSlugs"],
+              fields: ["pathKey"],
             },
           },
         },
