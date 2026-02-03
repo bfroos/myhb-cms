@@ -71,6 +71,12 @@ export default factories.createCoreController(
               },
             },
           },
+          treatments: {
+            fields: ["name"],
+            populate: {
+              treatmentPage: treatmentTeaserPopulate as object,
+            },
+          },
           images: mediaPopulate as object,
         },
       });
@@ -79,35 +85,6 @@ export default factories.createCoreController(
         ctx.notFound("Product not found");
         return;
       }
-
-      // Fetch treatments separately with treatmentTeaserPopulate
-      const productWithTreatments = (await strapi
-        .documents("api::product.product")
-        .findFirst({
-          locale,
-          filters: {
-            id: {
-              $eq: product.id,
-            },
-          },
-          populate: {
-            treatments: {
-              fields: ["name"],
-              populate: {
-                treatmentPage: treatmentTeaserPopulate as object,
-              },
-            },
-          },
-        })) as any;
-      const relatedTreatments = productWithTreatments?.treatments ?? [];
-
-      const relatedTreatmentsWithBlocks = relatedTreatments.map(
-        (treatment: any) => {
-          return {
-            ...treatment.treatmentPage,
-          };
-        }
-      );
 
       // Defensive: product.variants may not exist (typing issue)
       let cheapestVariant = null;
@@ -126,7 +103,6 @@ export default factories.createCoreController(
         data: {
           productPage,
           product,
-          relatedTreatmentTeasers: relatedTreatmentsWithBlocks,
           cheapestVariantPrice: cheapestVariant?.priceInEuroCent ?? 0,
         },
       };
