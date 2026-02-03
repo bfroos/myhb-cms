@@ -44,21 +44,6 @@
         }
       }
     },
-    "treatments": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::treatment.treatment",
-      "conditions": {
-        "visible": {
-          "==": [
-            {
-              "var": "type"
-            },
-            "step"
-          ]
-        }
-      }
-    },
     "followUpPlanText": {
       "type": "string",
       "conditions": {
@@ -85,6 +70,11 @@
           ]
         }
       }
+    },
+    "treatment": {
+      "type": "component",
+      "component": "treatment-plan.step-treatments",
+      "repeatable": true
     }
   },
   "config": {}

@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_treatment_plan_step_treatments",
+  "info": {
+    "displayName": "Step Treatments"
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string"
+    },
+    "treatmentPage": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::treatment-page.treatment-page"
+    }
+  },
+  "config": {}
+}

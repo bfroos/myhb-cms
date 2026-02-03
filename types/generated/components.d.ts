@@ -1299,6 +1299,20 @@ export interface TreatmentPageTreatmentProcess extends Struct.ComponentSchema {
   };
 }
 
+export interface TreatmentPlanStepTreatments extends Struct.ComponentSchema {
+  collectionName: 'components_treatment_plan_step_treatments';
+  info: {
+    displayName: 'Step Treatments';
+  };
+  attributes: {
+    label: Schema.Attribute.String;
+    treatmentPage: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::treatment-page.treatment-page'
+    >;
+  };
+}
+
 export interface TreatmentPlanTreatmentPlanStep extends Struct.ComponentSchema {
   collectionName: 'components_treatment_plan_treatment_plan_steps';
   info: {
@@ -1309,9 +1323,9 @@ export interface TreatmentPlanTreatmentPlanStep extends Struct.ComponentSchema {
     endOfPlanText: Schema.Attribute.String;
     followUpPlanText: Schema.Attribute.String &
       Schema.Attribute.DefaultTo<'Behandlung wiederholen'>;
-    treatments: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::treatment.treatment'
+    treatment: Schema.Attribute.Component<
+      'treatment-plan.step-treatments',
+      true
     >;
     type: Schema.Attribute.Enumeration<
       ['step', 'end-of-plan', 'follow-up-plan']
@@ -1400,6 +1414,7 @@ declare module '@strapi/strapi' {
       'treatment-page.treatment-details': TreatmentPageTreatmentDetails;
       'treatment-page.treatment-plan': TreatmentPageTreatmentPlan;
       'treatment-page.treatment-process': TreatmentPageTreatmentProcess;
+      'treatment-plan.step-treatments': TreatmentPlanStepTreatments;
       'treatment-plan.treatment-plan-step': TreatmentPlanTreatmentPlanStep;
     }
   }
