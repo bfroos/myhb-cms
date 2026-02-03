@@ -1,6 +1,6 @@
 import { factories } from "@strapi/strapi";
 import type { Context } from "koa";
-import { editorialBlocksPopulate } from "../../../utils/queries/blocks";
+import { allBlocksPopulate } from "../../../utils/queries/blocks";
 import { mediaPopulate } from "../../../utils/queries/strapi";
 import { seoPopulate } from "../../../utils/queries/components";
 
@@ -19,12 +19,8 @@ export default factories.createCoreController(
         .findFirst({
           locale,
           populate: {
-            seo: {
-              ...(seoPopulate as object),
-            },
-            blocks: {
-              ...(editorialBlocksPopulate as object),
-            },
+            seo: seoPopulate,
+            blocks: allBlocksPopulate,
           },
         });
 
