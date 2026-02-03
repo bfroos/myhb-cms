@@ -327,7 +327,12 @@ export const blockTreatmentPlanPopulate = {
     steps: {
       populate: {
         treatments: {
-          fields: ["name"],
+          fields: ["label"],
+          populate: {
+            treatmentPage: {
+              fields: ["slug", "ancestorSlugs"],
+            },
+          },
         },
       },
     },

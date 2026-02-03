@@ -58,10 +58,19 @@ export const treatmentPagePopulateCommon = {
       additionalInfos: {
         populate: "*",
       },
-      steps: {
-        populate: "*",
-      },
       personaPhoto: mediaPopulate as object,
+      steps: {
+        populate: {
+          treatments: {
+            fields: ["label"],
+            populate: {
+              treatmentPage: {
+                fields: ["slug", "ancestorSlugs"],
+              },
+            },
+          },
+        },
+      },
     },
   },
   benefits: {
