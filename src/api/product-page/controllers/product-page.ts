@@ -26,8 +26,8 @@ export default factories.createCoreController(
         .findFirst({
           locale,
           populate: {
-            blocks: allBlocksPopulate,
-          } as any,
+            blocks: allBlocksPopulate as object,
+          },
         });
 
       const productPage = productPageRaw

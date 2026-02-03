@@ -16,8 +16,8 @@ export default factories.createCoreController(
       const page = await strapi.documents("api::homepage.homepage").findFirst({
         locale,
         populate: {
-          seo: seoPopulate,
-          blocks: allBlocksPopulate,
+          seo: seoPopulate as object,
+          blocks: allBlocksPopulate as object,
         },
       });
 
