@@ -71,7 +71,7 @@
         }
       }
     },
-    "treatment": {
+    "treatments": {
       "type": "component",
       "component": "treatment-plan.step-treatments",
       "repeatable": true

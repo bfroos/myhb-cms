@@ -1323,7 +1323,7 @@ export interface TreatmentPlanTreatmentPlanStep extends Struct.ComponentSchema {
     endOfPlanText: Schema.Attribute.String;
     followUpPlanText: Schema.Attribute.String &
       Schema.Attribute.DefaultTo<'Behandlung wiederholen'>;
-    treatment: Schema.Attribute.Component<
+    treatments: Schema.Attribute.Component<
       'treatment-plan.step-treatments',
       true
     >;
