@@ -650,7 +650,7 @@ export interface GlobalEcommerce extends Struct.ComponentSchema {
   };
   attributes: {
     clubUrl: Schema.Attribute.String;
-    grouponUrl: Schema.Attribute.String;
+    couponUrl: Schema.Attribute.String;
     newsletterDiscountPercentage: Schema.Attribute.Integer;
   };
 }
