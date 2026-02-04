@@ -28,6 +28,11 @@
       "type": "component",
       "component": "shared.open-graph",
       "repeatable": false
+    },
+    "excludeFromSitemap": {
+      "type": "boolean",
+      "required": true,
+      "default": false
     }
   }
 }

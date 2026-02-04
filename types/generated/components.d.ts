@@ -1079,6 +1079,9 @@ export interface SharedSeo extends Struct.ComponentSchema {
     icon: 'search';
   };
   attributes: {
+    excludeFromSitemap: Schema.Attribute.Boolean &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<false>;
     keywords: Schema.Attribute.Text;
     metaDescription: Schema.Attribute.Text &
       Schema.Attribute.SetMinMaxLength<{
