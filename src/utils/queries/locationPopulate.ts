@@ -90,4 +90,22 @@ export const locationPopulateForPage = {
       },
     },
   },
+  jobs: {
+    filters: { isActive: { $eq: true } },
+    fields: [
+      "title",
+      "slug",
+      "genderHint",
+      "employmentTypes",
+      "hourlyRateMinInEuroCent",
+      "hourlyRateMaxInEuroCent",
+    ],
+    populate: {
+      localizations: { fields: ["locale", "slug"] },
+      locations: {
+        fields: ["name"],
+        populate: { city: { fields: ["name"] } },
+      },
+    },
+  },
 };
