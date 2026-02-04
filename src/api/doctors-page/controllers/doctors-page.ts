@@ -4,11 +4,7 @@
 
 import { factories } from "@strapi/strapi";
 import type { Context } from "koa";
-import {
-  doctorsBlocksPopulate,
-  editorialBlocksPopulate,
-  headerPageBlocksPopulate,
-} from "../../../utils/queries/blocks";
+import { doctorsBlocksPopulate } from "../../../utils/queries/blocks";
 import { seoPopulate } from "../../../utils/queries/components";
 
 export default factories.createCoreController(
@@ -22,16 +18,8 @@ export default factories.createCoreController(
         .findFirst({
           locale,
           populate: {
-            seo: {
-              ...(seoPopulate as object),
-            },
-            blocks: {
-              on: {
-                ...doctorsBlocksPopulate.on,
-                ...editorialBlocksPopulate.on,
-                ...headerPageBlocksPopulate.on,
-              },
-            },
+            seo: seoPopulate as object,
+            blocks: doctorsBlocksPopulate as object,
           },
         });
 
