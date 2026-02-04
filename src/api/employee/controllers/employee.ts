@@ -26,6 +26,9 @@ export default factories.createCoreController(
             slug: {
               $eq: slug,
             },
+            hideFromPublic: {
+              $eq: false,
+            },
           },
           fields: [
             "firstName",
