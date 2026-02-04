@@ -29,7 +29,7 @@
       },
       "required": false,
       "default": 1,
-      "unique": true
+      "unique": false
     },
     "description": {
       "type": "text",

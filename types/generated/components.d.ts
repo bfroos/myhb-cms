@@ -1335,9 +1335,7 @@ export interface TreatmentPlanTreatmentPlanStep extends Struct.ComponentSchema {
     > &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<'step'>;
-    week: Schema.Attribute.Integer &
-      Schema.Attribute.Unique &
-      Schema.Attribute.DefaultTo<1>;
+    week: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<1>;
   };
 }
 
