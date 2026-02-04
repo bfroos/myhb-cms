@@ -4,7 +4,7 @@
 
 import { factories } from "@strapi/strapi";
 import type { Context } from "koa";
-import { generalPageBlocksPopulate } from "../../../utils/queries/blocks";
+import { allBlocksPopulate } from "../../../utils/queries/blocks";
 import { seoPopulate } from "../../../utils/queries/components";
 
 export default factories.createCoreController(
@@ -26,10 +26,8 @@ export default factories.createCoreController(
           localizations: {
             fields: ["locale", "slug"],
           },
-          seo: {
-            ...(seoPopulate as object),
-          },
-          blocks: generalPageBlocksPopulate as any,
+          seo: seoPopulate as object,
+          blocks: allBlocksPopulate as object,
         },
       });
 
