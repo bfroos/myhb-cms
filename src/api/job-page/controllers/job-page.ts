@@ -4,7 +4,7 @@
 
 import { factories } from "@strapi/strapi";
 import type { Context } from "koa";
-import { editorialBlocksPopulate } from "../../../utils/queries/blocks";
+import { allBlocksPopulate } from "../../../utils/queries/blocks";
 import { mediaPopulate } from "../../../utils/queries/strapi";
 import { locationTeaserPopulate } from "../../../utils/queries/ui";
 
@@ -22,7 +22,7 @@ export default factories.createCoreController(
         .findFirst({
           locale,
           populate: {
-            blocks: editorialBlocksPopulate as any,
+            blocks: allBlocksPopulate as object,
           },
         });
 
