@@ -5,10 +5,7 @@
 import { factories } from "@strapi/strapi";
 import type { Context } from "koa";
 import { getLocationStatus } from "../../../utils/locationStatus";
-import {
-  blockTreatmentTeasersPopulate,
-  editorialBlocksPopulate,
-} from "../../../utils/queries/blocks";
+import { blockTreatmentTeasersPopulate } from "../../../utils/queries/blocks";
 import {
   treatmentPagePopulateForFindByLocationAndPath,
   treatmentPagePopulateForFindByPath,
@@ -109,7 +106,7 @@ export default factories.createCoreController(
       }>;
 
       const topParentSlugs = Array.from(
-        new Set(pagesWithAncestors.map((p) => p.ancestorSlugs[0])),
+        new Set(pagesWithAncestors.map((p) => p.ancestorSlugs[0]))
       );
 
       const topParents = (
@@ -132,7 +129,7 @@ export default factories.createCoreController(
       const topParentNameBySlug = new Map(
         topParents
           .filter((p) => typeof p.slug === "string")
-          .map((p) => [p.slug as string, p.name || ""] as const),
+          .map((p) => [p.slug as string, p.name || ""] as const)
       );
 
       const grouped = new Map<
@@ -164,8 +161,8 @@ export default factories.createCoreController(
         data: Array.from(grouped.values()).sort((a, b) =>
           (a.groupName || a.groupId).localeCompare(
             b.groupName || b.groupId,
-            "de",
-          ),
+            "de"
+          )
         ),
       };
     },
@@ -192,14 +189,7 @@ export default factories.createCoreController(
             pathKey: { $eq: pathKey },
           },
           locale,
-          populate: {
-            ...(treatmentPagePopulateForFindByPath as object),
-            blocks: {
-              on: {
-                ...(editorialBlocksPopulate.on as object),
-              },
-            },
-          },
+          populate: treatmentPagePopulateForFindByPath as object,
         });
       if (!page) return ctx.notFound("Treatment page not found");
 
@@ -233,7 +223,7 @@ export default factories.createCoreController(
         // Map ancestors in the order of ancestorSlugs
         ancestors = ancestorSlugs.map((slug: string) => {
           const ancestor = (ancestorPages as any[]).find(
-            (p: any) => p.slug === slug,
+            (p: any) => p.slug === slug
           );
           return ancestor
             ? { slug: ancestor.slug, name: ancestor.name }
@@ -305,9 +295,7 @@ export default factories.createCoreController(
             },
           },
           fields: ["slug", "pathKey", "name", "ancestorSlugs"],
-          populate: {
-            ...(treatmentPagePopulateForFindByLocationAndPath as object),
-          },
+          populate: treatmentPagePopulateForFindByLocationAndPath as object,
         });
 
       if (!treatmentPage) {
@@ -339,7 +327,7 @@ export default factories.createCoreController(
         // Map ancestors in the order of ancestorSlugs
         ancestors = ancestorSlugs.map((slug: string) => {
           const ancestor = ancestorPages.find(
-            (page: any) => page.slug === slug,
+            (page: any) => page.slug === slug
           );
           return ancestor
             ? { slug: ancestor.slug, name: ancestor.name }
@@ -356,7 +344,7 @@ export default factories.createCoreController(
       // Add openingStatus to location
       const locationOpenStatus = getLocationStatus(
         location.newOpeningDate,
-        location.timezone || "Europe/Berlin",
+        location.timezone || "Europe/Berlin"
       );
 
       const locationWithStatus = {
@@ -371,5 +359,5 @@ export default factories.createCoreController(
         },
       };
     },
-  }),
+  })
 );

@@ -1,5 +1,6 @@
 import { mediaPopulate } from "./strapi";
 import {
+  allBlocksPopulate,
   blockTreatmentTeasersPopulate,
   editorialBlocksPopulate,
 } from "./blocks";
@@ -150,7 +151,7 @@ export const treatmentPagePopulateCommon = {
 
 export const treatmentPagePopulateForFindByPath = {
   ...treatmentPagePopulateCommon,
-  blocks: editorialBlocksPopulate,
+  blocks: allBlocksPopulate as object,
 };
 
 export const treatmentPagePopulateForFindByLocationAndPath = {
