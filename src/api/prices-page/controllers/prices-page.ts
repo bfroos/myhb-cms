@@ -4,10 +4,7 @@
 
 import { factories } from "@strapi/strapi";
 import type { Context } from "koa";
-import {
-  editorialBlocksPopulate,
-  headerPageBlocksPopulate,
-} from "../../../utils/queries/blocks";
+import { allBlocksPopulate } from "../../../utils/queries/blocks";
 import { mediaPopulate } from "../../../utils/queries/strapi";
 import { seoPopulate } from "../../../utils/queries/components";
 
@@ -23,20 +20,9 @@ export default factories.createCoreController(
         .findFirst({
           locale,
           populate: {
-            seo: {
-              ...(seoPopulate as object),
-            },
-            topBlocks: {
-              on: {
-                ...(headerPageBlocksPopulate.on as object),
-                ...(editorialBlocksPopulate.on as object),
-              },
-            },
-            bottomBlocks: {
-              on: {
-                ...(editorialBlocksPopulate.on as object),
-              },
-            },
+            seo: seoPopulate as object,
+            topBlocks: allBlocksPopulate as object,
+            bottomBlocks: allBlocksPopulate as object,
           },
         });
 
@@ -46,6 +32,7 @@ export default factories.createCoreController(
         .findMany({
           locale,
           fields: ["name", "slug"],
+          sort: { name: "asc" },
           filters: {
             $or: [
               { treatments: { $notNull: true } },
