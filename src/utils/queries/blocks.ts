@@ -346,7 +346,7 @@ export const blockTreatmentPlanPopulate = {
 export const blockTreatmentTeasersPopulate = {
   populate: {
     treatmentPages: {
-      fields: ["name", "slug", "ancestorSlugs"],
+      fields: ["name", "pathKey"],
       populate: {
         treatment: {
           fields: ["priceInEuroCent", "isStartingPrice"],
