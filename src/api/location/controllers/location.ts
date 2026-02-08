@@ -53,6 +53,9 @@ export default factories.createCoreController(
               fields: ["name", "slug", "federalState"],
             },
             address: true,
+            coordinates: {
+              fields: ["lat", "long"],
+            },
             buildingImage: mediaPopulate as object,
           },
         });
