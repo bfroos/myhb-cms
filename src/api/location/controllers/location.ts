@@ -25,6 +25,48 @@ const locationTypeToTreatmentTypes: Record<
 export default factories.createCoreController(
   "api::location.location",
   ({ strapi }) => ({
+    async findBookableLocations(ctx: Context) {
+      const { locale } = ctx.query as { locale?: string };
+
+      const locations = await strapi
+        .documents("api::location.location")
+        .findMany({
+          locale,
+          fields: ["name", "slug", "newOpeningDate", "timezone", "calendlyUrl"],
+          filters: {
+            city: {
+              slug: {
+                $notNull: true,
+                $ne: "",
+              },
+            },
+          },
+          populate: {
+            city: {
+              fields: ["name", "slug", "federalState"],
+            },
+            address: true,
+            coordinates: {
+              fields: ["lat", "long"],
+            },
+            buildingImage: mediaPopulate as object,
+          },
+        });
+
+      const mappedLocations = (locations as any[]).map((location) => ({
+        ...location,
+        openingStatus: getLocationStatus(
+          location.newOpeningDate,
+          location.timezone || "Europe/Berlin"
+        ),
+      }));
+
+      const filteredLocations = mappedLocations.filter(
+        (location) => location.openingStatus !== "comingSoon"
+      );
+
+      return { data: filteredLocations };
+    },
     async findWithCalendlyUrl(ctx: Context) {
       const { locale } = ctx.query as { locale?: string };
 

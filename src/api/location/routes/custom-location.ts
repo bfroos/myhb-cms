@@ -2,6 +2,15 @@ export default {
   routes: [
     {
       method: "GET",
+      path: "/locations/bookable",
+      handler: "api::location.location.findBookableLocations",
+      config: {
+        policies: [],
+        middlewares: [],
+      },
+    },
+    {
+      method: "GET",
       path: "/locations/counts",
       handler: "api::location.location.getCounts",
       config: {
