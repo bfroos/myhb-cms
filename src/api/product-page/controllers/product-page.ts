@@ -25,6 +25,7 @@ export default factories.createCoreController(
         .documents("api::product-page.product-page")
         .findFirst({
           locale,
+          status: "published",
           populate: {
             blocks: allBlocksPopulate as object,
           },
@@ -35,56 +36,59 @@ export default factories.createCoreController(
         : null;
 
       // Fetch product with all fields except treatments
-      const product = await strapi.documents("api::product.product").findFirst({
-        locale,
-        filters: {
-          slug: {
-            $eq: productSlug,
+      const product = await strapi
+        .documents("api::product.product")
+        .findFirst({
+          locale,
+          status: "published",
+          filters: {
+            slug: {
+              $eq: productSlug,
+            },
           },
-        },
-        populate: {
-          localizations: {
-            fields: ["locale", "slug"],
-          },
-          manufacturer: {
-            fields: ["name"],
-          },
-          category: {
-            fields: ["name", "slug"],
-            populate: {
-              localizations: {
-                fields: ["locale", "slug"],
+          populate: {
+            localizations: {
+              fields: ["locale", "slug"],
+            },
+            manufacturer: {
+              fields: ["name"],
+            },
+            category: {
+              fields: ["name", "slug"],
+              populate: {
+                localizations: {
+                  fields: ["locale", "slug"],
+                },
               },
             },
-          },
-          variants: {
-            fields: [
-              "label",
-              "slug",
-              "isActive",
-              "priceInEuroCent",
-              "description",
-            ],
-            populate: {
-              volume: {
-                fields: ["quantity", "unit"],
+            variants: {
+              fields: [
+                "label",
+                "slug",
+                "isActive",
+                "priceInEuroCent",
+                "description",
+              ],
+              populate: {
+                volume: {
+                  fields: ["quantity", "unit"],
+                },
               },
             },
-          },
-          treatments: {
-            filters: {
-              treatmentPage: {
-                id: { $notNull: true },
+            treatments: {
+              filters: {
+                treatmentPage: {
+                  id: { $notNull: true },
+                },
+              },
+              fields: ["name"],
+              populate: {
+                treatmentPage: treatmentTeaserPopulate as object,
               },
             },
-            fields: ["name"],
-            populate: {
-              treatmentPage: treatmentTeaserPopulate as object,
-            },
+            images: mediaPopulate as object,
           },
-          images: mediaPopulate as object,
-        },
-      });
+        });
 
       if (!product) {
         ctx.notFound("Product not found");

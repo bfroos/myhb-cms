@@ -72,6 +72,7 @@ export default factories.createCoreController(
         .documents("api::treatment-page.treatment-page")
         .findMany({
           locale,
+          status: "published",
           fields: ["slug", "name", "pathKey", "ancestorSlugs"],
           filters: {
             showInMenu: { $eq: true },
@@ -115,6 +116,7 @@ export default factories.createCoreController(
               .documents("api::treatment-page.treatment-page")
               .findMany({
                 locale,
+                status: "published",
                 fields: ["slug", "name"],
                 filters: {
                   slug: {
@@ -189,6 +191,7 @@ export default factories.createCoreController(
             pathKey: { $eq: pathKey },
           },
           locale,
+          status: "published",
           populate: treatmentPagePopulateForFindByPath as object,
         });
       if (!page) return ctx.notFound("Treatment page not found");
@@ -211,6 +214,7 @@ export default factories.createCoreController(
           .documents("api::treatment-page.treatment-page")
           .findMany({
             locale,
+            status: "published",
             fields: ["slug", "name"],
             filters: {
               slug: {
@@ -263,6 +267,7 @@ export default factories.createCoreController(
         .documents("api::location.location")
         .findFirst({
           locale,
+          status: "published",
           fields: locationFieldsForPage as any,
           filters: {
             slug: {
@@ -289,6 +294,7 @@ export default factories.createCoreController(
         .documents("api::treatment-page.treatment-page")
         .findFirst({
           locale,
+          status: "published",
           filters: {
             pathKey: {
               $eq: pathKey,
@@ -315,6 +321,7 @@ export default factories.createCoreController(
           .documents("api::treatment-page.treatment-page")
           .findMany({
             locale,
+            status: "published",
             fields: ["slug", "name"],
             filters: {
               slug: {

@@ -17,6 +17,7 @@ export default factories.createCoreController(
         .documents("api::locations-page.locations-page")
         .findFirst({
           locale,
+          status: "published",
           populate: {
             seo: seoPopulate as object,
             blocks: allBlocksPopulate as object,
@@ -27,6 +28,7 @@ export default factories.createCoreController(
         .documents("api::location.location")
         .findMany({
           locale,
+          status: "published",
           ...(locationTeaserPopulate as any),
         });
 

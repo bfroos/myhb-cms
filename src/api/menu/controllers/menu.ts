@@ -80,6 +80,7 @@ export default {
         .documents("api::treatment-page.treatment-page")
         .findMany({
           locale: requestedLocale,
+          status: "published",
           fields: ["id", "name", "slug"],
           filters: {
             showInMenu: { $eq: true },
@@ -114,6 +115,7 @@ export default {
         .documents("api::product-category.product-category")
         .findMany({
           locale: requestedLocale,
+          status: "published",
           fields: ["id", "name", "slug"],
           limit: 9999,
         });

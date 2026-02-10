@@ -29,6 +29,7 @@ export default factories.createCoreController(
         .documents("api::city-page.city-page")
         .findFirst({
           locale,
+          status: "published",
           populate: {
             seo: {
               ...(seoPopulate as object),
@@ -47,22 +48,25 @@ export default factories.createCoreController(
           },
         });
 
-      const city = await strapi.documents("api::city.city").findFirst({
-        locale,
-        filters: {
-          slug: { $eq: citySlug },
-          locations: { id: { $notNull: true } },
-        },
-        fields: ["name", "slug", "federalState"],
-        populate: {
-          localizations: {
-            fields: ["locale", "slug"],
+      const city = await strapi
+        .documents("api::city.city")
+        .findFirst({
+          locale,
+          status: "published",
+          filters: {
+            slug: { $eq: citySlug },
+            locations: { id: { $notNull: true } },
           },
-          locations: {
-            ...(locationTeaserPopulate as any),
+          fields: ["name", "slug", "federalState"],
+          populate: {
+            localizations: {
+              fields: ["locale", "slug"],
+            },
+            locations: {
+              ...(locationTeaserPopulate as any),
+            },
           },
-        },
-      });
+        });
       if (!city) {
         ctx.notFound("City not found");
         return;

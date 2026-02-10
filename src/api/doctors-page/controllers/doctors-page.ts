@@ -17,6 +17,7 @@ export default factories.createCoreController(
         .documents("api::doctors-page.doctors-page")
         .findFirst({
           locale,
+          status: "published",
           populate: {
             seo: seoPopulate as object,
             blocks: allBlocksPopulate as object,

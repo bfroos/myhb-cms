@@ -21,6 +21,7 @@ export default factories.createCoreController(
         .documents("api::job-page.job-page")
         .findFirst({
           locale,
+          status: "published",
           populate: {
             blocks: allBlocksPopulate as object,
           },
@@ -28,40 +29,43 @@ export default factories.createCoreController(
 
       const jobPage = jobPageRaw ? { blocks: jobPageRaw.blocks } : null;
 
-      const jobDetails = await strapi.documents("api::job.job").findFirst({
-        locale,
-        filters: {
-          slug: {
-            $eq: jobSlug,
-          },
-          isActive: {
-            $eq: true,
-          },
-        },
-        populate: {
-          localizations: {
-            fields: ["locale", "slug"],
-          },
-          recruiter: {
-            filters: {
-              isActive: {
-                $eq: true,
-              },
-              hideFromPublic: {
-                $eq: false,
-              },
+      const jobDetails = await strapi
+        .documents("api::job.job")
+        .findFirst({
+          locale,
+          status: "published",
+          filters: {
+            slug: {
+              $eq: jobSlug,
             },
-            fields: ["firstName", "lastName"],
-            populate: {
-              photo: mediaPopulate as object,
+            isActive: {
+              $eq: true,
             },
           },
-          cover: mediaPopulate as object,
-          locations: {
-            ...(locationTeaserPopulate as any),
+          populate: {
+            localizations: {
+              fields: ["locale", "slug"],
+            },
+            recruiter: {
+              filters: {
+                isActive: {
+                  $eq: true,
+                },
+                hideFromPublic: {
+                  $eq: false,
+                },
+              },
+              fields: ["firstName", "lastName"],
+              populate: {
+                photo: mediaPopulate as object,
+              },
+            },
+            cover: mediaPopulate as object,
+            locations: {
+              ...(locationTeaserPopulate as any),
+            },
           },
-        },
-      });
+        });
 
       if (!jobDetails) {
         ctx.notFound("Job not found");

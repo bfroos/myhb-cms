@@ -32,6 +32,7 @@ export default factories.createCoreController(
         .documents("api::location.location")
         .findMany({
           locale,
+          status: "published",
           fields: ["name", "slug", "newOpeningDate", "timezone", "calendlyUrl"],
           filters: {
             city: {
@@ -74,6 +75,7 @@ export default factories.createCoreController(
         .documents("api::location.location")
         .findMany({
           locale,
+          status: "published",
           fields: ["name", "slug", "newOpeningDate", "timezone", "calendlyUrl"],
           filters: {
             calendlyUrl: {
@@ -128,6 +130,7 @@ export default factories.createCoreController(
         .documents("api::location.location")
         .findFirst({
           locale,
+          status: "published",
           fields: locationFieldsForPage as any,
           filters: {
             slug: {
@@ -209,14 +212,17 @@ export default factories.createCoreController(
       const [loungeCount, clinicCount, doctorCount] = await Promise.all([
         strapi.documents("api::location.location").count({
           locale: activeLocale,
+          status: "published",
           filters: { type: { $eq: "lounge" } },
         }),
         strapi.documents("api::location.location").count({
           locale: activeLocale,
+          status: "published",
           filters: { type: { $eq: "clinic" } },
         }),
         strapi.documents("api::employee.employee").count({
           locale: activeLocale,
+          status: "published",
           filters: {
             isActive: { $eq: true },
             employeeType: { $eq: "doctor" },

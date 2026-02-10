@@ -13,13 +13,16 @@ export default factories.createCoreController(
     async find(ctx: Context) {
       const { locale } = ctx.query as { locale?: string };
 
-      const page = await strapi.documents("api::homepage.homepage").findFirst({
-        locale,
-        populate: {
-          seo: seoPopulate as object,
-          blocks: allBlocksPopulate as object,
-        },
-      });
+      const page = await strapi
+        .documents("api::homepage.homepage")
+        .findFirst({
+          locale,
+          status: "published",
+          populate: {
+            seo: seoPopulate as object,
+            blocks: allBlocksPopulate as object,
+          },
+        });
 
       return { data: page || null };
     },

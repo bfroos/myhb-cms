@@ -22,6 +22,7 @@ export default factories.createCoreController(
         .documents("api::employee.employee")
         .findFirst({
           locale,
+          status: "published",
           filters: {
             slug: {
               $eq: slug,

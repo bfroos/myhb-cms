@@ -19,6 +19,7 @@ export default factories.createCoreController(
         .documents("api::prices-page.prices-page")
         .findFirst({
           locale,
+          status: "published",
           populate: {
             seo: seoPopulate as object,
             topBlocks: allBlocksPopulate as object,
@@ -31,6 +32,7 @@ export default factories.createCoreController(
         .documents("api::product-category.product-category")
         .findMany({
           locale,
+          status: "published",
           fields: ["name", "slug"],
           sort: { name: "asc" },
           filters: {

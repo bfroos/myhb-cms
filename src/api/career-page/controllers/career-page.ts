@@ -20,6 +20,7 @@ export default factories.createCoreController(
         .documents("api::career-page.career-page")
         .findFirst({
           locale,
+          status: "published",
           populate: {
             topBlocks: allBlocksPopulate as object,
             bottomBlocks: allBlocksPopulate as object,
@@ -37,6 +38,7 @@ export default factories.createCoreController(
       // Fetch all active jobs
       const jobs = await strapi.documents("api::job.job").findMany({
         locale,
+        status: "published",
         filters: {
           isActive: {
             $eq: true,

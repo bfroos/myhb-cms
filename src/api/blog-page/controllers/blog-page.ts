@@ -18,6 +18,7 @@ export default factories.createCoreController(
         .documents("api::blog-page.blog-page")
         .findFirst({
           locale,
+          status: "published",
           populate: {
             seo: seoPopulate,
             blocks: allBlocksPopulate,
@@ -29,6 +30,7 @@ export default factories.createCoreController(
         .documents("api::blog-category.blog-category")
         .findMany({
           locale,
+          status: "published",
           fields: ["name", "slug"],
         });
 
@@ -50,6 +52,7 @@ export default factories.createCoreController(
       const [articles, total] = await Promise.all([
         strapi.documents("api::blog-article.blog-article").findMany({
           locale,
+          status: "published",
           fields: ["headline", "intro", "displayDate", "slug"],
           filters:
             Object.keys(articleFilters).length > 0 ? articleFilters : undefined,
@@ -68,6 +71,7 @@ export default factories.createCoreController(
         }),
         strapi.documents("api::blog-article.blog-article").count({
           locale,
+          status: "published",
           filters:
             Object.keys(articleFilters).length > 0 ? articleFilters : undefined,
         }),
