@@ -30,9 +30,6 @@ interface LifecycleEvent {
 // Track updates to prevent infinite loops
 const updatingDescendants = new Set<ID>();
 
-// Store old values before update to compare in afterUpdate
-const oldValues = new Map<ID, { slug: string; ancestorSlugs: string[] }>();
-
 /**
  * Resolve locale from lifecycle event (Strapi Admin does not always set `event.params.locale`)
  */
@@ -550,6 +547,74 @@ export default {
     data.pathKey = calculatePathKey(data.ancestorSlugs, data.slug);
   },
 
+  async afterCreate(event: any) {
+    const { result } = event;
+    const strapi =
+      (global as any).strapi ||
+      require("@strapi/strapi").default ||
+      require("@strapi/strapi");
+
+    // Extract locale (admin doesn't always set `event.params.locale`)
+    const locale = resolveEventLocale(event, "de");
+
+    if (!result || !result.id) {
+      return;
+    }
+
+    // In Strapi 5, publishing a document creates a new DB row with `publishedAt` set.
+    // For descendant updates we want to operate on the DRAFT version, because only
+    // there the parent relations for the whole tree are konsistent.
+    const isPublished = Boolean((result as any).publishedAt);
+    const documentId =
+      typeof (result as any).documentId === "string"
+        ? ((result as any).documentId as string)
+        : null;
+
+    let pageId = result.id as ID;
+    let newSlug =
+      typeof (result as any).slug === "string" ? (result as any).slug : null;
+    let newAncestorSlugs = toStringArray((result as any).ancestorSlugs);
+
+    if (documentId && isPublished) {
+      try {
+        const docs = (strapi as any).documents(
+          "api::treatment-page.treatment-page"
+        );
+        const draft = await docs.findOne({
+          documentId,
+          locale,
+          status: "draft",
+          fields: ["id", "slug", "ancestorSlugs"] as any,
+        });
+
+        if (draft) {
+          pageId = (draft as any).id as ID;
+          newSlug =
+            typeof (draft as any).slug === "string"
+              ? ((draft as any).slug as string)
+              : newSlug;
+          newAncestorSlugs = toStringArray((draft as any).ancestorSlugs);
+        }
+      } catch {
+        // If draft cannot be resolved we gracefully fall back to `result`.
+      }
+    }
+
+    if (!newSlug) {
+      return;
+    }
+
+    // Update all descendants for this locale when a new version is created
+    // (e.g. on publish via Document Service).
+    await updateDescendants(
+      strapi,
+      pageId,
+      newSlug,
+      newAncestorSlugs,
+      locale
+    );
+  },
+
   async beforeUpdate(event: any) {
     const { data, where } = event.params;
     const strapi =
@@ -589,14 +654,9 @@ export default {
       return;
     }
 
-    // Store old values for comparison in afterUpdate
     const currentSlug =
       typeof (current as any).slug === "string" ? (current as any).slug : "";
     const currentAncestorSlugs = toStringArray((current as any).ancestorSlugs);
-    oldValues.set(pageId, {
-      slug: currentSlug,
-      ancestorSlugs: currentAncestorSlugs,
-    });
 
     const currentParent = (current as any).parent;
     const currentParentId =
@@ -693,87 +753,8 @@ export default {
   },
 
   async afterUpdate(event: any) {
-    const { data, where } = event.params;
-    const { result } = event;
-    const strapi =
-      (global as any).strapi ||
-      require("@strapi/strapi").default ||
-      require("@strapi/strapi");
-
-    // Extract locale (admin doesn't always set `event.params.locale`)
-    const locale = resolveEventLocale(event, "de");
-
-    // Skip if we're updating descendants (to prevent loops)
-    if (!where?.id || updatingDescendants.has(where.id)) {
-      return;
-    }
-
-    const pageId = where.id;
-
-    // Get old values that were stored in beforeUpdate
-    const oldValue = oldValues.get(pageId);
-    oldValues.delete(pageId); // Clean up
-
-    // Get new values after update for this locale
-    let updated: any;
-    if (result) {
-      updated = result;
-    } else {
-      updated = await strapi.entityService.findOne(
-        "api::treatment-page.treatment-page",
-        pageId,
-        {
-          populate: {},
-          locale,
-        }
-      );
-    }
-
-    if (!updated) {
-      return;
-    }
-
-    const newSlug =
-      typeof (updated as any).slug === "string" ? (updated as any).slug : null;
-    const newAncestorSlugs = toStringArray((updated as any).ancestorSlugs);
-
-    if (!newSlug) {
-      return;
-    }
-
-    // Check if slug or ancestorSlugs actually changed (compare with old values)
-    if (oldValue) {
-      const slugChanged = oldValue.slug !== newSlug;
-      const ancestorSlugsChanged =
-        JSON.stringify(oldValue.ancestorSlugs) !==
-        JSON.stringify(newAncestorSlugs);
-
-      // Only update descendants if values actually changed (for this locale)
-      if (slugChanged || ancestorSlugsChanged) {
-        // Update all descendants for this locale
-        await updateDescendants(
-          strapi,
-          pageId,
-          newSlug,
-          newAncestorSlugs,
-          locale
-        );
-      }
-    } else {
-      // If old values not available, check if slug or parent was in data
-      const slugChanged = "slug" in data;
-      const parentChanged = "parent" in data;
-
-      if (slugChanged || parentChanged) {
-        // Update all descendants for this locale
-        await updateDescendants(
-          strapi,
-          pageId,
-          newSlug,
-          newAncestorSlugs,
-          locale
-        );
-      }
-    }
+    // Intentionally left empty.
+    // Descendant updates are handled in `afterCreate`, which is triggered
+    // by the Document Service when a new version (e.g. published) is created.
   },
 };
