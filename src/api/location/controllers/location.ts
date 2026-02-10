@@ -169,6 +169,7 @@ export default factories.createCoreController(
         .documents("api::treatment.treatment")
         .findMany({
           locale,
+          status: "published",
           fields: ["name"],
           filters: {
             type: {
