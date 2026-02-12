@@ -119,12 +119,8 @@ export default ({ env }) => ({
         const previewSecret = env("PREVIEW_SECRET");
         if (!clientUrl) return null;
 
-        const params = new URLSearchParams({
-          secret: previewSecret || "",
-          url: pathname,
-          status,
-        });
-        return `${clientUrl}/api/preview?${params}`;
+        const previewPath = pathname.startsWith("/") ? pathname : `/${pathname}`;
+        return `${clientUrl}/__preview${previewPath}?token=${previewSecret || ""}`;
       },
     },
   },
