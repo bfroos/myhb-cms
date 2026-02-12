@@ -12,15 +12,11 @@ export default factories.createCoreController(
   ({ strapi }) => ({
     async findBySlug(ctx: Context) {
       const { slug } = ctx.params as { slug: string };
-      const { locale, status } = ctx.query as {
-        locale?: string;
-        status?: "draft" | "published";
-      };
-      const docStatus = status || "published";
+      const { locale } = ctx.query as { locale?: string };
 
       const page = await strapi.documents("api::page.page").findFirst({
         locale,
-        status: docStatus,
+        status: "published",
         filters: {
           slug: {
             $eq: slug,
