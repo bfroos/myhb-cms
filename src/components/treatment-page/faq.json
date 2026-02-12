@@ -13,6 +13,11 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::faq.faq"
+    },
+    "faqSets": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::faq-set.faq-set"
     }
   },
   "config": {}

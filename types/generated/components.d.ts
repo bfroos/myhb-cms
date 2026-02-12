@@ -1141,6 +1141,7 @@ export interface TreatmentPageFaq extends Struct.ComponentSchema {
   };
   attributes: {
     faqs: Schema.Attribute.Relation<'oneToMany', 'api::faq.faq'>;
+    faqSets: Schema.Attribute.Relation<'oneToMany', 'api::faq-set.faq-set'>;
     headline: Schema.Attribute.String;
   };
 }

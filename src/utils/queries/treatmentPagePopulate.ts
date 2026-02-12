@@ -129,6 +129,16 @@ export const treatmentPagePopulateCommon = {
         },
         fields: ["question", "answer"],
       },
+      faqSets: {
+        populate: {
+          faqs: {
+            fields: ["question", "answer"],
+            filters: {
+              isActive: { $eq: true },
+            },
+          },
+        },
+      },
     },
   },
   treatment: {
