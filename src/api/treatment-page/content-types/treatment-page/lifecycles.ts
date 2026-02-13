@@ -481,7 +481,8 @@ function extractParentId(parent: any): ID | null {
     return first;
   }
 
-  // If only disconnect, return null (relation is being removed)
+  // Wenn im Admin die Parent-Relation entfernt wird (z.B. Child von Parent-Liste löschen),
+  // sendet Strapi intern: parent: { disconnect: [...] }
   if (
     parent.disconnect &&
     (!parent.connect || parent.connect.length === 0) &&
@@ -491,6 +492,99 @@ function extractParentId(parent: any): ID | null {
   }
 
   return null;
+}
+
+/**
+ * Extrahiert IDs aus children.disconnect (wenn Parent A ein Child B entfernt)
+ */
+function extractDisconnectedChildIds(children: any): ID[] {
+  if (!children?.disconnect || !Array.isArray(children.disconnect)) {
+    return [];
+  }
+  return children.disconnect.map((item: any) => {
+    if (typeof item === "object" && item !== null) {
+      return item.id ?? item.documentId ?? item;
+    }
+    return item;
+  });
+}
+
+/**
+ * Aktualisiert Children, deren Parent-Relation entfernt wurde (z.B. von A's Children-Liste).
+ * Setzt ancestorSlugs=[] und pathKey=slug, damit sie Root-Level werden.
+ */
+async function updateDisconnectedChildren(
+  strapi: Core.Strapi,
+  childIds: ID[],
+  locale: string
+): Promise<void> {
+  for (const childId of childIds) {
+    if (updatingDescendants.has(childId)) continue;
+
+    const child = await strapi.entityService.findOne(
+      "api::treatment-page.treatment-page",
+      childId,
+      {
+        fields: ["slug", "documentId", "publishedAt"] as any,
+        locale,
+      } as any
+    );
+    if (!child) continue;
+
+    const childSlug =
+      typeof (child as any).slug === "string" ? (child as any).slug : null;
+    if (!childSlug) continue;
+
+    const newAncestorSlugs: string[] = [];
+    const newPathKey = childSlug;
+
+    updatingDescendants.add(childId);
+    try {
+      const dataToUpdate = {
+        ancestorSlugs: newAncestorSlugs,
+        pathKey: newPathKey,
+      };
+      const childDocumentId =
+        typeof (child as any).documentId === "string"
+          ? ((child as any).documentId as string)
+          : null;
+      let wasPublished = Boolean((child as any).publishedAt);
+
+      if (childDocumentId) {
+        if (!wasPublished) {
+          wasPublished = await hasPublishedVersion(
+            strapi,
+            childDocumentId,
+            locale
+          );
+        }
+        await updateDraftAndMaybeRepublish(
+          strapi,
+          childDocumentId,
+          locale,
+          dataToUpdate,
+          wasPublished
+        );
+      } else {
+        await strapi.entityService.update(
+          "api::treatment-page.treatment-page",
+          childId,
+          { data: dataToUpdate, locale }
+        );
+      }
+
+      // Rekursiv: Children des getrennten Childs haben jetzt neuen „Root“
+      await updateDescendants(
+        strapi,
+        childId,
+        childSlug,
+        newAncestorSlugs,
+        locale
+      );
+    } finally {
+      updatingDescendants.delete(childId);
+    }
+  }
 }
 
 export default {
@@ -511,6 +605,36 @@ export default {
 
     // Extract parent ID from Strapi 5 relation syntax
     const parentId = extractParentId(data.parent);
+
+    // Validate parent exists (prevents "relation does not exist" error)
+    if (parentId) {
+      let parentExists = null;
+      if (typeof parentId === "number" || /^\d+$/.test(String(parentId))) {
+        parentExists = await strapi.entityService.findOne(
+          "api::treatment-page.treatment-page",
+          parentId,
+          { fields: ["id"] as any }
+        );
+      } else {
+        try {
+          const docs = (strapi as any).documents(
+            "api::treatment-page.treatment-page"
+          );
+          parentExists = await docs.findOne({
+            documentId: parentId,
+            status: "draft",
+            fields: ["documentId"] as any,
+          });
+        } catch {
+          parentExists = null;
+        }
+      }
+      if (!parentExists) {
+        throw new Error(
+          `Die gewählte Elternseite existiert nicht oder ist ungültig. Bitte eine gültige Seite auswählen.`
+        );
+      }
+    }
 
     // In Strapi 5, when publishing a draft, beforeCreate might be called again
     // Check if this is the same document by documentId
@@ -606,13 +730,7 @@ export default {
 
     // Update all descendants for this locale when a new version is created
     // (e.g. on publish via Document Service).
-    await updateDescendants(
-      strapi,
-      pageId,
-      newSlug,
-      newAncestorSlugs,
-      locale
-    );
+    await updateDescendants(strapi, pageId, newSlug, newAncestorSlugs, locale);
   },
 
   async beforeUpdate(event: any) {
@@ -678,7 +796,7 @@ export default {
       // Extract parent ID from Strapi 5 relation syntax
       const extractedParentId = extractParentId(data.parent);
 
-      // If parent is explicitly being set to null (disconnect only)
+      // Parent wird entfernt (z.B. B von A's Children-Liste gelöscht → B wird Root)
       const isDisconnecting =
         data.parent?.disconnect &&
         Array.isArray(data.parent.disconnect) &&
@@ -686,14 +804,45 @@ export default {
         (!data.parent.connect || data.parent.connect.length === 0) &&
         (!data.parent.set || data.parent.set.length === 0);
 
-      // If parent is not being changed (all arrays empty), keep current parent
       if (extractedParentId === null && !isDisconnecting) {
-        // Parent not changed, use current
         newParentId = currentParentId;
       } else {
-        // Parent is being changed
+        // Parent geändert oder entfernt (disconnect) → ancestorSlugs/pathKey neu berechnen
         parentChanged = true;
         newParentId = extractedParentId;
+
+        // Validate parent exists (prevents "relation does not exist" error)
+        if (newParentId) {
+          let parentExists = null;
+          if (
+            typeof newParentId === "number" ||
+            /^\d+$/.test(String(newParentId))
+          ) {
+            parentExists = await strapi.entityService.findOne(
+              "api::treatment-page.treatment-page",
+              newParentId,
+              { fields: ["id"] as any }
+            );
+          } else {
+            try {
+              const docs = (strapi as any).documents(
+                "api::treatment-page.treatment-page"
+              );
+              parentExists = await docs.findOne({
+                documentId: newParentId,
+                status: "draft",
+                fields: ["documentId"] as any,
+              });
+            } catch {
+              parentExists = null;
+            }
+          }
+          if (!parentExists) {
+            throw new Error(
+              `Die gewählte Elternseite existiert nicht oder ist ungültig. Bitte eine gültige Seite auswählen.`
+            );
+          }
+        }
 
         // Cycle prevention
         if (
@@ -753,8 +902,20 @@ export default {
   },
 
   async afterUpdate(event: any) {
-    // Intentionally left empty.
-    // Descendant updates are handled in `afterCreate`, which is triggered
-    // by the Document Service when a new version (e.g. published) is created.
+    const { data } = event.params;
+    const strapi =
+      (global as any).strapi ||
+      require("@strapi/strapi").default ||
+      require("@strapi/strapi");
+    const locale = resolveEventLocale(event, "de");
+
+    // Wenn Parent A ein Child entfernt (children: { disconnect: [B] }), wird B nicht
+    // automatisch aktualisiert – wir müssen B's ancestorSlugs/pathKey manuell setzen.
+    if ("children" in data && data.children) {
+      const disconnectedIds = extractDisconnectedChildIds(data.children);
+      if (disconnectedIds.length > 0) {
+        await updateDisconnectedChildren(strapi, disconnectedIds, locale);
+      }
+    }
   },
 };
