@@ -27,14 +27,43 @@ export default factories.createCoreController(
   ({ strapi }) => ({
     async findBookableLocations(ctx: Context) {
       const { locale } = ctx.query as { locale?: string };
+      const { treatmentType } = ctx.query as { treatmentType?: string };
+
+      const allowedLocationTypesForTreatment = treatmentType
+        ? (Object.entries(locationTypeToTreatmentTypes)
+            .filter(([, treatmentTypes]) =>
+              treatmentTypes.includes(
+                treatmentType as
+                  | "minimally-invasive"
+                  | "abulatory"
+                  | "operational"
+              )
+            )
+            .map(
+              ([locationType]) =>
+                locationType as "lounge" | "center" | "clinic"
+            ) as ("lounge" | "center" | "clinic")[])
+        : null;
 
       const locations = await strapi
         .documents("api::location.location")
         .findMany({
           locale,
           status: "published",
-          fields: ["name", "slug", "newOpeningDate", "timezone", "calendlyUrl"],
+          fields: [
+            "name",
+            "slug",
+            "newOpeningDate",
+            "timezone",
+            "calendlyUrl",
+            "type",
+          ],
           filters: {
+            ...(allowedLocationTypesForTreatment && {
+              type: {
+                $in: allowedLocationTypesForTreatment,
+              },
+            }),
             city: {
               slug: {
                 $notNull: true,
