@@ -1,9 +1,5 @@
 import { mediaPopulate } from "./strapi";
-import {
-  allBlocksPopulate,
-  blockTreatmentTeasersPopulate,
-  editorialBlocksPopulate,
-} from "./blocks";
+import { allBlocksPopulate, blockTreatmentTeasersPopulate } from "./blocks";
 import { seoPopulate } from "./components";
 
 export const treatmentPagePopulateCommon = {
@@ -142,7 +138,7 @@ export const treatmentPagePopulateCommon = {
     },
   },
   treatment: {
-    fields: ["priceInEuroCent", "isStartingPrice", "name"],
+    fields: ["priceInEuroCent", "isStartingPrice", "name", "type"],
     populate: {
       products: {
         fields: [],
