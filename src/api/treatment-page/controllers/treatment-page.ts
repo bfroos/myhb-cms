@@ -7,6 +7,8 @@ import type { Context } from "koa";
 import { getLocationStatus } from "../../../utils/locationStatus";
 import { blockTreatmentTeasersPopulate } from "../../../utils/queries/blocks";
 import {
+  treatmentAdsPagePopulateForFindByLocationAndPath,
+  treatmentAdsPagePopulateForFindByPath,
   treatmentPagePopulateForFindByLocationAndPath,
   treatmentPagePopulateForFindByPath,
 } from "../../../utils/queries/treatmentPagePopulate";
@@ -14,6 +16,25 @@ import {
   locationFieldsForPage,
   locationPopulateForPage,
 } from "../../../utils/queries/locationPopulate";
+
+const SEO_TREATMENT_PAGE_UID = "api::treatment-page.treatment-page";
+const ADS_TREATMENT_PAGE_UID = "api::treatment-ads-page.treatment-ads-page";
+
+function getTreatmentPageUid(siteMode?: string): string {
+  return siteMode === "ads" ? ADS_TREATMENT_PAGE_UID : SEO_TREATMENT_PAGE_UID;
+}
+
+function getTreatmentPagePopulateForFindByPath(siteMode?: string) {
+  return siteMode === "ads"
+    ? treatmentAdsPagePopulateForFindByPath
+    : treatmentPagePopulateForFindByPath;
+}
+
+function getTreatmentPagePopulateForFindByLocationAndPath(siteMode?: string) {
+  return siteMode === "ads"
+    ? treatmentAdsPagePopulateForFindByLocationAndPath
+    : treatmentPagePopulateForFindByLocationAndPath;
+}
 
 /**
  * Calculates the cheapest price from treatment's own price and all product variants
@@ -67,9 +88,11 @@ export default factories.createCoreController(
      */
     async findListedGroupedByTopParent(ctx: Context) {
       const { locale } = ctx.query as { locale?: string };
+      const siteMode = ctx.get("x-site-mode");
+      const treatmentPageUid = getTreatmentPageUid(siteMode);
 
       const listedPages = (await strapi
-        .documents("api::treatment-page.treatment-page")
+        .documents(treatmentPageUid as any)
         .findMany({
           locale,
           status: "published",
@@ -113,7 +136,7 @@ export default factories.createCoreController(
       const topParents = (
         topParentSlugs.length
           ? await strapi
-              .documents("api::treatment-page.treatment-page")
+              .documents(treatmentPageUid as any)
               .findMany({
                 locale,
                 status: "published",
@@ -180,19 +203,21 @@ export default factories.createCoreController(
         path: string | string[];
       };
       const { locale } = ctx.query as { locale?: string };
+      const siteMode = ctx.get("x-site-mode");
+      const treatmentPageUid = getTreatmentPageUid(siteMode);
 
       const pathSegments = Array.isArray(path) ? path : [path];
       const pathKey = pathSegments.filter(Boolean).join("/");
 
       const page = await strapi
-        .documents("api::treatment-page.treatment-page")
+        .documents(treatmentPageUid as any)
         .findFirst({
           filters: {
             pathKey: { $eq: pathKey },
           },
           locale,
           status: "published",
-          populate: treatmentPagePopulateForFindByPath as object,
+          populate: getTreatmentPagePopulateForFindByPath(siteMode) as any,
         });
       if (!page) return ctx.notFound("Treatment page not found");
 
@@ -211,7 +236,7 @@ export default factories.createCoreController(
       ) {
         const ancestorSlugs = (page as any).ancestorSlugs as string[];
         const ancestorPages = await strapi
-          .documents("api::treatment-page.treatment-page")
+          .documents(treatmentPageUid as any)
           .findMany({
             locale,
             status: "published",
@@ -255,6 +280,8 @@ export default factories.createCoreController(
         treatmentPathKey: string | string[];
       };
       const { locale } = ctx.query as { locale?: string };
+      const siteMode = ctx.get("x-site-mode");
+      const treatmentPageUid = getTreatmentPageUid(siteMode);
 
       // Handle treatmentPathKey as array or string
       const pathKeySegments = Array.isArray(treatmentPathKey)
@@ -291,7 +318,7 @@ export default factories.createCoreController(
 
       // Fetch treatment page by pathKey
       const treatmentPage = await strapi
-        .documents("api::treatment-page.treatment-page")
+        .documents(treatmentPageUid as any)
         .findFirst({
           locale,
           status: "published",
@@ -301,7 +328,9 @@ export default factories.createCoreController(
             },
           },
           fields: ["slug", "pathKey", "name", "ancestorSlugs"],
-          populate: treatmentPagePopulateForFindByLocationAndPath as object,
+          populate: getTreatmentPagePopulateForFindByLocationAndPath(
+            siteMode,
+          ) as any,
         });
 
       if (!treatmentPage) {
@@ -318,7 +347,7 @@ export default factories.createCoreController(
       ) {
         const ancestorSlugs = treatmentPage.ancestorSlugs as string[];
         const ancestorPages = await strapi
-          .documents("api::treatment-page.treatment-page")
+          .documents(treatmentPageUid as any)
           .findMany({
             locale,
             status: "published",

@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_treatment_page_related_ads_services",
+  "info": {
+    "displayName": "Related Ads Services"
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string"
+    },
+    "treatmentAdsPages": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::treatment-ads-page.treatment-ads-page"
+    }
+  },
+  "config": {}
+}

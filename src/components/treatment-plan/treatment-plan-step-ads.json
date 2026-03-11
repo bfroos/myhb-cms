@@ -1,0 +1,81 @@
+{
+  "collectionName": "components_treatment_plan_treatment_plan_step_ads",
+  "info": {
+    "displayName": "Step Ads"
+  },
+  "options": {},
+  "attributes": {
+    "type": {
+      "type": "enumeration",
+      "required": true,
+      "default": "step",
+      "enum": [
+        "step",
+        "end-of-plan",
+        "follow-up-plan"
+      ]
+    },
+    "week": {
+      "type": "integer",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "type"
+            },
+            "step"
+          ]
+        }
+      },
+      "required": false,
+      "default": 1,
+      "unique": false
+    },
+    "description": {
+      "type": "text",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "type"
+            },
+            "step"
+          ]
+        }
+      }
+    },
+    "followUpPlanText": {
+      "type": "string",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "type"
+            },
+            "follow-up-plan"
+          ]
+        }
+      },
+      "default": "Behandlung wiederholen"
+    },
+    "endOfPlanText": {
+      "type": "string",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "type"
+            },
+            "end-of-plan"
+          ]
+        }
+      }
+    },
+    "treatments": {
+      "type": "component",
+      "component": "treatment-plan.step-ads-treatments",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

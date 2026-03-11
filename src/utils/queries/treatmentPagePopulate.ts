@@ -2,7 +2,49 @@ import { mediaPopulate } from "./strapi";
 import { allBlocksPopulate, blockTreatmentTeasersPopulate } from "./blocks";
 import { seoPopulate } from "./components";
 
-export const treatmentPagePopulateCommon = {
+function buildTreatmentPlanPopulate(
+  relationKey: "treatmentPage" | "treatmentAdsPage",
+) {
+  return {
+    fields: ["headline", "content", "personaAge", "personaTreatmentGoal"],
+    populate: {
+      additionalInfos: {
+        populate: "*",
+      },
+      personaPhoto: mediaPopulate as object,
+      steps: {
+        populate: {
+          treatments: {
+            fields: ["label"],
+            populate: {
+              [relationKey]: {
+                fields: ["pathKey"],
+              },
+            },
+          },
+        },
+      },
+    },
+  };
+}
+
+function buildRelatedTreatmentsPopulate(
+  relationKey: "treatmentPages" | "treatmentAdsPages",
+) {
+  return {
+    fields: ["headline"],
+    populate: {
+      [relationKey]: {
+        populate: {
+          ...(blockTreatmentTeasersPopulate.populate.treatmentPages
+            .populate as object),
+        },
+      },
+    },
+  };
+}
+
+const treatmentPagePopulateBase = {
   localizations: {
     fields: ["locale", "pathKey"],
   },
@@ -49,27 +91,6 @@ export const treatmentPagePopulateCommon = {
       image: mediaPopulate as object,
     },
   },
-  treatmentPlan: {
-    fields: ["headline", "content", "personaAge", "personaTreatmentGoal"],
-    populate: {
-      additionalInfos: {
-        populate: "*",
-      },
-      personaPhoto: mediaPopulate as object,
-      steps: {
-        populate: {
-          treatments: {
-            fields: ["label"],
-            populate: {
-              treatmentPage: {
-                fields: ["pathKey"],
-              },
-            },
-          },
-        },
-      },
-    },
-  },
   benefits: {
     fields: ["headline"],
     populate: {
@@ -102,17 +123,6 @@ export const treatmentPagePopulateCommon = {
     populate: {
       steps: {
         populate: "*",
-      },
-    },
-  },
-  relatedTreatments: {
-    fields: ["headline"],
-    populate: {
-      treatmentPages: {
-        populate: {
-          ...(blockTreatmentTeasersPopulate.populate.treatmentPages
-            .populate as object),
-        },
       },
     },
   },
@@ -155,6 +165,22 @@ export const treatmentPagePopulateCommon = {
   },
 };
 
+export const treatmentPagePopulateCommon = {
+  ...treatmentPagePopulateBase,
+  treatmentPlan: buildTreatmentPlanPopulate("treatmentPage"),
+  relatedTreatments: buildRelatedTreatmentsPopulate("treatmentPages"),
+};
+
+const treatmentAdsPopulateOverrides = {
+  treatmentPlan: buildTreatmentPlanPopulate("treatmentAdsPage"),
+  relatedTreatments: buildRelatedTreatmentsPopulate("treatmentAdsPages"),
+};
+
+export const treatmentAdsPagePopulateCommon = {
+  ...treatmentPagePopulateCommon,
+  ...treatmentAdsPopulateOverrides,
+};
+
 export const treatmentPagePopulateForFindByPath = {
   ...treatmentPagePopulateCommon,
   blocks: allBlocksPopulate as object,
@@ -162,4 +188,13 @@ export const treatmentPagePopulateForFindByPath = {
 
 export const treatmentPagePopulateForFindByLocationAndPath = {
   ...treatmentPagePopulateCommon,
+};
+
+export const treatmentAdsPagePopulateForFindByPath = {
+  ...treatmentAdsPagePopulateCommon,
+  blocks: allBlocksPopulate as object,
+};
+
+export const treatmentAdsPagePopulateForFindByLocationAndPath = {
+  ...treatmentAdsPagePopulateCommon,
 };

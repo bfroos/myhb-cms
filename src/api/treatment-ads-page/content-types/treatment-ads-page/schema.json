@@ -1,0 +1,271 @@
+{
+  "kind": "collectionType",
+  "collectionName": "treatment_ads_pages",
+  "info": {
+    "singularName": "treatment-ads-page",
+    "pluralName": "treatment-ads-pages",
+    "displayName": "Treatment Ads Page"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "internalLabel": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      },
+      "required": true,
+      "unique": true
+    },
+    "name": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "required": true
+    },
+    "slug": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "required": true,
+      "regex": "^[A-Za-z0-9-_.~]*$"
+    },
+    "appBookingSlug": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      },
+      "unique": false
+    },
+    "appTreatmentSlug": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    },
+    "showInMenu": {
+      "type": "boolean",
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      },
+      "required": true,
+      "default": true
+    },
+    "parent": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::treatment-ads-page.treatment-ads-page",
+      "inversedBy": "children"
+    },
+    "children": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::treatment-ads-page.treatment-ads-page",
+      "mappedBy": "parent"
+    },
+    "treatment": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::treatment.treatment"
+    },
+    "teaser": {
+      "type": "component",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "treatment-page.teaser",
+      "repeatable": false,
+      "required": false
+    },
+    "hero": {
+      "type": "component",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "treatment-page.hero",
+      "repeatable": false
+    },
+    "tableOfContents": {
+      "type": "component",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "treatment-page.table-of-contents",
+      "repeatable": false
+    },
+    "reviews": {
+      "type": "component",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "treatment-page.reviews",
+      "repeatable": false
+    },
+    "about": {
+      "type": "component",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "treatment-page.about",
+      "repeatable": false
+    },
+    "treatmentDetails": {
+      "type": "component",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "treatment-page.treatment-details",
+      "repeatable": false
+    },
+    "treatmentPlan": {
+      "type": "component",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "treatment-page.treatment-plan-ads",
+      "repeatable": false
+    },
+    "benefits": {
+      "type": "component",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "treatment-page.benefits",
+      "repeatable": false
+    },
+    "suitability": {
+      "type": "component",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "treatment-page.suitability",
+      "repeatable": false
+    },
+    "medicalTeamHighlight": {
+      "type": "component",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "treatment-page.medical-team-highlight",
+      "repeatable": false
+    },
+    "treatmentProcess": {
+      "type": "component",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "treatment-page.treatment-process",
+      "repeatable": false
+    },
+    "relatedTreatments": {
+      "type": "component",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "treatment-page.related-ads-services",
+      "repeatable": false
+    },
+    "faq": {
+      "type": "component",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "treatment-page.faq",
+      "repeatable": false
+    },
+    "blocks": {
+      "type": "dynamiczone",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "components": [
+        "blocks.benefits-list",
+        "blocks.comparison-block",
+        "blocks.employee",
+        "blocks.faq",
+        "blocks.highlights-strip",
+        "blocks.media-bento",
+        "blocks.media-card",
+        "blocks.process-steps",
+        "blocks.text-content",
+        "blocks.trust-grid",
+        "blocks.location-map"
+      ]
+    },
+    "seo": {
+      "type": "component",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "shared.seo",
+      "repeatable": false
+    },
+    "pathKey": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "unique": true
+    },
+    "ancestorSlugs": {
+      "type": "json",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  }
+}

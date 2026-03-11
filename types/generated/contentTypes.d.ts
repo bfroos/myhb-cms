@@ -2585,6 +2585,230 @@ export interface ApiStoryStory extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiTreatmentAdsPageTreatmentAdsPage
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'treatment_ads_pages';
+  info: {
+    displayName: 'Treatment Ads Page';
+    pluralName: 'treatment-ads-pages';
+    singularName: 'treatment-ads-page';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  pluginOptions: {
+    i18n: {
+      localized: true;
+    };
+  };
+  attributes: {
+    about: Schema.Attribute.Component<'treatment-page.about', false> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    ancestorSlugs: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    appBookingSlug: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    appTreatmentSlug: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    benefits: Schema.Attribute.Component<'treatment-page.benefits', false> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    blocks: Schema.Attribute.DynamicZone<
+      [
+        'blocks.benefits-list',
+        'blocks.comparison-block',
+        'blocks.employee',
+        'blocks.faq',
+        'blocks.highlights-strip',
+        'blocks.media-bento',
+        'blocks.media-card',
+        'blocks.process-steps',
+        'blocks.text-content',
+        'blocks.trust-grid',
+        'blocks.location-map',
+      ]
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    children: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::treatment-ads-page.treatment-ads-page'
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    faq: Schema.Attribute.Component<'treatment-page.faq', false> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    hero: Schema.Attribute.Component<'treatment-page.hero', false> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    internalLabel: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    locale: Schema.Attribute.String;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::treatment-ads-page.treatment-ads-page'
+    >;
+    medicalTeamHighlight: Schema.Attribute.Component<
+      'treatment-page.medical-team-highlight',
+      false
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    name: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    parent: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::treatment-ads-page.treatment-ads-page'
+    >;
+    pathKey: Schema.Attribute.String &
+      Schema.Attribute.Unique &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    publishedAt: Schema.Attribute.DateTime;
+    relatedTreatments: Schema.Attribute.Component<
+      'treatment-page.related-ads-services',
+      false
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    reviews: Schema.Attribute.Component<'treatment-page.reviews', false> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    seo: Schema.Attribute.Component<'shared.seo', false> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    showInMenu: Schema.Attribute.Boolean &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<true>;
+    slug: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    suitability: Schema.Attribute.Component<
+      'treatment-page.suitability',
+      false
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    tableOfContents: Schema.Attribute.Component<
+      'treatment-page.table-of-contents',
+      false
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    teaser: Schema.Attribute.Component<'treatment-page.teaser', false> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    treatment: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::treatment.treatment'
+    >;
+    treatmentDetails: Schema.Attribute.Component<
+      'treatment-page.treatment-details',
+      false
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    treatmentPlan: Schema.Attribute.Component<
+      'treatment-page.treatment-plan-ads',
+      false
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    treatmentProcess: Schema.Attribute.Component<
+      'treatment-page.treatment-process',
+      false
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiTreatmentPageTreatmentPage
   extends Struct.CollectionTypeSchema {
   collectionName: 'treatment_pages';
@@ -3429,6 +3653,7 @@ declare module '@strapi/strapi' {
       'api::redirect.redirect': ApiRedirectRedirect;
       'api::review.review': ApiReviewReview;
       'api::story.story': ApiStoryStory;
+      'api::treatment-ads-page.treatment-ads-page': ApiTreatmentAdsPageTreatmentAdsPage;
       'api::treatment-page.treatment-page': ApiTreatmentPageTreatmentPage;
       'api::treatment.treatment': ApiTreatmentTreatment;
       'plugin::content-releases.release': PluginContentReleasesRelease;

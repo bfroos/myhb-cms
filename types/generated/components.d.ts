@@ -1180,6 +1180,21 @@ export interface TreatmentPageMedicalTeamHighlight
   };
 }
 
+export interface TreatmentPageRelatedAdsServices
+  extends Struct.ComponentSchema {
+  collectionName: 'components_treatment_page_related_ads_services';
+  info: {
+    displayName: 'Related Ads Services';
+  };
+  attributes: {
+    headline: Schema.Attribute.String;
+    treatmentAdsPages: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::treatment-ads-page.treatment-ads-page'
+    >;
+  };
+}
+
 export interface TreatmentPageRelatedServices extends Struct.ComponentSchema {
   collectionName: 'components_treatment_page_related_services';
   info: {
@@ -1291,6 +1306,28 @@ export interface TreatmentPageTreatmentPlan extends Struct.ComponentSchema {
   };
 }
 
+export interface TreatmentPageTreatmentPlanAds extends Struct.ComponentSchema {
+  collectionName: 'components_treatment_page_treatment_plan_ads';
+  info: {
+    displayName: 'Treatment Plan Ads';
+  };
+  attributes: {
+    additionalInfos: Schema.Attribute.Component<
+      'shared.collabsible-item',
+      true
+    >;
+    content: Schema.Attribute.Blocks;
+    headline: Schema.Attribute.String;
+    personaAge: Schema.Attribute.Integer;
+    personaPhoto: Schema.Attribute.Media<'images'>;
+    personaTreatmentGoal: Schema.Attribute.Text;
+    steps: Schema.Attribute.Component<
+      'treatment-plan.treatment-plan-step-ads',
+      true
+    >;
+  };
+}
+
 export interface TreatmentPageTreatmentProcess extends Struct.ComponentSchema {
   collectionName: 'components_treatment_page_treatment_processes';
   info: {
@@ -1300,6 +1337,20 @@ export interface TreatmentPageTreatmentProcess extends Struct.ComponentSchema {
     content: Schema.Attribute.Blocks;
     headline: Schema.Attribute.String;
     steps: Schema.Attribute.Component<'shared.image-heading-text', true>;
+  };
+}
+
+export interface TreatmentPlanStepAdsTreatments extends Struct.ComponentSchema {
+  collectionName: 'components_treatment_plan_step_ads_treatments';
+  info: {
+    displayName: 'Step Ads Treatments';
+  };
+  attributes: {
+    label: Schema.Attribute.String;
+    treatmentAdsPage: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::treatment-ads-page.treatment-ads-page'
+    >;
   };
 }
 
@@ -1329,6 +1380,30 @@ export interface TreatmentPlanTreatmentPlanStep extends Struct.ComponentSchema {
       Schema.Attribute.DefaultTo<'Behandlung wiederholen'>;
     treatments: Schema.Attribute.Component<
       'treatment-plan.step-treatments',
+      true
+    >;
+    type: Schema.Attribute.Enumeration<
+      ['step', 'end-of-plan', 'follow-up-plan']
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'step'>;
+    week: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<1>;
+  };
+}
+
+export interface TreatmentPlanTreatmentPlanStepAds
+  extends Struct.ComponentSchema {
+  collectionName: 'components_treatment_plan_treatment_plan_step_ads';
+  info: {
+    displayName: 'Step Ads';
+  };
+  attributes: {
+    description: Schema.Attribute.Text;
+    endOfPlanText: Schema.Attribute.String;
+    followUpPlanText: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'Behandlung wiederholen'>;
+    treatments: Schema.Attribute.Component<
+      'treatment-plan.step-ads-treatments',
       true
     >;
     type: Schema.Attribute.Enumeration<
@@ -1408,6 +1483,7 @@ declare module '@strapi/strapi' {
       'treatment-page.faq': TreatmentPageFaq;
       'treatment-page.hero': TreatmentPageHero;
       'treatment-page.medical-team-highlight': TreatmentPageMedicalTeamHighlight;
+      'treatment-page.related-ads-services': TreatmentPageRelatedAdsServices;
       'treatment-page.related-services': TreatmentPageRelatedServices;
       'treatment-page.reviews': TreatmentPageReviews;
       'treatment-page.suitability': TreatmentPageSuitability;
@@ -1415,9 +1491,12 @@ declare module '@strapi/strapi' {
       'treatment-page.teaser': TreatmentPageTeaser;
       'treatment-page.treatment-details': TreatmentPageTreatmentDetails;
       'treatment-page.treatment-plan': TreatmentPageTreatmentPlan;
+      'treatment-page.treatment-plan-ads': TreatmentPageTreatmentPlanAds;
       'treatment-page.treatment-process': TreatmentPageTreatmentProcess;
+      'treatment-plan.step-ads-treatments': TreatmentPlanStepAdsTreatments;
       'treatment-plan.step-treatments': TreatmentPlanStepTreatments;
       'treatment-plan.treatment-plan-step': TreatmentPlanTreatmentPlanStep;
+      'treatment-plan.treatment-plan-step-ads': TreatmentPlanTreatmentPlanStepAds;
     }
   }
 }

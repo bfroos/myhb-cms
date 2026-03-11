@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_treatment_plan_step_ads_treatments",
+  "info": {
+    "displayName": "Step Ads Treatments"
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string"
+    },
+    "treatmentAdsPage": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::treatment-ads-page.treatment-ads-page"
+    }
+  },
+  "config": {}
+}

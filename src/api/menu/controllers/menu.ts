@@ -4,6 +4,9 @@
 
 import type { Context } from "koa";
 
+const SEO_TREATMENT_PAGE_UID = "api::treatment-page.treatment-page";
+const ADS_TREATMENT_PAGE_UID = "api::treatment-ads-page.treatment-ads-page";
+
 export default {
   /**
    * Returns navigation menus for different content types.
@@ -36,12 +39,15 @@ export default {
         : ["treatment-pages", "product-categories", "price-categories"]; // default to all
 
     const result: Record<string, any> = {};
+    const siteMode = ctx.get("x-site-mode");
+    const treatmentPageUid =
+      siteMode === "ads" ? ADS_TREATMENT_PAGE_UID : SEO_TREATMENT_PAGE_UID;
 
     // Helper function to build tree structure for hierarchical data
     const buildTree = (
       items: any[],
       parentId: number | null = null,
-      parentField: string = "parent",
+      parentField: string = "parent"
     ): any[] => {
       return items
         .filter((item) => {
@@ -76,35 +82,20 @@ export default {
 
     // Treatment Pages Menu
     if (requestedTypes.includes("treatment-pages")) {
-      const allPages = await strapi
-        .documents("api::treatment-page.treatment-page")
-        .findMany({
-          locale: requestedLocale,
-          status: "published",
-          fields: ["id", "name", "slug"],
-          filters: {
-            showInMenu: { $eq: true },
+      const allPages = await strapi.documents(treatmentPageUid).findMany({
+        locale: requestedLocale,
+        status: "published",
+        fields: ["id", "name", "slug"],
+        filters: {
+          showInMenu: { $eq: true },
+        },
+        populate: {
+          parent: {
+            fields: ["id"],
           },
-          populate: {
-            parent: {
-              fields: ["id"],
-            },
-            children: {
-              fields: ["id", "name", "slug"],
-              populate: {
-                children: {
-                  fields: ["id", "name", "slug"],
-                  populate: {
-                    children: {
-                      fields: ["id", "name", "slug"],
-                    },
-                  },
-                },
-              },
-            },
-          },
-          limit: 9999,
-        });
+        },
+        limit: 9999,
+      });
 
       result["treatment-pages"] = buildTree(allPages, null, "parent");
     }

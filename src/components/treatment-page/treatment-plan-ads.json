@@ -1,0 +1,39 @@
+{
+  "collectionName": "components_treatment_page_treatment_plan_ads",
+  "info": {
+    "displayName": "Treatment Plan Ads"
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string"
+    },
+    "content": {
+      "type": "blocks"
+    },
+    "additionalInfos": {
+      "type": "component",
+      "component": "shared.collabsible-item",
+      "repeatable": true
+    },
+    "personaPhoto": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "personaAge": {
+      "type": "integer"
+    },
+    "personaTreatmentGoal": {
+      "type": "text"
+    },
+    "steps": {
+      "type": "component",
+      "component": "treatment-plan.treatment-plan-step-ads",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}
