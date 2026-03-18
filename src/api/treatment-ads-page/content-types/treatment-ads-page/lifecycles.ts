@@ -185,33 +185,36 @@ async function resolveDocumentId(
 }
 
 /**
- * Strapi 5 helper: check if a published version exists for locale.
- * We intentionally swallow errors (e.g. "not found" when not published).
+ * Strapi 5 helper: check whether a published row exists for locale.
+ * Uses a DB query to avoid false negatives from document service errors.
  */
 async function hasPublishedVersion(
   strapi: Core.Strapi,
   documentId: string,
   locale: string
 ): Promise<boolean> {
-  const docs = (strapi as any).documents("api::treatment-ads-page.treatment-ads-page");
   try {
-    await docs.findOne({
-      documentId,
-      locale,
-      status: "published",
-      fields: ["documentId"] as any,
-    });
-    return true;
+    const publishedEntry = await strapi.db
+      .query("api::treatment-ads-page.treatment-ads-page")
+      .findOne({
+        where: {
+          documentId,
+          locale,
+          publishedAt: { $notNull: true },
+        },
+        select: ["id"],
+      } as any);
+    return Boolean(publishedEntry);
   } catch {
     return false;
   }
 }
 
 /**
- * Strapi 5 helper: update draft and (optionally) keep published state in sync.
+ * Strapi 5 helper: update draft and keep published state in sync when needed.
  *
- * If `republish === true`, we publish the updated draft and discard the draft diff
- * to avoid leaving the entry in "Modified" status in the admin UI.
+ * For published entries, update draft + published in parallel and then discard draft
+ * so the admin UI does not keep entries in "Modified" state.
  */
 async function updateDraftAndMaybeRepublish(
   strapi: Core.Strapi,
@@ -222,16 +225,21 @@ async function updateDraftAndMaybeRepublish(
 ): Promise<void> {
   const docs = (strapi as any).documents("api::treatment-ads-page.treatment-ads-page");
 
-  await docs.update({
-    documentId,
-    locale,
-    data,
-    status: "draft",
-  });
+  if (!republish) {
+    await docs.update({
+      documentId,
+      locale,
+      data,
+      status: "draft",
+    });
+    return;
+  }
 
-  if (!republish) return;
+  await Promise.all([
+    docs.update({ documentId, locale, data, status: "draft" }),
+    docs.update({ documentId, locale, data, status: "published" }),
+  ]);
 
-  await docs.publish({ documentId, locale });
   await docs.discardDraft({ documentId, locale });
 }
 
@@ -604,7 +612,7 @@ async function updateDisconnectedChildren(
         );
       }
 
-      // Recursive: children of the disconnected child now have a new root „Root“
+      // Recursive: children of the disconnected child now have a new root
       await updateDescendants(
         strapi,
         childId,
