@@ -185,62 +185,21 @@ async function resolveDocumentId(
 }
 
 /**
- * Strapi 5 helper: check whether a published row exists for locale.
- * Uses a DB query to avoid false negatives from document service errors.
+ * Updates path fields for all locale versions (draft + published) of a document.
+ * This keeps both versions consistent and avoids leaving entries in "Modified".
  */
-async function hasPublishedVersion(
-  strapi: Core.Strapi,
-  documentId: string,
-  locale: string
-): Promise<boolean> {
-  try {
-    const publishedEntry = await strapi.db
-      .query("api::treatment-ads-page.treatment-ads-page")
-      .findOne({
-        where: {
-          documentId,
-          locale,
-          publishedAt: { $notNull: true },
-        },
-        select: ["id"],
-      } as any);
-    return Boolean(publishedEntry);
-  } catch {
-    return false;
-  }
-}
-
-/**
- * Strapi 5 helper: update draft and keep published state in sync when needed.
- *
- * For published entries, update draft + published in parallel and then discard draft
- * so the admin UI does not keep entries in "Modified" state.
- */
-async function updateDraftAndMaybeRepublish(
+async function updatePathFieldsForDocument(
   strapi: Core.Strapi,
   documentId: string,
   locale: string,
-  data: Record<string, any>,
-  republish: boolean
+  data: Record<string, any>
 ): Promise<void> {
-  const docs = (strapi as any).documents("api::treatment-ads-page.treatment-ads-page");
-
-  if (!republish) {
-    await docs.update({
-      documentId,
-      locale,
+  await strapi.db
+    .query("api::treatment-ads-page.treatment-ads-page")
+    .updateMany({
+      where: { documentId, locale },
       data,
-      status: "draft",
-    });
-    return;
-  }
-
-  await Promise.all([
-    docs.update({ documentId, locale, data, status: "draft" }),
-    docs.update({ documentId, locale, data, status: "published" }),
-  ]);
-
-  await docs.discardDraft({ documentId, locale });
+    } as any);
 }
 
 /**
@@ -402,8 +361,7 @@ async function updateDescendants(
           },
         },
         // `documentId` exists in Strapi 5 but may not be in generated typings.
-        // Keep it in the payload for re-publishing.
-        fields: ["slug", "documentId", "publishedAt"] as any,
+        fields: ["slug", "documentId"] as any,
         populate: {},
         locale,
       } as any
@@ -419,8 +377,6 @@ async function updateDescendants(
           typeof (child as any).documentId === "string"
             ? ((child as any).documentId as string)
             : null;
-        let wasPublished = Boolean((child as any).publishedAt);
-
         if (!childSlug) return;
 
         const newPathKey = calculatePathKey(newAncestorSlugs, childSlug);
@@ -438,19 +394,11 @@ async function updateDescendants(
           }
 
           if (documentId) {
-            if (!wasPublished) {
-              wasPublished = await hasPublishedVersion(
-                strapi,
-                documentId,
-                locale
-              );
-            }
-            await updateDraftAndMaybeRepublish(
+            await updatePathFieldsForDocument(
               strapi,
               documentId,
               locale,
-              dataToUpdate,
-              wasPublished
+              dataToUpdate
             );
           } else {
             await strapi.entityService.update(
@@ -564,7 +512,7 @@ async function updateDisconnectedChildren(
       "api::treatment-ads-page.treatment-ads-page",
       childId,
       {
-        fields: ["slug", "documentId", "publishedAt"] as any,
+        fields: ["slug", "documentId"] as any,
         locale,
       } as any
     );
@@ -587,22 +535,13 @@ async function updateDisconnectedChildren(
         typeof (child as any).documentId === "string"
           ? ((child as any).documentId as string)
           : null;
-      let wasPublished = Boolean((child as any).publishedAt);
 
       if (childDocumentId) {
-        if (!wasPublished) {
-          wasPublished = await hasPublishedVersion(
-            strapi,
-            childDocumentId,
-            locale
-          );
-        }
-        await updateDraftAndMaybeRepublish(
+        await updatePathFieldsForDocument(
           strapi,
           childDocumentId,
           locale,
-          dataToUpdate,
-          wasPublished
+          dataToUpdate
         );
       } else {
         await strapi.entityService.update(
