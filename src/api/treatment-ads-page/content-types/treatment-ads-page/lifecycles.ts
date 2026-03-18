@@ -31,6 +31,22 @@ interface LifecycleEvent {
 const updatingDescendants = new Set<ID>();
 
 /**
+ * Runs a function asynchronously after the HTTP response is sent.
+ * Prevents long-running descendant updates from causing timeouts and
+ * "Unexpected token <, "<!DOCTYPE "..." (HTML error page instead of JSON).
+ */
+function runAfterResponse(fn: () => Promise<void>, strapi: Core.Strapi): void {
+  setImmediate(() => {
+    fn().catch((err) => {
+      strapi.log.error(
+        "[treatment-ads-page] Background descendant update failed:",
+        err
+      );
+    });
+  });
+}
+
+/**
  * Resolve locale from lifecycle event (Strapi Admin does not always set `event.params.locale`)
  */
 function resolveEventLocale(event: any, fallback = "de"): string {
@@ -122,6 +138,31 @@ async function calculateAncestorSlugs(
 function calculatePathKey(ancestorSlugs: string[], slug: string): string {
   const segments = [...ancestorSlugs, slug].filter(Boolean);
   return segments.join("/");
+}
+
+/**
+ * Strapi 5 helper: resolve entity id from documentId + locale.
+ * Needed when Document Service passes where.documentId instead of where.id.
+ */
+async function resolveEntityIdFromDocumentId(
+  strapi: Core.Strapi,
+  documentId: string,
+  locale: string
+): Promise<ID | null> {
+  try {
+    const docs = (strapi as any).documents(
+      "api::treatment-ads-page.treatment-ads-page"
+    );
+    const entry = await docs.findOne({
+      documentId,
+      locale,
+      status: "draft",
+      fields: ["id"] as any,
+    });
+    return (entry as any)?.id ?? null;
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -481,8 +522,8 @@ function extractParentId(parent: any): ID | null {
     return first;
   }
 
-  // Wenn im Admin die Parent-Relation entfernt wird (z.B. Child von Parent-Liste löschen),
-  // sendet Strapi intern: parent: { disconnect: [...] }
+  // When parent relation is removed in admin (e.g. child removed from parent's children list),
+  // Strapi sends internally: parent: { disconnect: [...] }
   if (
     parent.disconnect &&
     (!parent.connect || parent.connect.length === 0) &&
@@ -495,7 +536,7 @@ function extractParentId(parent: any): ID | null {
 }
 
 /**
- * Extrahiert IDs aus children.disconnect (wenn Parent A ein Child B entfernt)
+ * Extracts IDs from children.disconnect (when parent A removes child B)
  */
 function extractDisconnectedChildIds(children: any): ID[] {
   if (!children?.disconnect || !Array.isArray(children.disconnect)) {
@@ -510,8 +551,8 @@ function extractDisconnectedChildIds(children: any): ID[] {
 }
 
 /**
- * Aktualisiert Children, deren Parent-Relation entfernt wurde (z.B. von A's Children-Liste).
- * Setzt ancestorSlugs=[] und pathKey=slug, damit sie Root-Level werden.
+ * Updates children whose parent relation was removed (e.g. from A's children list).
+ * Sets ancestorSlugs=[] and pathKey=slug so they become root-level.
  */
 async function updateDisconnectedChildren(
   strapi: Core.Strapi,
@@ -573,7 +614,7 @@ async function updateDisconnectedChildren(
         );
       }
 
-      // Rekursiv: Children des getrennten Childs haben jetzt neuen „Root“
+      // Recursive: children of the disconnected child now have a new root „Root“
       await updateDescendants(
         strapi,
         childId,
@@ -728,9 +769,13 @@ export default {
       return;
     }
 
-    // Update all descendants for this locale when a new version is created
-    // (e.g. on publish via Document Service).
-    await updateDescendants(strapi, pageId, newSlug, newAncestorSlugs, locale);
+    // Update descendants asynchronously to avoid HTTP timeout with many subpages.
+    // The save response returns immediately; descendant pathKeys are updated in background.
+    runAfterResponse(
+      () =>
+        updateDescendants(strapi, pageId, newSlug, newAncestorSlugs, locale),
+      strapi
+    );
   },
 
   async beforeUpdate(event: any) {
@@ -743,11 +788,18 @@ export default {
     // Extract locale (admin doesn't always set `event.params.locale`)
     const locale = resolveEventLocale(event, "de");
 
-    if (!where?.id) {
+    // Strapi 5 Document Service (Admin) may pass where.documentId instead of where.id
+    let pageId: ID | null = where?.id ?? null;
+    if (!pageId && typeof where?.documentId === "string") {
+      pageId = await resolveEntityIdFromDocumentId(
+        strapi,
+        where.documentId,
+        locale
+      );
+    }
+    if (!pageId) {
       return;
     }
-
-    const pageId = where.id;
 
     // Skip if we're updating descendants (to prevent loops)
     if (updatingDescendants.has(pageId)) {
@@ -796,7 +848,7 @@ export default {
       // Extract parent ID from Strapi 5 relation syntax
       const extractedParentId = extractParentId(data.parent);
 
-      // Parent wird entfernt (z.B. B von A's Children-Liste gelöscht → B wird Root)
+      // Parent is being removed (e.g. B removed from A's children list → B becomes root)
       const isDisconnecting =
         data.parent?.disconnect &&
         Array.isArray(data.parent.disconnect) &&
@@ -807,7 +859,7 @@ export default {
       if (extractedParentId === null && !isDisconnecting) {
         newParentId = currentParentId;
       } else {
-        // Parent geändert oder entfernt (disconnect) → ancestorSlugs/pathKey neu berechnen
+        // Parent changed or removed (disconnect) → recalculate ancestorSlugs/pathKey
         parentChanged = true;
         newParentId = extractedParentId;
 
@@ -899,6 +951,23 @@ export default {
       const finalSlug = newSlug || currentSlug;
       data.pathKey = calculatePathKey(finalAncestorSlugs, finalSlug);
     }
+
+    // Payload for afterUpdate: descendants need pathKey/ancestorSlugs update
+    const needDescendantsUpdate = slugChanged || parentChanged;
+    (event.params as any)._descendantsNeedUpdate = needDescendantsUpdate;
+    if (needDescendantsUpdate) {
+      const finalAncestorSlugs =
+        data.ancestorSlugs !== undefined
+          ? data.ancestorSlugs
+          : toStringArray((current as any).ancestorSlugs);
+      const finalSlug = newSlug || currentSlug;
+      (event.params as any)._descendantsUpdatePayload = {
+        pageId,
+        newSlug: finalSlug,
+        newAncestorSlugs: finalAncestorSlugs,
+        locale,
+      };
+    }
   },
 
   async afterUpdate(event: any) {
@@ -909,13 +978,26 @@ export default {
       require("@strapi/strapi");
     const locale = resolveEventLocale(event, "de");
 
-    // Wenn Parent A ein Child entfernt (children: { disconnect: [B] }), wird B nicht
-    // automatisch aktualisiert – wir müssen B's ancestorSlugs/pathKey manuell setzen.
+    // When parent A removes a child (children: { disconnect: [B] }), B is not
+    // automatically updated – we must set B's ancestorSlugs/pathKey manually.
     if ("children" in data && data.children) {
       const disconnectedIds = extractDisconnectedChildIds(data.children);
       if (disconnectedIds.length > 0) {
         await updateDisconnectedChildren(strapi, disconnectedIds, locale);
       }
+    }
+
+    // When slug or parent changed, all descendants must be updated.
+    // Use payload from beforeUpdate (result can be incomplete with Document Service).
+    const payload = (event.params as any)._descendantsUpdatePayload;
+    if (payload?.pageId && payload?.newSlug) {
+      await updateDescendants(
+        strapi,
+        payload.pageId,
+        payload.newSlug,
+        payload.newAncestorSlugs ?? [],
+        payload.locale ?? locale
+      );
     }
   },
 };
