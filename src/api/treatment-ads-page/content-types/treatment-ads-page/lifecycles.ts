@@ -401,79 +401,69 @@ async function updateDescendants(
       } as any
     );
 
-    // Update each child for this locale
-    for (const child of children) {
-      const newAncestorSlugs = [...pageAncestorSlugs, pageSlug];
-      const childSlug =
-        typeof (child as any).slug === "string" ? (child as any).slug : null;
-      const childDocumentId =
-        typeof (child as any).documentId === "string"
-          ? ((child as any).documentId as string)
-          : null;
-      // IMPORTANT (Strapi 5): entityService typically returns the DRAFT version.
-      // For published documents, the draft often has `publishedAt = null`, even if a published
-      // version exists. So we must detect "was published" via Document Service.
-      let wasPublished = Boolean((child as any).publishedAt);
+    // Update each child in parallel (siblings are independent)
+    const newAncestorSlugs = [...pageAncestorSlugs, pageSlug];
+    await Promise.all(
+      children.map(async (child) => {
+        const childSlug =
+          typeof (child as any).slug === "string" ? (child as any).slug : null;
+        const childDocumentId =
+          typeof (child as any).documentId === "string"
+            ? ((child as any).documentId as string)
+            : null;
+        let wasPublished = Boolean((child as any).publishedAt);
 
-      if (!childSlug) {
-        continue;
-      }
+        if (!childSlug) return;
 
-      const newPathKey = calculatePathKey(newAncestorSlugs, childSlug);
+        const newPathKey = calculatePathKey(newAncestorSlugs, childSlug);
 
-      // Prevent child update from triggering lifecycles again.
-      // We'll handle recursion ourselves below.
-      updatingDescendants.add(child.id);
-      try {
-        const dataToUpdate = {
-          ancestorSlugs: newAncestorSlugs,
-          pathKey: newPathKey,
-        };
+        updatingDescendants.add(child.id);
+        try {
+          const dataToUpdate = {
+            ancestorSlugs: newAncestorSlugs,
+            pathKey: newPathKey,
+          };
 
-        // Resolve documentId reliably (typing may not expose it)
-        let documentId = childDocumentId;
-        if (!documentId) {
-          documentId = await resolveDocumentId(strapi, child.id, locale);
-        }
+          let documentId = childDocumentId;
+          if (!documentId) {
+            documentId = await resolveDocumentId(strapi, child.id, locale);
+          }
 
-        if (documentId) {
-          // Detect whether a published version exists for this locale
-          if (!wasPublished) {
-            wasPublished = await hasPublishedVersion(
+          if (documentId) {
+            if (!wasPublished) {
+              wasPublished = await hasPublishedVersion(
+                strapi,
+                documentId,
+                locale
+              );
+            }
+            await updateDraftAndMaybeRepublish(
               strapi,
               documentId,
-              locale
+              locale,
+              dataToUpdate,
+              wasPublished
+            );
+          } else {
+            await strapi.entityService.update(
+              "api::treatment-ads-page.treatment-ads-page",
+              child.id,
+              { data: dataToUpdate, locale }
             );
           }
 
-          await updateDraftAndMaybeRepublish(
+          await updateDescendants(
             strapi,
-            documentId,
-            locale,
-            dataToUpdate,
-            wasPublished
-          );
-        } else {
-          // Fallback: update draft if we can't get a documentId
-          await strapi.entityService.update(
-            "api::treatment-ads-page.treatment-ads-page",
             child.id,
-            { data: dataToUpdate, locale }
+            childSlug,
+            newAncestorSlugs,
+            locale
           );
+        } finally {
+          updatingDescendants.delete(child.id);
         }
-      } finally {
-        updatingDescendants.delete(child.id);
-      }
-
-      // Recursively update descendants for this locale
-      await updateDescendants(
-        strapi,
-        child.id,
-        childSlug,
-        newAncestorSlugs,
-        locale
-      );
-    }
+      })
+    );
   } finally {
     updatingDescendants.delete(pageId);
   }
@@ -988,7 +978,7 @@ export default {
     }
 
     // When slug or parent changed, all descendants must be updated.
-    // Use payload from beforeUpdate (result can be incomplete with Document Service).
+    // Runs synchronously with parallelized sibling updates to stay under timeout.
     const payload = (event.params as any)._descendantsUpdatePayload;
     if (payload?.pageId && payload?.newSlug) {
       await updateDescendants(
