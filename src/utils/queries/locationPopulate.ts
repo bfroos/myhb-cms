@@ -13,6 +13,18 @@ export const locationFieldsForPage = [
   "calendlyUrl",
 ];
 
+export const locationFieldsForAdsPage = [
+  "name",
+  "slug",
+  "newOpeningDate",
+  "timezone",
+  "googlePlaceId",
+  "isBookingAllowed",
+  "showDiscount",
+  "type",
+  "calendlyUrl",
+];
+
 export const locationPopulateForPage = {
   localizations: {
     fields: ["locale", "slug"],
@@ -105,6 +117,60 @@ export const locationPopulateForPage = {
       locations: {
         fields: ["name"],
         populate: { city: { fields: ["name"] } },
+      },
+    },
+  },
+};
+
+export const locationPopulateForAdsPage = {
+  localizations: {
+    fields: ["locale", "slug"],
+  },
+  address: {
+    fields: ["street", "houseNumber", "postalCode", "city"],
+  },
+  directions: {
+    fields: [
+      "headline",
+      "content",
+      "walkDirections",
+      "publicTransportDirections",
+      "carDirections",
+    ],
+    populate: {
+      image: mediaPopulate as object,
+    },
+  },
+  coordinates: {
+    fields: ["lat", "long"],
+  },
+  buildingImage: mediaPopulate as object,
+  city: {
+    fields: ["name", "slug", "federalState"],
+    populate: {
+      localizations: {
+        fields: ["locale", "slug"],
+      },
+    },
+  },
+  contact: {
+    fields: ["phoneNumber", "whatsAppNumber"],
+  },
+  openingHours: {
+    populate: {
+      week: {
+        populate: {
+          intervals: {
+            populate: "*",
+          },
+        },
+      },
+      exceptions: {
+        populate: {
+          intervals: {
+            populate: "*",
+          },
+        },
       },
     },
   },

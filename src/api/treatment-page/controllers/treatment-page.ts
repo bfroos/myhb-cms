@@ -13,7 +13,9 @@ import {
   treatmentPagePopulateForFindByPath,
 } from "../../../utils/queries/treatmentPagePopulate";
 import {
+  locationFieldsForAdsPage,
   locationFieldsForPage,
+  locationPopulateForAdsPage,
   locationPopulateForPage,
 } from "../../../utils/queries/locationPopulate";
 
@@ -34,6 +36,16 @@ function getTreatmentPagePopulateForFindByLocationAndPath(siteMode?: string) {
   return siteMode === "ads"
     ? treatmentAdsPagePopulateForFindByLocationAndPath
     : treatmentPagePopulateForFindByLocationAndPath;
+}
+
+function getLocationFieldsForSiteMode(siteMode?: string) {
+  return siteMode === "ads" ? locationFieldsForAdsPage : locationFieldsForPage;
+}
+
+function getLocationPopulateForSiteMode(siteMode?: string) {
+  return siteMode === "ads"
+    ? locationPopulateForAdsPage
+    : locationPopulateForPage;
 }
 
 /**
@@ -295,7 +307,7 @@ export default factories.createCoreController(
         .findFirst({
           locale,
           status: "published",
-          fields: locationFieldsForPage as any,
+          fields: getLocationFieldsForSiteMode(siteMode) as any,
           filters: {
             slug: {
               $eq: locationSlug,
@@ -307,7 +319,7 @@ export default factories.createCoreController(
             },
           },
           populate: {
-            ...(locationPopulateForPage as object),
+            ...(getLocationPopulateForSiteMode(siteMode) as object),
           },
         });
 

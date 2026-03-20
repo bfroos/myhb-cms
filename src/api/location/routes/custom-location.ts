@@ -36,5 +36,14 @@ export default {
         middlewares: [],
       },
     },
+    {
+      method: "GET",
+      path: "/locations/:citySlug/:locationSlug/with-treatments-ads",
+      handler: "api::location.location.findByCityAndSlugWithTreatmentsAds",
+      config: {
+        policies: [],
+        middlewares: [],
+      },
+    },
   ],
 };

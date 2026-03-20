@@ -6,7 +6,9 @@ import { factories } from "@strapi/strapi";
 import type { Context } from "koa";
 import { getLocationStatus } from "../../../utils/locationStatus";
 import {
+  locationFieldsForAdsPage,
   locationFieldsForPage,
+  locationPopulateForAdsPage,
   locationPopulateForPage,
 } from "../../../utils/queries/locationPopulate";
 import { treatmentTeaserPopulate } from "../../../utils/queries/ui";
@@ -194,6 +196,92 @@ export default factories.createCoreController(
       }
 
       // Fetch treatments that match location type and have treatmentPage
+      const treatments = await strapi
+        .documents("api::treatment.treatment")
+        .findMany({
+          locale,
+          status: "published",
+          fields: ["name"],
+          filters: {
+            type: {
+              $in: allowedTreatmentTypes,
+            },
+            treatmentPage: {
+              id: {
+                $notNull: true,
+              },
+            },
+          },
+          populate: {
+            treatmentPage: {
+              ...(treatmentTeaserPopulate as any),
+            } as object,
+          },
+        });
+
+      const treatmentPages = (treatments || [])
+        .map((treatment: any) => treatment.treatmentPage)
+        .filter((page: any) => page !== null && page !== undefined);
+
+      const locationOpenStatus = getLocationStatus(
+        location.newOpeningDate,
+        location.timezone || "Europe/Berlin"
+      );
+
+      return {
+        data: {
+          location,
+          locationOpenStatus,
+          treatmentPages,
+        },
+      };
+    },
+
+    async findByCityAndSlugWithTreatmentsAds(ctx: Context) {
+      const { citySlug, locationSlug } = ctx.params as {
+        citySlug: string;
+        locationSlug: string;
+      };
+      const { locale } = ctx.query as { locale?: string };
+
+      const location = await strapi
+        .documents("api::location.location")
+        .findFirst({
+          locale,
+          status: "published",
+          fields: locationFieldsForAdsPage as any,
+          filters: {
+            slug: {
+              $eq: locationSlug,
+            },
+            city: {
+              slug: {
+                $eq: citySlug,
+              },
+            },
+          },
+          populate: locationPopulateForAdsPage as any,
+        });
+
+      if (!location) {
+        ctx.notFound("Location not found");
+        return;
+      }
+
+      const allowedTreatmentTypes =
+        locationTypeToTreatmentTypes[
+          location.type as "lounge" | "center" | "clinic"
+        ];
+
+      if (!allowedTreatmentTypes || allowedTreatmentTypes.length === 0) {
+        return {
+          data: {
+            location,
+            treatmentPages: [],
+          },
+        };
+      }
+
       const treatments = await strapi
         .documents("api::treatment.treatment")
         .findMany({
