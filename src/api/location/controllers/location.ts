@@ -268,47 +268,6 @@ export default factories.createCoreController(
         return;
       }
 
-      const allowedTreatmentTypes =
-        locationTypeToTreatmentTypes[
-          location.type as "lounge" | "center" | "clinic"
-        ];
-
-      if (!allowedTreatmentTypes || allowedTreatmentTypes.length === 0) {
-        return {
-          data: {
-            location,
-            treatmentPages: [],
-          },
-        };
-      }
-
-      const treatments = await strapi
-        .documents("api::treatment.treatment")
-        .findMany({
-          locale,
-          status: "published",
-          fields: ["name"],
-          filters: {
-            type: {
-              $in: allowedTreatmentTypes,
-            },
-            treatmentPage: {
-              id: {
-                $notNull: true,
-              },
-            },
-          },
-          populate: {
-            treatmentPage: {
-              ...(treatmentTeaserPopulate as any),
-            } as object,
-          },
-        });
-
-      const treatmentPages = (treatments || [])
-        .map((treatment: any) => treatment.treatmentPage)
-        .filter((page: any) => page !== null && page !== undefined);
-
       const locationOpenStatus = getLocationStatus(
         location.newOpeningDate,
         location.timezone || "Europe/Berlin"
@@ -318,7 +277,6 @@ export default factories.createCoreController(
         data: {
           location,
           locationOpenStatus,
-          treatmentPages,
         },
       };
     },
