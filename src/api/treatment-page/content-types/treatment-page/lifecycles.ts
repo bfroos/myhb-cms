@@ -94,13 +94,42 @@ async function resolveEntityIdFromDocumentId(
 ): Promise<ID | null> {
   try {
     const docs = (strapi as any).documents("api::treatment-page.treatment-page");
-    const entry = await docs.findOne({
-      documentId,
-      locale,
-      status: "draft",
-      fields: ["id"] as any,
-    });
-    return (entry as any)?.id ?? null;
+    try {
+      const draftEntry = await docs.findOne({
+        documentId,
+        locale,
+        status: "draft",
+        fields: ["id"] as any,
+      });
+      if ((draftEntry as any)?.id != null) {
+        return (draftEntry as any).id as ID;
+      }
+    } catch {
+      // no-op, try next fallback
+    }
+
+    try {
+      const publishedEntry = await docs.findOne({
+        documentId,
+        locale,
+        status: "published",
+        fields: ["id"] as any,
+      });
+      if ((publishedEntry as any)?.id != null) {
+        return (publishedEntry as any).id as ID;
+      }
+    } catch {
+      // no-op, try db-level fallback
+    }
+
+    const anyEntry = await strapi.db
+      .query("api::treatment-page.treatment-page")
+      .findOne({
+        where: { documentId },
+        select: ["id"],
+      } as any);
+
+    return (anyEntry as any)?.id ?? null;
   } catch {
     return null;
   }
@@ -814,6 +843,13 @@ export default {
         locale
       );
     }
+    if ("localizations" in data && data.localizations) {
+      data.localizations = await normalizeMultiRelationPayload(
+        strapi,
+        data.localizations,
+        locale
+      );
+    }
 
     // Normalize parent relation before Strapi validates relation IDs.
     const normalizedParent = await normalizeSingleRelationPayload(
@@ -1007,6 +1043,13 @@ export default {
       data.children = await normalizeMultiRelationPayload(
         strapi,
         data.children,
+        locale
+      );
+    }
+    if ("localizations" in data && data.localizations) {
+      data.localizations = await normalizeMultiRelationPayload(
+        strapi,
+        data.localizations,
         locale
       );
     }
