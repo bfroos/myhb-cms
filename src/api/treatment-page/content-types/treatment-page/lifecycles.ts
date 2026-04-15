@@ -42,6 +42,210 @@ function resolveEventLocale(event: any, fallback = "de"): string {
   );
 }
 
+function isEntityId(value: unknown): value is ID {
+  return typeof value === "number" || /^\d+$/.test(String(value));
+}
+
+function stripDocumentId(value: any): any {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return value;
+  }
+
+  const { documentId: _documentId, ...rest } = value;
+  return rest;
+}
+
+function extractRelationRef(value: any): ID | null {
+  if (!value) {
+    return null;
+  }
+
+  if (typeof value === "string" || typeof value === "number") {
+    return value;
+  }
+
+  if (typeof value !== "object") {
+    return null;
+  }
+
+  if ("id" in value && value.id != null) {
+    if (typeof value.id === "object" && value.id !== null) {
+      return extractRelationRef(value.id);
+    }
+
+    return value.id;
+  }
+
+  if (typeof value.documentId === "string") {
+    return value.documentId;
+  }
+
+  return null;
+}
+
+/**
+ * Strapi 5 helper: resolve entity id from documentId + locale.
+ * Needed when the admin payload contains documentId-based relations.
+ */
+async function resolveEntityIdFromDocumentId(
+  strapi: Core.Strapi,
+  documentId: string,
+  locale: string
+): Promise<ID | null> {
+  try {
+    const docs = (strapi as any).documents("api::treatment-page.treatment-page");
+    const entry = await docs.findOne({
+      documentId,
+      locale,
+      status: "draft",
+      fields: ["id"] as any,
+    });
+    return (entry as any)?.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
+async function resolveRelationEntityId(
+  strapi: Core.Strapi,
+  value: any,
+  locale: string
+): Promise<ID | null> {
+  const ref = extractRelationRef(value);
+  if (!ref) {
+    return null;
+  }
+
+  if (isEntityId(ref)) {
+    return ref;
+  }
+
+  return resolveEntityIdFromDocumentId(strapi, String(ref), locale);
+}
+
+function toRelationWriteValue(original: any, entityId: ID): any {
+  if (typeof original === "string" || typeof original === "number") {
+    return entityId;
+  }
+
+  if (original && typeof original === "object") {
+    return {
+      ...stripDocumentId(original),
+      id: entityId,
+    };
+  }
+
+  return entityId;
+}
+
+async function normalizeSingleRelationPayload(
+  strapi: Core.Strapi,
+  value: any,
+  locale: string
+): Promise<{ entityId: ID | null; payload: any }> {
+  if (!value) {
+    return { entityId: null, payload: value };
+  }
+
+  if (
+    value.disconnect &&
+    (!value.connect || value.connect.length === 0) &&
+    (!value.set || value.set.length === 0)
+  ) {
+    return { entityId: null, payload: value };
+  }
+
+  if (value.set && Array.isArray(value.set) && value.set.length > 0) {
+    const entityId = await resolveRelationEntityId(strapi, value.set[0], locale);
+    return {
+      entityId,
+      payload: entityId
+        ? {
+            ...stripDocumentId(value),
+            set: [toRelationWriteValue(value.set[0], entityId)],
+          }
+        : value,
+    };
+  }
+
+  if (
+    value.connect &&
+    Array.isArray(value.connect) &&
+    value.connect.length > 0
+  ) {
+    const entityId = await resolveRelationEntityId(
+      strapi,
+      value.connect[0],
+      locale
+    );
+    return {
+      entityId,
+      payload: entityId
+        ? {
+            ...stripDocumentId(value),
+            connect: [toRelationWriteValue(value.connect[0], entityId)],
+          }
+        : value,
+    };
+  }
+
+  const entityId = await resolveRelationEntityId(strapi, value, locale);
+  return {
+    entityId,
+    payload: entityId ? toRelationWriteValue(value, entityId) : value,
+  };
+}
+
+async function normalizeMultiRelationPayload(
+  strapi: Core.Strapi,
+  value: any,
+  locale: string
+): Promise<any> {
+  if (!value) {
+    return value;
+  }
+
+  if (Array.isArray(value)) {
+    const normalized = await Promise.all(
+      value.map(async (item) => {
+        const entityId = await resolveRelationEntityId(strapi, item, locale);
+        if (!entityId) {
+          throw new Error("Eine verknuepfte Unterseite konnte nicht aufgeloest werden.");
+        }
+
+        return toRelationWriteValue(item, entityId);
+      })
+    );
+
+    return normalized;
+  }
+
+  if (typeof value !== "object") {
+    return value;
+  }
+
+  const normalized = { ...stripDocumentId(value) };
+
+  for (const key of ["set", "connect", "disconnect"] as const) {
+    if (!Array.isArray(value[key])) {
+      continue;
+    }
+
+    normalized[key] = await Promise.all(
+      value[key].map(async (item: any) => {
+        const entityId = await resolveRelationEntityId(strapi, item, locale);
+        if (!entityId) {
+          throw new Error("Eine verknuepfte Unterseite konnte nicht aufgeloest werden.");
+        }
+
+        return toRelationWriteValue(item, entityId);
+      })
+    );
+  }
+
+  return normalized;
+}
+
 /**
  * Safely converts JSONValue to string array
  */
@@ -603,32 +807,32 @@ export default {
       throw new Error("Slug is required");
     }
 
-    // Extract parent ID from Strapi 5 relation syntax
-    const parentId = extractParentId(data.parent);
+    if ("children" in data && data.children) {
+      data.children = await normalizeMultiRelationPayload(
+        strapi,
+        data.children,
+        locale
+      );
+    }
+
+    // Normalize parent relation before Strapi validates relation IDs.
+    const normalizedParent = await normalizeSingleRelationPayload(
+      strapi,
+      data.parent,
+      locale
+    );
+    const parentId = normalizedParent.entityId;
+    if ("parent" in data) {
+      data.parent = normalizedParent.payload;
+    }
 
     // Validate parent exists (prevents "relation does not exist" error)
     if (parentId) {
-      let parentExists = null;
-      if (typeof parentId === "number" || /^\d+$/.test(String(parentId))) {
-        parentExists = await strapi.entityService.findOne(
-          "api::treatment-page.treatment-page",
-          parentId,
-          { fields: ["id"] as any }
-        );
-      } else {
-        try {
-          const docs = (strapi as any).documents(
-            "api::treatment-page.treatment-page"
-          );
-          parentExists = await docs.findOne({
-            documentId: parentId,
-            status: "draft",
-            fields: ["documentId"] as any,
-          });
-        } catch {
-          parentExists = null;
-        }
-      }
+      const parentExists = await strapi.entityService.findOne(
+        "api::treatment-page.treatment-page",
+        parentId,
+        { fields: ["id"] as any }
+      );
       if (!parentExists) {
         throw new Error(
           `Die gewählte Elternseite existiert nicht oder ist ungültig. Bitte eine gültige Seite auswählen.`
@@ -743,11 +947,18 @@ export default {
     // Extract locale (admin doesn't always set `event.params.locale`)
     const locale = resolveEventLocale(event, "de");
 
-    if (!where?.id) {
-      return;
+    let pageId: ID | null = where?.id ?? null;
+    if (!pageId && typeof where?.documentId === "string") {
+      pageId = await resolveEntityIdFromDocumentId(
+        strapi,
+        where.documentId,
+        locale
+      );
     }
 
-    const pageId = where.id;
+    if (!pageId) {
+      return;
+    }
 
     // Skip if we're updating descendants (to prevent loops)
     if (updatingDescendants.has(pageId)) {
@@ -792,9 +1003,23 @@ export default {
     let newParentId: ID | null | undefined = currentParentId;
     let parentChanged = false;
 
+    if ("children" in data && data.children) {
+      data.children = await normalizeMultiRelationPayload(
+        strapi,
+        data.children,
+        locale
+      );
+    }
+
     if ("parent" in data) {
-      // Extract parent ID from Strapi 5 relation syntax
-      const extractedParentId = extractParentId(data.parent);
+      // Normalize parent relation before Strapi validates relation IDs.
+      const normalizedParent = await normalizeSingleRelationPayload(
+        strapi,
+        data.parent,
+        locale
+      );
+      const extractedParentId = normalizedParent.entityId;
+      data.parent = normalizedParent.payload;
 
       // Parent wird entfernt (z.B. B von A's Children-Liste gelöscht → B wird Root)
       const isDisconnecting =
@@ -813,30 +1038,11 @@ export default {
 
         // Validate parent exists (prevents "relation does not exist" error)
         if (newParentId) {
-          let parentExists = null;
-          if (
-            typeof newParentId === "number" ||
-            /^\d+$/.test(String(newParentId))
-          ) {
-            parentExists = await strapi.entityService.findOne(
-              "api::treatment-page.treatment-page",
-              newParentId,
-              { fields: ["id"] as any }
-            );
-          } else {
-            try {
-              const docs = (strapi as any).documents(
-                "api::treatment-page.treatment-page"
-              );
-              parentExists = await docs.findOne({
-                documentId: newParentId,
-                status: "draft",
-                fields: ["documentId"] as any,
-              });
-            } catch {
-              parentExists = null;
-            }
-          }
+          const parentExists = await strapi.entityService.findOne(
+            "api::treatment-page.treatment-page",
+            newParentId,
+            { fields: ["id"] as any }
+          );
           if (!parentExists) {
             throw new Error(
               `Die gewählte Elternseite existiert nicht oder ist ungültig. Bitte eine gültige Seite auswählen.`
