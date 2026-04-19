@@ -223,6 +223,59 @@ export default factories.createCoreController(
         .map((treatment: any) => treatment.treatmentPage)
         .filter((page: any) => page !== null && page !== undefined);
 
+      const topCategorySlugs = Array.from(
+        new Set(
+          treatmentPages
+            .map((page: any) =>
+              Array.isArray(page?.ancestorSlugs) && page.ancestorSlugs.length > 0
+                ? page.ancestorSlugs[0]
+                : page?.slug
+            )
+            .filter((slug: unknown): slug is string => typeof slug === "string")
+        )
+      );
+
+      let topCategoryNameBySlug = new Map<string, string>();
+
+      if (topCategorySlugs.length > 0) {
+        const topCategoryPages = await strapi
+          .documents("api::treatment-page.treatment-page")
+          .findMany({
+            locale,
+            status: "published",
+            fields: ["slug", "name"],
+            filters: {
+              slug: {
+                $in: topCategorySlugs,
+              },
+            },
+            limit: topCategorySlugs.length,
+          });
+
+        topCategoryNameBySlug = new Map(
+          (topCategoryPages as any[]).map((page) => [page.slug, page.name])
+        );
+      }
+
+      const treatmentPagesWithTopCategory = treatmentPages.map((page: any) => {
+        const topCategorySlug =
+          Array.isArray(page?.ancestorSlugs) && page.ancestorSlugs.length > 0
+            ? page.ancestorSlugs[0]
+            : page?.slug;
+
+        if (!topCategorySlug) {
+          return page;
+        }
+
+        return {
+          ...page,
+          topCategory: {
+            slug: topCategorySlug,
+            name: topCategoryNameBySlug.get(topCategorySlug) ?? page.name,
+          },
+        };
+      });
+
       const locationOpenStatus = getLocationStatus(
         location.newOpeningDate,
         location.timezone || "Europe/Berlin"
@@ -232,7 +285,7 @@ export default factories.createCoreController(
         data: {
           location,
           locationOpenStatus,
-          treatmentPages,
+          treatmentPages: treatmentPagesWithTopCategory,
         },
       };
     },
