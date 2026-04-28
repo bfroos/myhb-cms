@@ -1,3 +1,9 @@
+import {
+  isTreatmentPageUid,
+  syncPathKeysForDocument,
+  cascadeUpdateDescendants,
+} from "./utils/treatmentPagePathUtils";
+
 // ============================================================================
 // Helper Functions
 // ============================================================================
@@ -245,10 +251,10 @@ export default {
    * This gives you an opportunity to extend code.
    */
   register({ strapi }: any) {
-    // Register Document Service Middleware for Strapi v5
-    // This is the recommended approach and gives us access to full component data
-    // Works for all components including those in dynamic zones
     if (strapi.documents && typeof strapi.documents.use === "function") {
+      // -----------------------------------------------------------------------
+      // Middleware 1: Component sanitization on create / update
+      // -----------------------------------------------------------------------
       strapi.documents.use(async (context: any, next: any) => {
         const { uid, action, params } = context;
 
@@ -260,12 +266,71 @@ export default {
         ) {
           const data = params?.data;
           if (data) {
-            // Sanitize all components recursively
             sanitizeDataRecursive(data);
           }
         }
 
         return next();
+      });
+
+      // -----------------------------------------------------------------------
+      // Middleware 2: pathKey / ancestorSlugs cascade on publish
+      //
+      // Re-entry guard: when we republish children during the cascade we must
+      // not re-enter this middleware for those documents, otherwise we'd loop
+      // infinitely.  We track document IDs that are currently being processed
+      // in a module-level Set so it survives across middleware invocations.
+      // -----------------------------------------------------------------------
+      const pathKeySyncInProgress = new Set<string>();
+
+      strapi.documents.use(async (context: any, next: any) => {
+        const { uid, action, params } = context;
+
+        if (
+          action !== "publish" ||
+          typeof uid !== "string" ||
+          !isTreatmentPageUid(uid)
+        ) {
+          return next();
+        }
+
+        const documentId: string | undefined = params?.documentId;
+        if (!documentId) return next();
+
+        // Skip if this publish was triggered by our own cascade
+        if (pathKeySyncInProgress.has(documentId)) {
+          return next();
+        }
+
+        // Let Strapi publish the document first
+        const result = await next();
+
+        try {
+          // 1. Update pathKey on the document that was just published
+          pathKeySyncInProgress.add(documentId);
+          await syncPathKeysForDocument(
+            documentId,
+            uid,
+            strapi,
+            pathKeySyncInProgress
+          );
+
+          // 2. Cascade to all descendants
+          await cascadeUpdateDescendants(
+            documentId,
+            uid,
+            strapi,
+            pathKeySyncInProgress
+          );
+        } catch (err) {
+          strapi.log.error(
+            `[pathKey] Failed to sync pathKeys for documentId=${documentId}: ${err}`
+          );
+        } finally {
+          pathKeySyncInProgress.delete(documentId);
+        }
+
+        return result;
       });
     }
   },
