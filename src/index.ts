@@ -1,5 +1,6 @@
 import {
   isTreatmentPageUid,
+  syncDraftPathKeysForDocument,
   syncPathKeysForDocument,
   cascadeUpdateDescendants,
 } from "./utils/treatmentPagePathUtils";
@@ -314,6 +315,12 @@ export default {
             fields: ["documentId"],
           })
         );
+
+        // First publish: write path fields to draft before Strapi publishes it.
+        // This ensures the first published version already contains pathKey.
+        if (!wasPublishedBefore) {
+          await syncDraftPathKeysForDocument(documentId, uid, locale, strapi);
+        }
 
         // Let Strapi publish the document first
         const result = await next();

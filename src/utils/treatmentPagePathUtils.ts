@@ -91,6 +91,33 @@ export async function computePathKeyData(
 }
 
 /**
+ * Updates path fields on the draft version only (no publish).
+ * Used before first publish so that the initial published version
+ * already contains a correct pathKey.
+ */
+export async function syncDraftPathKeysForDocument(
+  documentId: string,
+  uid: TreatmentPageUid,
+  locale: string,
+  strapi: any
+): Promise<void> {
+  const { pathKey, ancestorSlugs } = await computePathKeyData(
+    documentId,
+    uid,
+    locale,
+    strapi
+  );
+
+  if (!pathKey) return;
+
+  await strapi.documents(uid).update({
+    documentId,
+    locale,
+    data: { pathKey, ancestorSlugs } as any,
+  });
+}
+
+/**
  * Updates `pathKey` and `ancestorSlugs` on both the draft and published
  * version of a document for one locale.
  *
