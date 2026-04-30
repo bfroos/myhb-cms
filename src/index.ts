@@ -13,6 +13,9 @@ function isObject(value: unknown): value is Record<string, any> {
   return typeof value === "object" && value !== null;
 }
 
+// Temporary kill switch for pathKey workflow (for debugging / A-B tests).
+const ENABLE_PATHKEY_WORKFLOW = false;
+
 // ============================================================================
 // Component Sanitization Functions
 // ============================================================================
@@ -285,6 +288,10 @@ export default {
       const pathKeySyncInProgress = new Set<string>();
 
       strapi.documents.use(async (context: any, next: any) => {
+        if (!ENABLE_PATHKEY_WORKFLOW) {
+          return next();
+        }
+
         const { uid, action, params } = context;
 
         if (
