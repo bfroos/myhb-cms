@@ -296,11 +296,24 @@ export default {
 
         const documentId: string | undefined = params?.documentId;
         if (!documentId) return next();
+        const locale: string | undefined =
+          typeof params?.locale === "string" ? params.locale : undefined;
+        if (!locale) return next();
 
         // Skip if this publish was triggered by our own cascade
         if (pathKeySyncInProgress.has(documentId)) {
           return next();
         }
+
+        // Snapshot published state for the currently edited locale before publish.
+        const wasPublishedBefore = Boolean(
+          await strapi.documents(uid).findOne({
+            documentId,
+            locale,
+            status: "published",
+            fields: ["documentId"],
+          })
+        );
 
         // Let Strapi publish the document first
         const result = await next();
@@ -311,14 +324,17 @@ export default {
           await syncPathKeysForDocument(
             documentId,
             uid,
+            locale,
             strapi,
-            pathKeySyncInProgress
+            pathKeySyncInProgress,
+            wasPublishedBefore
           );
 
           // 2. Cascade to all descendants
           await cascadeUpdateDescendants(
             documentId,
             uid,
+            locale,
             strapi,
             pathKeySyncInProgress
           );

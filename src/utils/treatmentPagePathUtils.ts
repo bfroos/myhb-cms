@@ -91,23 +91,8 @@ export async function computePathKeyData(
 }
 
 /**
- * Returns all configured locale codes (e.g. ["de", "en"]).
- */
-async function getAllLocales(strapi: any): Promise<string[]> {
-  try {
-    const locales = await strapi
-      .plugin("i18n")
-      .service("locales")
-      .find();
-    return (locales as Array<{ code: string }>).map((l) => l.code);
-  } catch {
-    return ["de"];
-  }
-}
-
-/**
  * Updates `pathKey` and `ancestorSlugs` on both the draft and published
- * version of a document for every locale.
+ * version of a document for one locale.
  *
  * Uses a re-entry guard (Set of documentIds currently being processed)
  * to prevent infinite publish loops when republishing children.
@@ -115,79 +100,121 @@ async function getAllLocales(strapi: any): Promise<string[]> {
 export async function syncPathKeysForDocument(
   documentId: string,
   uid: TreatmentPageUid,
+  locale: string,
   strapi: any,
-  inProgress: Set<string>
+  inProgress: Set<string>,
+  wasPublishedBefore?: boolean
 ): Promise<void> {
-  const locales = await getAllLocales(strapi);
-
-  for (const locale of locales) {
-    const { pathKey, ancestorSlugs } = await computePathKeyData(
-      documentId,
-      uid,
-      locale,
-      strapi
+  const documentsService = strapi.documents(uid);
+  const isPublishedBefore =
+    wasPublishedBefore ??
+    Boolean(
+      await documentsService.findOne({
+        documentId,
+        locale,
+        status: "published",
+        fields: ["documentId"],
+      })
     );
 
-    if (!pathKey) continue;
+  // Safety: never touch locales that are not published yet.
+  // Updating such locales can create a minimal draft (path fields only),
+  // which may overwrite translated content on the first manual publish.
+  if (!isPublishedBefore) return;
 
-    await strapi.documents(uid).update({
-      documentId,
-      locale,
-      data: { pathKey, ancestorSlugs } as any,
-    });
+  const { pathKey, ancestorSlugs } = await computePathKeyData(
+    documentId,
+    uid,
+    locale,
+    strapi
+  );
 
-    // If the document has a published version, republish to sync the published data.
-    // The re-entry guard in the middleware prevents an infinite publish loop.
-    const published = await strapi.documents(uid).findOne({
-      documentId,
-      locale,
-      status: "published",
-      fields: ["documentId"],
-    });
+  if (!pathKey) return;
 
-    if (published) {
-      inProgress.add(documentId);
+  await documentsService.update({
+    documentId,
+    locale,
+    data: { pathKey, ancestorSlugs } as any,
+  });
+
+  const maxPublishAttempts = 3;
+  let publishedWithFreshData = false;
+  let lastPublishError: unknown = null;
+
+  inProgress.add(documentId);
+  try {
+    for (let attempt = 1; attempt <= maxPublishAttempts; attempt += 1) {
       try {
-        await strapi.documents(uid).publish({ documentId, locale });
-      } finally {
-        inProgress.delete(documentId);
+        await documentsService.publish({ documentId, locale });
+
+        const publishedAfter = await documentsService.findOne({
+          documentId,
+          locale,
+          status: "published",
+          fields: ["pathKey"],
+        });
+
+        if (publishedAfter?.pathKey === pathKey) {
+          publishedWithFreshData = true;
+          break;
+        }
+      } catch (error) {
+        lastPublishError = error;
       }
     }
+  } finally {
+    inProgress.delete(documentId);
+  }
+
+  if (!publishedWithFreshData) {
+    // Hard safety net: never leave previously published content in a lingering draft state.
+    try {
+      if (typeof documentsService.discardDraft === "function") {
+        await documentsService.discardDraft({ documentId, locale });
+      }
+    } catch (discardError) {
+      strapi.log.error(
+        `[treatmentPagePathUtils] Failed to discard draft for documentId=${documentId}, locale=${locale}: ${discardError}`
+      );
+    }
+
+    const publishErrorMessage =
+      lastPublishError instanceof Error
+        ? lastPublishError.message
+        : String(lastPublishError ?? "unknown publish error");
+
+    throw new Error(
+      `[treatmentPagePathUtils] Failed to keep document published for documentId=${documentId}, locale=${locale}. Last publish error: ${publishErrorMessage}`
+    );
   }
 }
 
 /**
  * Returns the documentIds of all direct children of a document.
  *
- * The `parent`/`children` relation is not localized (same across all locales),
- * but Strapi 5 only returns related documents that exist in the requested
- * locale when populating. To avoid missing children that only exist in a
- * subset of locales, we query across every configured locale and deduplicate.
+ * Returns children for one requested locale.
  */
 async function getChildDocumentIds(
   documentId: string,
   uid: TreatmentPageUid,
+  locale: string,
   strapi: any
 ): Promise<string[]> {
-  const locales = await getAllLocales(strapi);
-  const ids = new Set<string>();
-
-  for (const locale of locales) {
-    const page = await strapi.documents(uid).findOne({
-      documentId,
-      locale,
-      fields: [],
-      populate: {
-        children: {
-          fields: ["documentId"],
-        },
+  const page = await strapi.documents(uid).findOne({
+    documentId,
+    locale,
+    fields: [],
+    populate: {
+      children: {
+        fields: ["documentId"],
       },
-      status: "draft",
-    });
+    },
+    status: "draft",
+  });
 
-    for (const child of (page as any)?.children ?? []) {
-      if (child?.documentId) ids.add(child.documentId as string);
-    }
+  const ids = new Set<string>();
+  for (const child of (page as any)?.children ?? []) {
+    if (child?.documentId) ids.add(child.documentId as string);
   }
 
   return Array.from(ids);
@@ -200,6 +227,7 @@ async function getChildDocumentIds(
 export async function cascadeUpdateDescendants(
   documentId: string,
   uid: TreatmentPageUid,
+  locale: string,
   strapi: any,
   inProgress: Set<string>,
   depth = 0
@@ -211,10 +239,17 @@ export async function cascadeUpdateDescendants(
     return;
   }
 
-  const childIds = await getChildDocumentIds(documentId, uid, strapi);
+  const childIds = await getChildDocumentIds(documentId, uid, locale, strapi);
 
   for (const childId of childIds) {
-    await syncPathKeysForDocument(childId, uid, strapi, inProgress);
-    await cascadeUpdateDescendants(childId, uid, strapi, inProgress, depth + 1);
+    await syncPathKeysForDocument(childId, uid, locale, strapi, inProgress);
+    await cascadeUpdateDescendants(
+      childId,
+      uid,
+      locale,
+      strapi,
+      inProgress,
+      depth + 1
+    );
   }
 }
