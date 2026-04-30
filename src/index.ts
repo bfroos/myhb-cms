@@ -14,7 +14,7 @@ function isObject(value: unknown): value is Record<string, any> {
 }
 
 // Temporary kill switch for pathKey workflow (for debugging / A-B tests).
-const ENABLE_PATHKEY_WORKFLOW = false;
+const ENABLE_PATHKEY_WORKFLOW = true;
 
 // ============================================================================
 // Component Sanitization Functions
