@@ -247,6 +247,16 @@ async function getChildDocumentIds(
   return Array.from(ids);
 }
 
+export async function hasChildrenInLocale(
+  documentId: string,
+  uid: TreatmentPageUid,
+  locale: string,
+  strapi: any
+): Promise<boolean> {
+  const childIds = await getChildDocumentIds(documentId, uid, locale, strapi);
+  return childIds.length > 0;
+}
+
 /**
  * Recursively syncs `pathKey` and `ancestorSlugs` for all descendants
  * of a given document.

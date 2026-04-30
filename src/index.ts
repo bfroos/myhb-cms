@@ -3,6 +3,7 @@ import {
   syncDraftPathKeysForDocument,
   syncPathKeysForDocument,
   cascadeUpdateDescendants,
+  hasChildrenInLocale,
 } from "./utils/treatmentPagePathUtils";
 
 // ============================================================================
@@ -306,15 +307,15 @@ export default {
           return next();
         }
 
-        // Snapshot published state for the currently edited locale before publish.
-        const wasPublishedBefore = Boolean(
-          await strapi.documents(uid).findOne({
-            documentId,
-            locale,
-            status: "published",
-            fields: ["documentId"],
-          })
-        );
+        // Snapshot published state/path before publish.
+        const publishedBefore = await strapi.documents(uid).findOne({
+          documentId,
+          locale,
+          status: "published",
+          fields: ["documentId", "pathKey"],
+        });
+        const wasPublishedBefore = Boolean(publishedBefore);
+        const publishedPathKeyBefore = publishedBefore?.pathKey ?? null;
 
         // First publish: write path fields to draft before Strapi publishes it.
         // This ensures the first published version already contains pathKey.
@@ -337,14 +338,37 @@ export default {
             wasPublishedBefore
           );
 
-          // 2. Cascade to all descendants
-          await cascadeUpdateDescendants(
+          // 2. Cascade only when descendants exist and pathKey actually changed.
+          const hasChildren = await hasChildrenInLocale(
             documentId,
             uid,
             locale,
-            strapi,
-            pathKeySyncInProgress
+            strapi
           );
+
+          if (hasChildren) {
+            const publishedAfter = await strapi.documents(uid).findOne({
+              documentId,
+              locale,
+              status: "published",
+              fields: ["pathKey"],
+            });
+            const publishedPathKeyAfter = publishedAfter?.pathKey ?? null;
+
+            const pathKeyChanged =
+              !wasPublishedBefore ||
+              publishedPathKeyBefore !== publishedPathKeyAfter;
+
+            if (pathKeyChanged) {
+              await cascadeUpdateDescendants(
+                documentId,
+                uid,
+                locale,
+                strapi,
+                pathKeySyncInProgress
+              );
+            }
+          }
         } catch (err) {
           strapi.log.error(
             `[pathKey] Failed to sync pathKeys for documentId=${documentId}: ${err}`
