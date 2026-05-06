@@ -18,11 +18,10 @@ const getPreviewPathname = (uid: string, { locale, document }: { locale: string;
       return `/standorte/${citySlug}/${locationSlug}`;
     }
     case "api::treatment-page.treatment-page": {
-      const citySlug = document?.location?.city?.slug;
-      const locationSlug = document?.location?.slug;
-      const treatmentSlug = document?.slug;
-      if (!citySlug || !locationSlug || !treatmentSlug) return null;
-      return `/standorte/${citySlug}/${locationSlug}/${treatmentSlug}`;
+      // treatment-page has no location field; use pathKey (e.g. "botox" or "hyaluron/lippen-aufspritzen")
+      const pathKey = document?.pathKey;
+      if (!pathKey) return null;
+      return `/behandlungen/${pathKey}`;
     }
     case "api::landing-page.landing-page": {
       const pageSlug = slug || documentId || id;
@@ -74,12 +73,8 @@ function getPopulate(uid: string): Record<string, any> {
     case "api::location.location":
       return { city: { fields: ["slug"] } };
     case "api::treatment-page.treatment-page":
-      return {
-        location: {
-          populate: { city: { fields: ["slug"] } },
-          fields: ["slug"],
-        },
-      };
+      // No relations needed - pathKey is a direct string field
+      return {};
     case "api::city-page.city-page":
       return { city: { fields: ["slug"] } };
     default:
