@@ -68,6 +68,13 @@ const getPreviewPathname = (uid: string, { locale, document }: { locale: string;
   }
 };
 
+// Which content types need city/location populated
+const NEEDS_LOCATION_POPULATE = new Set([
+  "api::location.location",
+  "api::treatment-page.treatment-page",
+  "api::city-page.city-page",
+]);
+
 export default ({ env }) => {
   const clientUrl = env("CLIENT_URL", "https://www.myhealthandbeauty.com");
   const previewSecret = env("PREVIEW_SECRET", "");
@@ -98,21 +105,25 @@ export default ({ env }) => {
         allowedOrigins: clientUrl,
 
         async handler(uid: string, { documentId, locale, status }: { documentId: string; locale: string; status: string }) {
+          // Only populate city/location fields for content types that need them
+          const populate = NEEDS_LOCATION_POPULATE.has(uid)
+            ? {
+                city: { fields: ["slug"] },
+                location: {
+                  populate: { city: { fields: ["slug"] } },
+                  fields: ["slug"],
+                },
+              }
+            : {};
+
           const document = await strapi.documents(uid as any).findOne({
             documentId,
-            populate: {
-              city: { fields: ["slug"] },
-              location: {
-                populate: { city: { fields: ["slug"] } },
-                fields: ["slug"],
-              },
-            },
+            populate,
           });
 
           const pathname = getPreviewPathname(uid, { locale, document });
           if (!pathname) return null;
 
-          // Build the preview URL pointing to the Nuxt /api/preview route
           const urlSearchParams = new URLSearchParams({
             url: pathname,
             secret: previewSecret,
