@@ -42,4 +42,8 @@ export default ({ env }) => ({
     enabled: true,
     resolve: "./src/plugins/amount-cents",
   },
+  // Enable native Strapi Preview feature
+  preview: {
+    enabled: true,
+  },
 });
