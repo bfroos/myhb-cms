@@ -32,7 +32,8 @@
     "strapi-plugin-required-relation-field": "^0.3.1",
     "strapi-provider-cloudflare-r2": "^0.3.0",
     "styled-components": "^6.0.0",
-    "@strapi/sdk-plugin": "^5.4.0"
+    "@strapi/sdk-plugin": "^5.4.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@strapi/typescript-utils": "5.32.0",
