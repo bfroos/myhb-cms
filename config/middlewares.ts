@@ -32,6 +32,12 @@ export default ({ env }) => {
               "market-assets.strapi.io",
               ...mediaHosts,
             ],
+            // Allow frontend domains to be embedded in iframes for Preview feature
+            "frame-src": [
+              "'self'",
+              env("CLIENT_URL", "https://www.myhealthandbeauty.com"),
+              env("CLIENT_URL_ADS", "https://go.myhealthandbeauty.com"),
+            ],
             upgradeInsecureRequests: null,
           },
         },
