@@ -68,12 +68,24 @@ const getPreviewPathname = (uid: string, { locale, document }: { locale: string;
   }
 };
 
-// Which content types need city/location populated
-const NEEDS_LOCATION_POPULATE = new Set([
-  "api::location.location",
-  "api::treatment-page.treatment-page",
-  "api::city-page.city-page",
-]);
+// Build the correct populate object per content type
+function getPopulate(uid: string): Record<string, any> {
+  switch (uid) {
+    case "api::location.location":
+      return { city: { fields: ["slug"] } };
+    case "api::treatment-page.treatment-page":
+      return {
+        location: {
+          populate: { city: { fields: ["slug"] } },
+          fields: ["slug"],
+        },
+      };
+    case "api::city-page.city-page":
+      return { city: { fields: ["slug"] } };
+    default:
+      return {};
+  }
+}
 
 export default ({ env }) => {
   const clientUrl = env("CLIENT_URL", "https://www.myhealthandbeauty.com");
@@ -105,20 +117,9 @@ export default ({ env }) => {
         allowedOrigins: clientUrl,
 
         async handler(uid: string, { documentId, locale, status }: { documentId: string; locale: string; status: string }) {
-          // Only populate city/location fields for content types that need them
-          const populate = NEEDS_LOCATION_POPULATE.has(uid)
-            ? {
-                city: { fields: ["slug"] },
-                location: {
-                  populate: { city: { fields: ["slug"] } },
-                  fields: ["slug"],
-                },
-              }
-            : {};
-
           const document = await strapi.documents(uid as any).findOne({
             documentId,
-            populate,
+            populate: getPopulate(uid),
           });
 
           const pathname = getPreviewPathname(uid, { locale, document });
