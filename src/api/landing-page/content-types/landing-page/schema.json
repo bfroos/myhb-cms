@@ -25,11 +25,6 @@
       "type": "string",
       "required": true
     },
-    "template": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "plugin::page-builder.template"
-    },
     "seo": {
       "type": "component",
       "repeatable": false,
