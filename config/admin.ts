@@ -3,30 +3,20 @@
  * Includes Preview feature for frontend content review
  */
 
-// Generate preview pathname based on content type and document
 const getPreviewPathname = (uid: string, { locale, document }: { locale: string; document: any }): string | null => {
   const { slug, id, documentId } = document ?? {};
 
-  console.log(`[PREVIEW DEBUG] uid=${uid}, slug=${slug}, documentId=${documentId}, locale=${locale}`);
-
   switch (uid) {
-    // Blog articles → /blog/{slug}
     case "api::blog-article.blog-article": {
       if (!slug) return "/blog";
-      const result = `/blog/${slug}`;
-      console.log(`[PREVIEW] Blog Article: returning ${result}`);
-      return result;
+      return `/blog/${slug}`;
     }
-
-    // Locations → /standorte/{citySlug}/{locationSlug}
     case "api::location.location": {
       const citySlug = document?.city?.slug;
       const locationSlug = document?.slug;
       if (!citySlug || !locationSlug) return "/standorte";
       return `/standorte/${citySlug}/${locationSlug}`;
     }
-
-    // Treatment pages → /standorte/{citySlug}/{locationSlug}/{treatmentSlug}
     case "api::treatment-page.treatment-page": {
       const citySlug = document?.location?.city?.slug;
       const locationSlug = document?.location?.slug;
@@ -34,159 +24,104 @@ const getPreviewPathname = (uid: string, { locale, document }: { locale: string;
       if (!citySlug || !locationSlug || !treatmentSlug) return null;
       return `/standorte/${citySlug}/${locationSlug}/${treatmentSlug}`;
     }
-
-    // Landing pages → /lp/{slug} or /lp/{documentId} as fallback
     case "api::landing-page.landing-page": {
       const pageSlug = slug || documentId || id;
       if (!pageSlug) return null;
       return `/lp/${pageSlug}`;
     }
-
-    // Homepage → /
-    case "api::homepage.homepage": {
+    case "api::homepage.homepage":
       return "/";
-    }
-
-    // About Us → /ueber-uns
-    case "api::about-us-page.about-us-page": {
+    case "api::about-us-page.about-us-page":
       return "/ueber-uns";
-    }
-
-    // Blog overview → /blog
-    case "api::blog-page.blog-page": {
+    case "api::blog-page.blog-page":
       return "/blog";
-    }
-
-    // Prices → /preise
-    case "api::prices-page.prices-page": {
+    case "api::prices-page.prices-page":
       return "/preise";
-    }
-
-    // Products → /produkte/{slug}
     case "api::product.product": {
       if (!slug) return "/produkte";
       return `/produkte/${slug}`;
     }
-
-    // General page → /{slug}
     case "api::general-page.general-page": {
       const pageSlug = slug || documentId || id;
       if (!pageSlug) return null;
       return `/${pageSlug}`;
     }
-
-    // Job page → /jobs
-    case "api::job-page.job-page": {
+    case "api::job-page.job-page":
       return "/jobs";
-    }
-
-    // Treatment ads page → /behandlungen
     case "api::treatment-ads-page.treatment-ads-page": {
-      return "/behandlungen";
+      if (!slug) return "/behandlungen";
+      return `/behandlungen/${slug}`;
     }
-
-    // Career page → /karriere
-    case "api::career-page.career-page": {
+    case "api::career-page.career-page":
       return "/karriere";
-    }
-
-    // City page → /standorte/{citySlug}
     case "api::city-page.city-page": {
       const citySlug = document?.city?.slug || slug || documentId || id;
       if (!citySlug) return "/standorte";
       return `/standorte/${citySlug}`;
     }
-
-    // Doctors page → /team
-    case "api::doctors-page.doctors-page": {
+    case "api::doctors-page.doctors-page":
       return "/team";
-    }
-
-    // Locations page → /standorte
-    case "api::locations-page.locations-page": {
+    case "api::locations-page.locations-page":
       return "/standorte";
-    }
-
-    // No preview for other content types (menu, redirect, global, etc.)
     default:
-      console.log(`[PREVIEW DEBUG] No handler for uid=${uid}`);
       return null;
   }
 };
 
-export default ({ env }) => ({
-  auth: {
-    secret: env("ADMIN_JWT_SECRET"),
-  },
-  apiToken: {
-    salt: env("API_TOKEN_SALT"),
-  },
-  transfer: {
-    token: {
-      salt: env("TRANSFER_TOKEN_SALT"),
+export default ({ env }) => {
+  const clientUrl = env("CLIENT_URL", "https://www.myhealthandbeauty.com");
+  const previewSecret = env("PREVIEW_SECRET", "");
+
+  return {
+    auth: {
+      secret: env("ADMIN_JWT_SECRET"),
     },
-  },
-  secrets: {
-    encryptionKey: env("ENCRYPTION_KEY"),
-  },
-  flags: {
-    nps: env.bool("FLAG_NPS", true),
-    promoteEE: env.bool("FLAG_PROMOTE_EE", true),
-  },
+    apiToken: {
+      salt: env("API_TOKEN_SALT"),
+    },
+    transfer: {
+      token: {
+        salt: env("TRANSFER_TOKEN_SALT"),
+      },
+    },
+    secrets: {
+      encryptionKey: env("ENCRYPTION_KEY"),
+    },
+    flags: {
+      nps: env.bool("FLAG_NPS", true),
+      promoteEE: env.bool("FLAG_PROMOTE_EE", true),
+    },
 
-  // ── PREVIEW FEATURE ────────────────────────────────────────────────
-  preview: {
-    enabled: true,
-    config: {
-      // Allow preview from the main frontend domain (www)
-      allowedOrigins: env("CLIENT_URL", "https://www.myhealthandbeauty.com"),
+    preview: {
+      enabled: true,
+      config: {
+        allowedOrigins: clientUrl,
 
-      async handler(uid: string, { documentId, locale, status }: { documentId: string; locale: string; status: string }) {
-        console.log(`[PREVIEW HANDLER] Starting for uid=${uid}, documentId=${documentId}, locale=${locale}, status=${status}`);
-        
-        try {
-          // Fetch the document with relevant relations
+        async handler(uid: string, { documentId, locale, status }: { documentId: string; locale: string; status: string }) {
           const document = await strapi.documents(uid as any).findOne({
             documentId,
             populate: {
               city: { fields: ["slug"] },
               location: {
-                populate: {
-                  city: { fields: ["slug"] },
-                },
+                populate: { city: { fields: ["slug"] } },
                 fields: ["slug"],
               },
             },
           });
 
-          console.log(`[PREVIEW HANDLER] Document fetched:`, { documentId, slug: document?.slug });
-
           const pathname = getPreviewPathname(uid, { locale, document });
+          if (!pathname) return null;
 
-          console.log(`[PREVIEW HANDLER] Pathname result: ${pathname}`);
+          // Build the preview URL pointing to the Nuxt /api/preview route
+          const urlSearchParams = new URLSearchParams({
+            url: pathname,
+            secret: previewSecret,
+            status,
+          });
 
-          // No preview configured for this content type
-          if (!pathname) {
-            console.log(`[PREVIEW HANDLER] No pathname, returning null`);
-            return null;
-          }
-
-          const clientUrl = env("CLIENT_URL", "https://www.myhealthandbeauty.com");
-
-          // Use Nuxt preview mode: append ?preview=true for drafts
-          const url = new URL(`${clientUrl}${pathname}`);
-          if (status === "draft") {
-            url.searchParams.set("preview", "true");
-          }
-
-          const finalUrl = url.toString();
-          console.log(`[PREVIEW HANDLER] Final URL: ${finalUrl}`);
-          return finalUrl;
-        } catch (error) {
-          console.error(`[PREVIEW HANDLER ERROR]`, error);
-          return null;
-        }
+          return `${clientUrl}/api/preview?${urlSearchParams}`;
+        },
       },
     },
-  },
-});
+  };
+};
