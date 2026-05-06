@@ -28,4 +28,10 @@ export default ({ env }) => ({
     enabled: true,
     resolve: "./src/plugins/amount-cents",
   },
+  // Disabled: @wecre8websites/strapi-page-builder v1.1.2 is incompatible with Strapi 5.44
+  // It crashes the Admin UI sidebar navigation for single types.
+  // Re-enable once a compatible version is released.
+  "strapi-page-builder": {
+    enabled: false,
+  },
 });
