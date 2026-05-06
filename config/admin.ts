@@ -133,11 +133,8 @@ export default ({ env }) => ({
   preview: {
     enabled: true,
     config: {
-      // Allow preview from both www and go subdomains
-      allowedOrigins: [
-        env("CLIENT_URL", "https://www.myhealthandbeauty.com"),
-        env("CLIENT_URL_ADS", "https://go.myhealthandbeauty.com"),
-      ],
+      // Allow preview from the main frontend domain (www)
+      allowedOrigins: env("CLIENT_URL", "https://www.myhealthandbeauty.com"),
 
       async handler(uid: string, { documentId, locale, status }: { documentId: string; locale: string; status: string }) {
         // Fetch the document with relevant relations
