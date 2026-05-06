@@ -5,7 +5,7 @@
 
 // Generate preview pathname based on content type and document
 const getPreviewPathname = (uid: string, { locale, document }: { locale: string; document: any }): string | null => {
-  const { slug } = document ?? {};
+  const { slug, id, documentId } = document ?? {};
 
   switch (uid) {
     // Blog articles → /blog/{slug}
@@ -31,10 +31,11 @@ const getPreviewPathname = (uid: string, { locale, document }: { locale: string;
       return `/standorte/${citySlug}/${locationSlug}/${treatmentSlug}`;
     }
 
-    // Landing pages → /lp/{slug}
+    // Landing pages → /lp/{slug} or /lp/{documentId} as fallback
     case "api::landing-page.landing-page": {
-      if (!slug) return null;
-      return `/lp/${slug}`;
+      const pageSlug = slug || documentId || id;
+      if (!pageSlug) return null;
+      return `/lp/${pageSlug}`;
     }
 
     // Homepage → /
