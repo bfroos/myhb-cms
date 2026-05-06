@@ -20,6 +20,7 @@
   ],
   "dependencies": {
     "@arshiash80/strapi-plugin-iconhub": "^1.1.1",
+    "@wecre8websites/strapi-page-builder": "^1.1.2",
     "@strapi/plugin-cloud": "5.44.0",
     "@strapi/plugin-users-permissions": "5.44.0",
     "@strapi/strapi": "5.44.0",
