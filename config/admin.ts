@@ -7,11 +7,15 @@
 const getPreviewPathname = (uid: string, { locale, document }: { locale: string; document: any }): string | null => {
   const { slug, id, documentId } = document ?? {};
 
+  console.log(`[PREVIEW DEBUG] uid=${uid}, slug=${slug}, documentId=${documentId}, locale=${locale}`);
+
   switch (uid) {
     // Blog articles → /blog/{slug}
     case "api::blog-article.blog-article": {
       if (!slug) return "/blog";
-      return `/blog/${slug}`;
+      const result = `/blog/${slug}`;
+      console.log(`[PREVIEW] Blog Article: returning ${result}`);
+      return result;
     }
 
     // Locations → /standorte/{citySlug}/{locationSlug}
@@ -105,6 +109,7 @@ const getPreviewPathname = (uid: string, { locale, document }: { locale: string;
 
     // No preview for other content types (menu, redirect, global, etc.)
     default:
+      console.log(`[PREVIEW DEBUG] No handler for uid=${uid}`);
       return null;
   }
 };
@@ -137,34 +142,50 @@ export default ({ env }) => ({
       allowedOrigins: env("CLIENT_URL", "https://www.myhealthandbeauty.com"),
 
       async handler(uid: string, { documentId, locale, status }: { documentId: string; locale: string; status: string }) {
-        // Fetch the document with relevant relations
-        const document = await strapi.documents(uid as any).findOne({
-          documentId,
-          populate: {
-            city: { fields: ["slug"] },
-            location: {
-              populate: {
-                city: { fields: ["slug"] },
+        console.log(`[PREVIEW HANDLER] Starting for uid=${uid}, documentId=${documentId}, locale=${locale}, status=${status}`);
+        
+        try {
+          // Fetch the document with relevant relations
+          const document = await strapi.documents(uid as any).findOne({
+            documentId,
+            populate: {
+              city: { fields: ["slug"] },
+              location: {
+                populate: {
+                  city: { fields: ["slug"] },
+                },
+                fields: ["slug"],
               },
-              fields: ["slug"],
             },
-          },
-        });
+          });
 
-        const pathname = getPreviewPathname(uid, { locale, document });
+          console.log(`[PREVIEW HANDLER] Document fetched:`, { documentId, slug: document?.slug });
 
-        // No preview configured for this content type
-        if (!pathname) return null;
+          const pathname = getPreviewPathname(uid, { locale, document });
 
-        const clientUrl = env("CLIENT_URL", "https://www.myhealthandbeauty.com");
+          console.log(`[PREVIEW HANDLER] Pathname result: ${pathname}`);
 
-        // Use Nuxt preview mode: append ?preview=true for drafts
-        const url = new URL(`${clientUrl}${pathname}`);
-        if (status === "draft") {
-          url.searchParams.set("preview", "true");
+          // No preview configured for this content type
+          if (!pathname) {
+            console.log(`[PREVIEW HANDLER] No pathname, returning null`);
+            return null;
+          }
+
+          const clientUrl = env("CLIENT_URL", "https://www.myhealthandbeauty.com");
+
+          // Use Nuxt preview mode: append ?preview=true for drafts
+          const url = new URL(`${clientUrl}${pathname}`);
+          if (status === "draft") {
+            url.searchParams.set("preview", "true");
+          }
+
+          const finalUrl = url.toString();
+          console.log(`[PREVIEW HANDLER] Final URL: ${finalUrl}`);
+          return finalUrl;
+        } catch (error) {
+          console.error(`[PREVIEW HANDLER ERROR]`, error);
+          return null;
         }
-
-        return url.toString();
       },
     },
   },
