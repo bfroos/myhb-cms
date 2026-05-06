@@ -31,10 +31,10 @@
     "strapi-plugin-multi-select": "^2.1.1",
     "strapi-plugin-required-relation-field": "^0.3.1",
     "strapi-provider-cloudflare-r2": "^0.3.0",
-    "styled-components": "^6.0.0"
+    "styled-components": "^6.0.0",
+    "@strapi/sdk-plugin": "^5.4.0"
   },
   "devDependencies": {
-    "@strapi/sdk-plugin": "^5.4.0",
     "@strapi/typescript-utils": "5.32.0",
     "@types/node": "^20",
     "@types/react": "^18",
@@ -44,11 +44,6 @@
   "engines": {
     "node": ">=20.0.0 <=22.x.x",
     "npm": ">=6.0.0"
-  },
-  "overrides": {
-    "@wecre8websites/strapi-page-builder": {
-      "@strapi/strapi": "$@strapi/strapi"
-    }
   },
   "strapi": {
     "uuid": "9f22227f-0d92-43b0-abd3-4138eb933862",
