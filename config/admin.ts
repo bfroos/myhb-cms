@@ -64,6 +64,45 @@ const getPreviewPathname = (uid: string, { locale, document }: { locale: string;
       return `/produkte/${slug}`;
     }
 
+    // General page → /{slug}
+    case "api::general-page.general-page": {
+      const pageSlug = slug || documentId || id;
+      if (!pageSlug) return null;
+      return `/${pageSlug}`;
+    }
+
+    // Job page → /jobs
+    case "api::job-page.job-page": {
+      return "/jobs";
+    }
+
+    // Treatment ads page → /behandlungen
+    case "api::treatment-ads-page.treatment-ads-page": {
+      return "/behandlungen";
+    }
+
+    // Career page → /karriere
+    case "api::career-page.career-page": {
+      return "/karriere";
+    }
+
+    // City page → /standorte/{citySlug}
+    case "api::city-page.city-page": {
+      const citySlug = document?.city?.slug || slug || documentId || id;
+      if (!citySlug) return "/standorte";
+      return `/standorte/${citySlug}`;
+    }
+
+    // Doctors page → /team
+    case "api::doctors-page.doctors-page": {
+      return "/team";
+    }
+
+    // Locations page → /standorte
+    case "api::locations-page.locations-page": {
+      return "/standorte";
+    }
+
     // No preview for other content types (menu, redirect, global, etc.)
     default:
       return null;
