@@ -43,7 +43,12 @@ const getPreviewPathname = (uid: string, { locale, document }: { locale: string;
     case "api::general-page.general-page": {
       const pageSlug = slug || documentId || id;
       if (!pageSlug) return null;
-      return `/${pageSlug}`;
+      return `/p/${pageSlug}`;
+    }
+    case "api::page.page": {
+      const pageSlug = slug || documentId || id;
+      if (!pageSlug) return null;
+      return `/p/${pageSlug}`;
     }
     case "api::job-page.job-page":
       return "/jobs";
