@@ -1,0 +1,30 @@
+{
+  "collectionName": "components_blocks_before_after_pairs",
+  "info": {
+    "displayName": "Before After Pair",
+    "icon": "images"
+  },
+  "options": {},
+  "attributes": {
+    "beforeImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "beforeAlt": {
+      "type": "string"
+    },
+    "afterImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "afterAlt": {
+      "type": "string"
+    }
+  }
+}

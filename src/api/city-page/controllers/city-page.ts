@@ -11,6 +11,7 @@ import {
 import { getLocationStatus } from "../../../utils/locationStatus";
 import { locationTeaserPopulate } from "../../../utils/queries/ui";
 import { seoPopulate } from "../../../utils/queries/components";
+import { getPreviewStatus } from "../../../utils/previewStatus";
 
 export default factories.createCoreController(
   "api::city-page.city-page",
@@ -24,12 +25,13 @@ export default factories.createCoreController(
         citySlug: string;
       };
       const { locale } = ctx.query as { locale?: string };
+      const status = getPreviewStatus(ctx);
 
       const cityPage = await strapi
         .documents("api::city-page.city-page")
         .findFirst({
           locale,
-          status: "published",
+          status,
           populate: {
             seo: {
               ...(seoPopulate as object),
@@ -52,7 +54,7 @@ export default factories.createCoreController(
         .documents("api::city.city")
         .findFirst({
           locale,
-          status: "published",
+          status,
           filters: {
             slug: { $eq: citySlug },
             locations: { id: { $notNull: true } },

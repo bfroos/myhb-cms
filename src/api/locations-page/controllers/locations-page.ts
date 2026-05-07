@@ -8,16 +8,18 @@ import { getLocationStatus } from "../../../utils/locationStatus";
 import { allBlocksPopulate } from "../../../utils/queries/blocks";
 import { locationTeaserPopulate } from "../../../utils/queries/ui";
 import { seoPopulate } from "../../../utils/queries/components";
+import { getPreviewStatus } from "../../../utils/previewStatus";
 export default factories.createCoreController(
   "api::locations-page.locations-page",
   ({ strapi }) => ({
     async findWithLocations(ctx: Context) {
       const { locale } = ctx.query as { locale?: string };
+      const status = getPreviewStatus(ctx);
       const locationsPage = await strapi
         .documents("api::locations-page.locations-page")
         .findFirst({
           locale,
-          status: "published",
+          status,
           populate: {
             seo: seoPopulate as object,
             blocks: allBlocksPopulate as object,
@@ -28,7 +30,7 @@ export default factories.createCoreController(
         .documents("api::location.location")
         .findMany({
           locale,
-          status: "published",
+          status,
           ...(locationTeaserPopulate as any),
         });
 

@@ -385,6 +385,64 @@ export const landingBlockPopulate = {
   populate: {},
 } as const;
 
+export const blockLandingHeroPopulate = {
+  populate: {
+    imageMedia: mediaPopulate,
+  },
+} as const;
+
+export const blockBeforeAfterPopulate = {
+  populate: {
+    pairsMedia: {
+      populate: {
+        beforeImage: mediaPopulate,
+        afterImage: mediaPopulate,
+      },
+    },
+  },
+} as const;
+
+export const blockDoctorLandingPopulate = {
+  populate: {
+    imageMedia: mediaPopulate,
+  },
+} as const;
+
+export const blockPressLogosPopulate = {
+  populate: {
+    logoItems: {
+      populate: {
+        logo: mediaPopulate,
+      },
+    },
+  },
+} as const;
+
+export const blockPromoBannerPopulate = {
+  populate: {
+    stickerMedia: mediaPopulate,
+  },
+} as const;
+
+export const blockPromoStripPopulate = {
+  populate: {
+    stickerMedia: mediaPopulate,
+  },
+} as const;
+
+export const blockPromoHeroPopulate = {
+  populate: {
+    imageMedia: mediaPopulate,
+    stickerMedia: mediaPopulate,
+  },
+} as const;
+
+export const blockPromoFloatingStickerPopulate = {
+  populate: {
+    stickerMedia: mediaPopulate,
+  },
+} as const;
+
 export const allBlocksPopulate = {
   on: {
     "blocks.benefits-list": blockBenefitsListPopulate,
@@ -411,13 +469,13 @@ export const allBlocksPopulate = {
     "blocks.treatment-plan": blockTreatmentPlanPopulate,
     "blocks.treatment-teasers": blockTreatmentTeasersPopulate,
     "blocks.trust-grid": blockTrustGridPopulate,
-    "blocks.landing-hero": landingBlockPopulate,
+    "blocks.landing-hero": blockLandingHeroPopulate,
     "blocks.trust-bar": landingBlockPopulate,
     "blocks.quick-info": landingBlockPopulate,
-    "blocks.before-after": landingBlockPopulate,
+    "blocks.before-after": blockBeforeAfterPopulate,
     "blocks.benefit-grid": landingBlockPopulate,
     "blocks.seo-collapsible": landingBlockPopulate,
-    "blocks.doctor": landingBlockPopulate,
+    "blocks.doctor": blockDoctorLandingPopulate,
     "blocks.price-overview": landingBlockPopulate,
     "blocks.price-teaser": landingBlockPopulate,
     "blocks.faq-accordion": landingBlockPopulate,
@@ -426,14 +484,14 @@ export const allBlocksPopulate = {
     "blocks.final-cta": landingBlockPopulate,
     "blocks.mobile-sticky-cta": landingBlockPopulate,
     "blocks.landing-reviews": landingBlockPopulate,
-    "blocks.press-logos": landingBlockPopulate,
+    "blocks.press-logos": blockPressLogosPopulate,
     "blocks.guarantees": landingBlockPopulate,
     "blocks.awards": landingBlockPopulate,
     "blocks.live-counter": landingBlockPopulate,
-    "blocks.promo-banner": landingBlockPopulate,
-    "blocks.promo-strip": landingBlockPopulate,
-    "blocks.promo-hero": landingBlockPopulate,
-    "blocks.promo-floating-sticker": landingBlockPopulate,
+    "blocks.promo-banner": blockPromoBannerPopulate,
+    "blocks.promo-strip": blockPromoStripPopulate,
+    "blocks.promo-hero": blockPromoHeroPopulate,
+    "blocks.promo-floating-sticker": blockPromoFloatingStickerPopulate,
   },
 };
 

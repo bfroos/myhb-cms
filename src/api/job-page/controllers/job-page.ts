@@ -7,6 +7,7 @@ import type { Context } from "koa";
 import { allBlocksPopulate } from "../../../utils/queries/blocks";
 import { mediaPopulate } from "../../../utils/queries/strapi";
 import { locationTeaserPopulate } from "../../../utils/queries/ui";
+import { getPreviewStatus } from "../../../utils/previewStatus";
 
 export default factories.createCoreController(
   "api::job-page.job-page",
@@ -16,12 +17,13 @@ export default factories.createCoreController(
         jobSlug: string;
       };
       const { locale } = ctx.query as { locale?: string };
+      const status = getPreviewStatus(ctx);
 
       const jobPageRaw = await strapi
         .documents("api::job-page.job-page")
         .findFirst({
           locale,
-          status: "published",
+          status,
           populate: {
             blocks: allBlocksPopulate as object,
           },
@@ -33,7 +35,7 @@ export default factories.createCoreController(
         .documents("api::job.job")
         .findFirst({
           locale,
-          status: "published",
+          status,
           filters: {
             slug: {
               $eq: jobSlug,

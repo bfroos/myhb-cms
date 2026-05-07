@@ -12,6 +12,13 @@
     "stickerSrc": {
       "type": "string"
     },
+    "stickerMedia": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
     "position": {
       "type": "enumeration",
       "enum": [

@@ -13,6 +13,7 @@ import {
 } from "../../../utils/queries/locationPopulate";
 import { treatmentTeaserPopulate } from "../../../utils/queries/ui";
 import { mediaPopulate } from "../../../utils/queries/strapi";
+import { getPreviewStatus } from "../../../utils/previewStatus";
 
 // Mapping von LocationType zu erlaubten TreatmentTypes
 const locationTypeToTreatmentTypes: Record<
@@ -30,6 +31,7 @@ export default factories.createCoreController(
     async findBookableLocations(ctx: Context) {
       const { locale } = ctx.query as { locale?: string };
       const { treatmentType } = ctx.query as { treatmentType?: string };
+      const status = getPreviewStatus(ctx);
 
       const allowedLocationTypesForTreatment = treatmentType
         ? (Object.entries(locationTypeToTreatmentTypes)
@@ -51,7 +53,7 @@ export default factories.createCoreController(
         .documents("api::location.location")
         .findMany({
           locale,
-          status: "published",
+          status,
           fields: [
             "name",
             "slug",
@@ -101,12 +103,13 @@ export default factories.createCoreController(
     },
     async findWithCalendlyUrl(ctx: Context) {
       const { locale } = ctx.query as { locale?: string };
+      const status = getPreviewStatus(ctx);
 
       const locations = await strapi
         .documents("api::location.location")
         .findMany({
           locale,
-          status: "published",
+          status,
           fields: ["name", "slug", "newOpeningDate", "timezone", "calendlyUrl"],
           filters: {
             calendlyUrl: {
@@ -155,13 +158,14 @@ export default factories.createCoreController(
         locationSlug: string;
       };
       const { locale } = ctx.query as { locale?: string };
+      const status = getPreviewStatus(ctx);
 
       // Fetch location with all needed populate
       const location = await strapi
         .documents("api::location.location")
         .findFirst({
           locale,
-          status: "published",
+          status,
           fields: locationFieldsForPage as any,
           filters: {
             slug: {
@@ -200,7 +204,7 @@ export default factories.createCoreController(
         .documents("api::treatment.treatment")
         .findMany({
           locale,
-          status: "published",
+          status,
           fields: ["name"],
           filters: {
             type: {
@@ -242,7 +246,7 @@ export default factories.createCoreController(
           .documents("api::treatment-page.treatment-page")
           .findMany({
             locale,
-            status: "published",
+            status,
             fields: ["slug", "name"],
             filters: {
               slug: {
@@ -296,12 +300,13 @@ export default factories.createCoreController(
         locationSlug: string;
       };
       const { locale } = ctx.query as { locale?: string };
+      const status = getPreviewStatus(ctx);
 
       const location = await strapi
         .documents("api::location.location")
         .findFirst({
           locale,
-          status: "published",
+          status,
           fields: locationFieldsForAdsPage as any,
           filters: {
             slug: {
@@ -337,21 +342,22 @@ export default factories.createCoreController(
     async getCounts(ctx: Context) {
       const { locale } = ctx.query as { locale?: string };
       const activeLocale = locale || "de";
+      const status = getPreviewStatus(ctx);
 
       const [loungeCount, clinicCount, doctorCount] = await Promise.all([
         strapi.documents("api::location.location").count({
           locale: activeLocale,
-          status: "published",
+          status,
           filters: { type: { $eq: "lounge" } },
         }),
         strapi.documents("api::location.location").count({
           locale: activeLocale,
-          status: "published",
+          status,
           filters: { type: { $eq: "clinic" } },
         }),
         strapi.documents("api::employee.employee").count({
           locale: activeLocale,
-          status: "published",
+          status,
           filters: {
             isActive: { $eq: true },
             employeeType: { $eq: "doctor" },

@@ -18,6 +18,13 @@
     "image": {
       "type": "json"
     },
+    "imageMedia": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
     "cta": {
       "type": "json"
     },
@@ -26,6 +33,13 @@
     },
     "stickerSrc": {
       "type": "string"
+    },
+    "stickerMedia": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
     },
     "elevated": {
       "type": "boolean",

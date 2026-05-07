@@ -6,18 +6,20 @@ import { factories } from "@strapi/strapi";
 import type { Context } from "koa";
 import { allBlocksPopulate } from "../../../utils/queries/blocks";
 import { seoPopulate } from "../../../utils/queries/components";
+import { getPreviewStatus } from "../../../utils/previewStatus";
 
 export default factories.createCoreController(
   "api::doctors-page.doctors-page",
   ({ strapi }) => ({
     async find(ctx: Context) {
       const { locale } = ctx.query as { locale?: string };
+      const status = getPreviewStatus(ctx);
 
       const page = await strapi
         .documents("api::doctors-page.doctors-page")
         .findFirst({
           locale,
-          status: "published",
+          status,
           populate: {
             seo: seoPopulate as object,
             blocks: allBlocksPopulate as object,

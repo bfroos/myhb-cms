@@ -7,6 +7,7 @@ import type { Context } from "koa";
 import { treatmentTeaserPopulate } from "../../../utils/queries/ui";
 import { allBlocksPopulate } from "../../../utils/queries/blocks";
 import { mediaPopulate } from "../../../utils/queries/strapi";
+import { getPreviewStatus } from "../../../utils/previewStatus";
 
 export default factories.createCoreController(
   "api::product-page.product-page",
@@ -19,13 +20,14 @@ export default factories.createCoreController(
         productSlug: string;
       };
       const { locale } = ctx.query as { locale?: string };
+      const status = getPreviewStatus(ctx);
 
       // Fetch product-page (singleType) - only blocks
       const productPageRaw = await strapi
         .documents("api::product-page.product-page")
         .findFirst({
           locale,
-          status: "published",
+          status,
           populate: {
             blocks: allBlocksPopulate as object,
           },
@@ -40,7 +42,7 @@ export default factories.createCoreController(
         .documents("api::product.product")
         .findFirst({
           locale,
-          status: "published",
+          status,
           filters: {
             slug: {
               $eq: productSlug,

@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_blocks_press_logos",
+  "info": {
+    "displayName": "Press Logo",
+    "icon": "image"
+  },
+  "options": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "logo": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    }
+  }
+}

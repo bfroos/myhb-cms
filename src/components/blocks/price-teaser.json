@@ -18,6 +18,14 @@
     "items": {
       "type": "json"
     },
+    "source": {
+      "type": "enumeration",
+      "enum": [
+        "manual",
+        "context"
+      ],
+      "default": "manual"
+    },
     "limit": {
       "type": "integer"
     },

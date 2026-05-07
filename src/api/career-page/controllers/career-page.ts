@@ -8,19 +8,21 @@ import { allBlocksPopulate } from "../../../utils/queries/blocks";
 import { mediaPopulate } from "../../../utils/queries/strapi";
 import { locationTeaserPopulate } from "../../../utils/queries/ui";
 import { seoPopulate } from "../../../utils/queries/components";
+import { getPreviewStatus } from "../../../utils/previewStatus";
 
 export default factories.createCoreController(
   "api::career-page.career-page",
   ({ strapi }) => ({
     async find(ctx: Context) {
       const { locale } = ctx.query as { locale?: string };
+      const status = getPreviewStatus(ctx);
 
       // Fetch career-page (singleType)
       const careerPage = await strapi
         .documents("api::career-page.career-page")
         .findFirst({
           locale,
-          status: "published",
+          status,
           populate: {
             topBlocks: allBlocksPopulate as object,
             bottomBlocks: allBlocksPopulate as object,
@@ -38,7 +40,7 @@ export default factories.createCoreController(
       // Fetch all active jobs
       const jobs = await strapi.documents("api::job.job").findMany({
         locale,
-        status: "published",
+        status,
         filters: {
           isActive: {
             $eq: true,

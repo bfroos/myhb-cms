@@ -18,6 +18,13 @@
     "image": {
       "type": "json"
     },
+    "imageMedia": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
     "checks": {
       "type": "json"
     },

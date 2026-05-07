@@ -30,6 +30,13 @@
     "image": {
       "type": "json"
     },
+    "imageMedia": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
     "elevated": {
       "type": "boolean",
       "default": true

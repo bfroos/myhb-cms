@@ -3,6 +3,7 @@
  */
 
 import type { Context } from "koa";
+import { getPreviewStatus } from "../../../utils/previewStatus";
 
 const SEO_TREATMENT_PAGE_UID = "api::treatment-page.treatment-page";
 const ADS_TREATMENT_PAGE_UID = "api::treatment-ads-page.treatment-ads-page";
@@ -40,6 +41,7 @@ export default {
 
     const result: Record<string, any> = {};
     const siteMode = ctx.get("x-site-mode");
+    const status = getPreviewStatus(ctx);
     const treatmentPageUid =
       siteMode === "ads" ? ADS_TREATMENT_PAGE_UID : SEO_TREATMENT_PAGE_UID;
 
@@ -84,7 +86,7 @@ export default {
     if (requestedTypes.includes("treatment-pages")) {
       const allPages = await strapi.documents(treatmentPageUid).findMany({
         locale: requestedLocale,
-        status: "published",
+        status,
         fields: ["id", "name", "slug"],
         filters: {
           showInMenu: { $eq: true },
@@ -106,7 +108,7 @@ export default {
         .documents("api::product-category.product-category")
         .findMany({
           locale: requestedLocale,
-          status: "published",
+          status,
           fields: ["id", "name", "slug"],
           limit: 9999,
         });

@@ -3,6 +3,7 @@ import type { Context } from "koa";
 import { allBlocksPopulate } from "../../../utils/queries/blocks";
 import { mediaPopulate } from "../../../utils/queries/strapi";
 import { seoPopulate } from "../../../utils/queries/components";
+import { getPreviewStatus } from "../../../utils/previewStatus";
 
 export default factories.createCoreController(
   "api::blog-page.blog-page",
@@ -12,13 +13,14 @@ export default factories.createCoreController(
       const categorySlug = ctx.query.categorySlug as string | undefined;
       const page = Math.max(1, Number(ctx.query.page) || 1);
       const pageSize = 9;
+      const status = getPreviewStatus(ctx);
 
       // Fetch blog-page (singleType)
       const blogPage = await strapi
         .documents("api::blog-page.blog-page")
         .findFirst({
           locale,
-          status: "published",
+          status,
           populate: {
             seo: seoPopulate,
             blocks: allBlocksPopulate,
@@ -30,7 +32,7 @@ export default factories.createCoreController(
         .documents("api::blog-category.blog-category")
         .findMany({
           locale,
-          status: "published",
+          status,
           fields: ["name", "slug"],
         });
 
@@ -52,7 +54,7 @@ export default factories.createCoreController(
       const [articles, total] = await Promise.all([
         strapi.documents("api::blog-article.blog-article").findMany({
           locale,
-          status: "published",
+          status,
           fields: ["headline", "intro", "displayDate", "slug"],
           filters:
             Object.keys(articleFilters).length > 0 ? articleFilters : undefined,
@@ -71,7 +73,7 @@ export default factories.createCoreController(
         }),
         strapi.documents("api::blog-article.blog-article").count({
           locale,
-          status: "published",
+          status,
           filters:
             Object.keys(articleFilters).length > 0 ? articleFilters : undefined,
         }),

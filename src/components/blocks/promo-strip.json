@@ -15,6 +15,13 @@
     "stickerSrc": {
       "type": "string"
     },
+    "stickerMedia": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
     "cta": {
       "type": "json"
     }

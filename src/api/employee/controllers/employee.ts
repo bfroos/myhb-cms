@@ -10,6 +10,7 @@ import {
   reviewTeaserPopulate,
   treatmentTeaserPopulate,
 } from "../../../utils/queries/ui";
+import { getPreviewStatus } from "../../../utils/previewStatus";
 
 export default factories.createCoreController(
   "api::employee.employee",
@@ -17,12 +18,13 @@ export default factories.createCoreController(
     async findBySlug(ctx: Context) {
       const { slug } = ctx.params as { slug: string };
       const { locale } = ctx.query as { locale?: string };
+      const status = getPreviewStatus(ctx);
 
       const employee = await strapi
         .documents("api::employee.employee")
         .findFirst({
           locale,
-          status: "published",
+          status,
           filters: {
             slug: {
               $eq: slug,

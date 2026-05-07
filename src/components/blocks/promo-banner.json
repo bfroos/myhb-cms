@@ -30,6 +30,13 @@
     "stickerSrc": {
       "type": "string"
     },
+    "stickerMedia": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
     "rotate": {
       "type": "integer",
       "default": -8

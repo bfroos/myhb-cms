@@ -12,6 +12,11 @@
     "pairs": {
       "type": "json"
     },
+    "pairsMedia": {
+      "type": "component",
+      "component": "blocks.before-after-pair",
+      "repeatable": true
+    },
     "elevated": {
       "type": "boolean",
       "default": true

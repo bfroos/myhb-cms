@@ -18,6 +18,7 @@ import {
   locationPopulateForAdsPage,
   locationPopulateForPage,
 } from "../../../utils/queries/locationPopulate";
+import { getPreviewStatus } from "../../../utils/previewStatus";
 
 const SEO_TREATMENT_PAGE_UID = "api::treatment-page.treatment-page";
 const ADS_TREATMENT_PAGE_UID = "api::treatment-ads-page.treatment-ads-page";
@@ -102,12 +103,13 @@ export default factories.createCoreController(
       const { locale } = ctx.query as { locale?: string };
       const siteMode = ctx.get("x-site-mode");
       const treatmentPageUid = getTreatmentPageUid(siteMode);
+      const status = getPreviewStatus(ctx);
 
       const listedPages = (await strapi
         .documents(treatmentPageUid as any)
         .findMany({
           locale,
-          status: "published",
+          status,
           fields: ["slug", "name", "pathKey", "ancestorSlugs"],
           filters: {
             showInMenu: { $eq: true },
@@ -151,7 +153,7 @@ export default factories.createCoreController(
               .documents(treatmentPageUid as any)
               .findMany({
                 locale,
-                status: "published",
+                status,
                 fields: ["slug", "name"],
                 filters: {
                   slug: {
@@ -217,6 +219,7 @@ export default factories.createCoreController(
       const { locale } = ctx.query as { locale?: string };
       const siteMode = ctx.get("x-site-mode");
       const treatmentPageUid = getTreatmentPageUid(siteMode);
+      const status = getPreviewStatus(ctx);
 
       const pathSegments = Array.isArray(path) ? path : [path];
       const pathKey = pathSegments.filter(Boolean).join("/");
@@ -228,7 +231,7 @@ export default factories.createCoreController(
             pathKey: { $eq: pathKey },
           },
           locale,
-          status: "published",
+          status,
           populate: getTreatmentPagePopulateForFindByPath(siteMode) as any,
         });
       if (!page) return ctx.notFound("Treatment page not found");
@@ -251,7 +254,7 @@ export default factories.createCoreController(
           .documents(treatmentPageUid as any)
           .findMany({
             locale,
-            status: "published",
+            status,
             fields: ["slug", "name"],
             filters: {
               slug: {
@@ -294,6 +297,7 @@ export default factories.createCoreController(
       const { locale } = ctx.query as { locale?: string };
       const siteMode = ctx.get("x-site-mode");
       const treatmentPageUid = getTreatmentPageUid(siteMode);
+      const status = getPreviewStatus(ctx);
 
       // Handle treatmentPathKey as array or string
       const pathKeySegments = Array.isArray(treatmentPathKey)
@@ -306,7 +310,7 @@ export default factories.createCoreController(
         .documents("api::location.location")
         .findFirst({
           locale,
-          status: "published",
+          status,
           fields: getLocationFieldsForSiteMode(siteMode) as any,
           filters: {
             slug: {
@@ -333,7 +337,7 @@ export default factories.createCoreController(
         .documents(treatmentPageUid as any)
         .findFirst({
           locale,
-          status: "published",
+          status,
           filters: {
             pathKey: {
               $eq: pathKey,
@@ -362,7 +366,7 @@ export default factories.createCoreController(
           .documents(treatmentPageUid as any)
           .findMany({
             locale,
-            status: "published",
+            status,
             fields: ["slug", "name"],
             filters: {
               slug: {
