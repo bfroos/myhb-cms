@@ -1,0 +1,33 @@
+{
+  "collectionName": "components_blocks_price_overviews",
+  "info": {
+    "displayName": "Price Overview",
+    "icon": "layout"
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string"
+    },
+    "items": {
+      "type": "json"
+    },
+    "cta": {
+      "type": "json"
+    },
+    "elevated": {
+      "type": "boolean",
+      "default": true
+    },
+    "themeClass": {
+      "type": "enumeration",
+      "enum": [
+        "theme-light",
+        "theme-soft",
+        "theme-neutral",
+        "theme-strong"
+      ],
+      "default": "theme-light"
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_blocks_promo_strips",
+  "info": {
+    "displayName": "Promo Strip",
+    "icon": "layout"
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string"
+    },
+    "text": {
+      "type": "text"
+    },
+    "stickerSrc": {
+      "type": "string"
+    },
+    "cta": {
+      "type": "json"
+    }
+  }
+}

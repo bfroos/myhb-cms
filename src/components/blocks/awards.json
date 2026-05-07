@@ -1,0 +1,33 @@
+{
+  "collectionName": "components_blocks_awardss",
+  "info": {
+    "displayName": "Awards",
+    "icon": "layout"
+  },
+  "options": {},
+  "attributes": {
+    "eyebrow": {
+      "type": "string"
+    },
+    "headline": {
+      "type": "string"
+    },
+    "items": {
+      "type": "json"
+    },
+    "elevated": {
+      "type": "boolean",
+      "default": true
+    },
+    "themeClass": {
+      "type": "enumeration",
+      "enum": [
+        "theme-light",
+        "theme-soft",
+        "theme-neutral",
+        "theme-strong"
+      ],
+      "default": "theme-light"
+    }
+  }
+}

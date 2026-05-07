@@ -2,6 +2,6 @@
  * landing-page router
  */
 
-import { factories } from '@strapi/strapi';
+import { factories } from "@strapi/strapi";
 
-export default factories.createCoreRouter('api::landing-page.landing-page' as any);
+export default factories.createCoreRouter("api::landing-page.landing-page" as any);

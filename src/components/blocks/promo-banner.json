@@ -1,0 +1,52 @@
+{
+  "collectionName": "components_blocks_promo_banners",
+  "info": {
+    "displayName": "Promo Banner",
+    "icon": "layout"
+  },
+  "options": {},
+  "attributes": {
+    "eyebrow": {
+      "type": "string"
+    },
+    "headline": {
+      "type": "string"
+    },
+    "text": {
+      "type": "text"
+    },
+    "checks": {
+      "type": "json"
+    },
+    "primaryCta": {
+      "type": "json"
+    },
+    "secondaryCta": {
+      "type": "json"
+    },
+    "finePrint": {
+      "type": "string"
+    },
+    "stickerSrc": {
+      "type": "string"
+    },
+    "rotate": {
+      "type": "integer",
+      "default": -8
+    },
+    "elevated": {
+      "type": "boolean",
+      "default": true
+    },
+    "themeClass": {
+      "type": "enumeration",
+      "enum": [
+        "theme-light",
+        "theme-soft",
+        "theme-neutral",
+        "theme-strong"
+      ],
+      "default": "theme-light"
+    }
+  }
+}

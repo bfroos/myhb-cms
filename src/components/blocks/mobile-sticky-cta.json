@@ -1,0 +1,35 @@
+{
+  "collectionName": "components_blocks_mobile_sticky_ctas",
+  "info": {
+    "displayName": "Mobile Sticky CTA",
+    "icon": "layout"
+  },
+  "options": {},
+  "attributes": {
+    "phone": {
+      "type": "string"
+    },
+    "whatsapp": {
+      "type": "string"
+    },
+    "callLabel": {
+      "type": "string"
+    },
+    "bookLabel": {
+      "type": "string"
+    },
+    "whatsappLabel": {
+      "type": "string"
+    },
+    "themeClass": {
+      "type": "enumeration",
+      "enum": [
+        "theme-light",
+        "theme-soft",
+        "theme-neutral",
+        "theme-strong"
+      ],
+      "default": "theme-light"
+    }
+  }
+}

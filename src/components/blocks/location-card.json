@@ -1,0 +1,42 @@
+{
+  "collectionName": "components_blocks_location_cards",
+  "info": {
+    "displayName": "Location Card",
+    "icon": "layout"
+  },
+  "options": {},
+  "attributes": {
+    "address": {
+      "type": "json"
+    },
+    "lat": {
+      "type": "decimal"
+    },
+    "lng": {
+      "type": "decimal"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "whatsapp": {
+      "type": "string"
+    },
+    "hours": {
+      "type": "json"
+    },
+    "googleMapsApiKey": {
+      "type": "string"
+    },
+    "zoom": {
+      "type": "integer",
+      "default": 14
+    },
+    "elevated": {
+      "type": "boolean",
+      "default": true
+    },
+    "placeId": {
+      "type": "string"
+    }
+  }
+}

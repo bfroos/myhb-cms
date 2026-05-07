@@ -1,0 +1,42 @@
+{
+  "collectionName": "components_blocks_doctors",
+  "info": {
+    "displayName": "Doctor",
+    "icon": "layout"
+  },
+  "options": {},
+  "attributes": {
+    "eyebrow": {
+      "type": "string"
+    },
+    "headline": {
+      "type": "string"
+    },
+    "text": {
+      "type": "text"
+    },
+    "image": {
+      "type": "json"
+    },
+    "checks": {
+      "type": "json"
+    },
+    "cta": {
+      "type": "json"
+    },
+    "elevated": {
+      "type": "boolean",
+      "default": true
+    },
+    "themeClass": {
+      "type": "enumeration",
+      "enum": [
+        "theme-light",
+        "theme-soft",
+        "theme-neutral",
+        "theme-strong"
+      ],
+      "default": "theme-light"
+    }
+  }
+}

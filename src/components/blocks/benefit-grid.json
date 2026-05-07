@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_blocks_benefit_grids",
+  "info": {
+    "displayName": "Benefit Grid",
+    "icon": "layout"
+  },
+  "options": {},
+  "attributes": {
+    "items": {
+      "type": "json"
+    },
+    "themeClass": {
+      "type": "enumeration",
+      "enum": [
+        "theme-light",
+        "theme-soft",
+        "theme-neutral",
+        "theme-strong"
+      ],
+      "default": "theme-light"
+    }
+  }
+}

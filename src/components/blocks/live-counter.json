@@ -1,0 +1,36 @@
+{
+  "collectionName": "components_blocks_live_counters",
+  "info": {
+    "displayName": "Live Counter",
+    "icon": "layout"
+  },
+  "options": {},
+  "attributes": {
+    "start": {
+      "type": "integer"
+    },
+    "perDay": {
+      "type": "integer"
+    },
+    "label": {
+      "type": "string"
+    },
+    "sub": {
+      "type": "string"
+    },
+    "elevated": {
+      "type": "boolean",
+      "default": true
+    },
+    "themeClass": {
+      "type": "enumeration",
+      "enum": [
+        "theme-light",
+        "theme-soft",
+        "theme-neutral",
+        "theme-strong"
+      ],
+      "default": "theme-light"
+    }
+  }
+}

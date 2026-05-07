@@ -1,0 +1,31 @@
+{
+  "collectionName": "components_blocks_seo_collapsibles",
+  "info": {
+    "displayName": "SEO Collapsible",
+    "icon": "layout"
+  },
+  "options": {},
+  "attributes": {
+    "items": {
+      "type": "json"
+    },
+    "openFirst": {
+      "type": "boolean",
+      "default": false
+    },
+    "elevated": {
+      "type": "boolean",
+      "default": true
+    },
+    "themeClass": {
+      "type": "enumeration",
+      "enum": [
+        "theme-light",
+        "theme-soft",
+        "theme-neutral",
+        "theme-strong"
+      ],
+      "default": "theme-light"
+    }
+  }
+}

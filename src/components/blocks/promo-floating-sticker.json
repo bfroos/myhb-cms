@@ -1,0 +1,51 @@
+{
+  "collectionName": "components_blocks_promo_floating_stickers",
+  "info": {
+    "displayName": "Promo Floating Sticker",
+    "icon": "layout"
+  },
+  "options": {},
+  "attributes": {
+    "href": {
+      "type": "string"
+    },
+    "stickerSrc": {
+      "type": "string"
+    },
+    "position": {
+      "type": "enumeration",
+      "enum": [
+        "bottom-right",
+        "bottom-left",
+        "top-right",
+        "top-left"
+      ],
+      "default": "bottom-right"
+    },
+    "size": {
+      "type": "enumeration",
+      "enum": [
+        "sm",
+        "md",
+        "lg",
+        "xl"
+      ],
+      "default": "lg"
+    },
+    "rotate": {
+      "type": "integer",
+      "default": -8
+    },
+    "offset": {
+      "type": "integer",
+      "default": 24
+    },
+    "dismissible": {
+      "type": "boolean",
+      "default": true
+    },
+    "ariaLabel": {
+      "type": "string"
+    }
+  }
+}

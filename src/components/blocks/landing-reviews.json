@@ -1,0 +1,33 @@
+{
+  "collectionName": "components_blocks_landing_reviewss",
+  "info": {
+    "displayName": "Landing Reviews",
+    "icon": "layout"
+  },
+  "options": {},
+  "attributes": {
+    "rating": {
+      "type": "decimal"
+    },
+    "count": {
+      "type": "string"
+    },
+    "reviews": {
+      "type": "json"
+    },
+    "elevated": {
+      "type": "boolean",
+      "default": true
+    },
+    "themeClass": {
+      "type": "enumeration",
+      "enum": [
+        "theme-light",
+        "theme-soft",
+        "theme-neutral",
+        "theme-strong"
+      ],
+      "default": "theme-light"
+    }
+  }
+}

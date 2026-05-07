@@ -20,9 +20,9 @@
   ],
   "dependencies": {
     "@arshiash80/strapi-plugin-iconhub": "^1.1.1",
-    "@wecre8websites/strapi-page-builder": "^1.1.2",
     "@strapi/plugin-cloud": "5.44.0",
     "@strapi/plugin-users-permissions": "5.44.0",
+    "@strapi/sdk-plugin": "^5.4.0",
     "@strapi/strapi": "5.44.0",
     "better-sqlite3": "12.4.1",
     "react": "^18.0.0",
@@ -32,7 +32,6 @@
     "strapi-plugin-required-relation-field": "^0.3.1",
     "strapi-provider-cloudflare-r2": "^0.3.0",
     "styled-components": "^6.0.0",
-    "@strapi/sdk-plugin": "^5.4.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {

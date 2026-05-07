@@ -381,6 +381,10 @@ export const blockTrustGridPopulate = {
   },
 } as const;
 
+export const landingBlockPopulate = {
+  populate: {},
+} as const;
+
 export const allBlocksPopulate = {
   on: {
     "blocks.benefits-list": blockBenefitsListPopulate,
@@ -407,6 +411,29 @@ export const allBlocksPopulate = {
     "blocks.treatment-plan": blockTreatmentPlanPopulate,
     "blocks.treatment-teasers": blockTreatmentTeasersPopulate,
     "blocks.trust-grid": blockTrustGridPopulate,
+    "blocks.landing-hero": landingBlockPopulate,
+    "blocks.trust-bar": landingBlockPopulate,
+    "blocks.quick-info": landingBlockPopulate,
+    "blocks.before-after": landingBlockPopulate,
+    "blocks.benefit-grid": landingBlockPopulate,
+    "blocks.seo-collapsible": landingBlockPopulate,
+    "blocks.doctor": landingBlockPopulate,
+    "blocks.price-overview": landingBlockPopulate,
+    "blocks.price-teaser": landingBlockPopulate,
+    "blocks.faq-accordion": landingBlockPopulate,
+    "blocks.local-section": landingBlockPopulate,
+    "blocks.location-card": landingBlockPopulate,
+    "blocks.final-cta": landingBlockPopulate,
+    "blocks.mobile-sticky-cta": landingBlockPopulate,
+    "blocks.landing-reviews": landingBlockPopulate,
+    "blocks.press-logos": landingBlockPopulate,
+    "blocks.guarantees": landingBlockPopulate,
+    "blocks.awards": landingBlockPopulate,
+    "blocks.live-counter": landingBlockPopulate,
+    "blocks.promo-banner": landingBlockPopulate,
+    "blocks.promo-strip": landingBlockPopulate,
+    "blocks.promo-hero": landingBlockPopulate,
+    "blocks.promo-floating-sticker": landingBlockPopulate,
   },
 };
 

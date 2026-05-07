@@ -5,30 +5,88 @@
     "singularName": "landing-page",
     "pluralName": "landing-pages",
     "displayName": "Landing Page",
-    "description": "Visual page builder landing pages"
+    "description": "Dynamic-zone landing pages built from Vue blocks"
   },
   "options": {
     "draftAndPublish": true
   },
   "pluginOptions": {
     "i18n": {
-      "localized": false
+      "localized": true
     }
   },
   "attributes": {
-    "slug": {
-      "type": "uid",
+    "internalLabel": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      },
       "required": true,
-      "targetField": "name"
+      "unique": true
     },
     "name": {
       "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
       "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "targetField": "name",
+      "required": true
+    },
+    "blocks": {
+      "type": "dynamiczone",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "components": [
+        "blocks.landing-hero",
+        "blocks.trust-bar",
+        "blocks.quick-info",
+        "blocks.before-after",
+        "blocks.benefit-grid",
+        "blocks.seo-collapsible",
+        "blocks.doctor",
+        "blocks.price-overview",
+        "blocks.price-teaser",
+        "blocks.faq-accordion",
+        "blocks.local-section",
+        "blocks.location-card",
+        "blocks.final-cta",
+        "blocks.mobile-sticky-cta",
+        "blocks.landing-reviews",
+        "blocks.press-logos",
+        "blocks.guarantees",
+        "blocks.awards",
+        "blocks.live-counter",
+        "blocks.promo-banner",
+        "blocks.promo-strip",
+        "blocks.promo-hero",
+        "blocks.promo-floating-sticker"
+      ]
     },
     "seo": {
       "type": "component",
-      "repeatable": false,
-      "component": "shared.seo"
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "shared.seo",
+      "repeatable": false
     }
   }
 }
