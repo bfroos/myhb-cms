@@ -43,12 +43,7 @@ const getPreviewPathname = (uid: string, { locale, document }: { locale: string;
     case "api::general-page.general-page": {
       const pageSlug = slug || documentId || id;
       if (!pageSlug) return null;
-      return `/p/${pageSlug}`;
-    }
-    case "api::page.page": {
-      const pageSlug = slug || documentId || id;
-      if (!pageSlug) return null;
-      return `/p/${pageSlug}`;
+      return `/${pageSlug}`;
     }
     case "api::job-page.job-page":
       return "/jobs";
@@ -114,9 +109,14 @@ export default ({ env }) => {
     preview: {
       enabled: true,
       config: {
-        // CRITICAL: Must be array, not string!
-        // This allows postMessage to work with correct origin validation
-        allowedOrigins: [clientUrl],
+        // allowedOrigins must be an array — Strapi uses this as postMessage targetOrigin.
+        // Include all origins the preview iframe can run on.
+        allowedOrigins: [
+          clientUrl,
+          'https://go.myhealthandbeauty.com',
+          'http://localhost:3000',
+          'http://localhost:3001',
+        ],
 
         async handler(uid: string, { documentId, locale, status }: { documentId: string; locale: string; status: string }) {
           const document = await strapi.documents(uid as any).findOne({
