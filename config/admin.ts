@@ -114,7 +114,9 @@ export default ({ env }) => {
     preview: {
       enabled: true,
       config: {
-        allowedOrigins: clientUrl,
+        // CRITICAL: Must be array, not string!
+        // This allows postMessage to work with correct origin validation
+        allowedOrigins: [clientUrl],
 
         async handler(uid: string, { documentId, locale, status }: { documentId: string; locale: string; status: string }) {
           const document = await strapi.documents(uid as any).findOne({
