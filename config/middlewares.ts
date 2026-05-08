@@ -2,14 +2,23 @@ export default ({ env }) => {
   const toHost = (url?: string) =>
     url ? url.replace(/^https?:\/\//, "").replace(/\/$/, "") : "";
 
-  // Current media host (new) + optional previous media host (old)
-  // Explicitly include both R2 custom domains for CSP compatibility with Admin UI
-  const mediaHosts = [
-    toHost(env("CF_PUBLIC_ACCESS_URL")),
-    toHost(env("CF_PUBLIC_ACCESS_URL_OLD")),
+  // Hardcoded R2 custom domains for CSP (fallback if env vars fail)
+  const hardcodedMediaHosts = [
     "media.myhb.app",
     "media.myhealthandbeauty.app",
+  ];
+
+  // Try to load from env vars, fallback to hardcoded
+  const envMediaHosts = [
+    toHost(env("CF_PUBLIC_ACCESS_URL")),
+    toHost(env("CF_PUBLIC_ACCESS_URL_OLD")),
   ].filter(Boolean);
+
+  // Use env vars if available, otherwise hardcoded
+  const mediaHosts = envMediaHosts.length > 0 ? envMediaHosts : hardcodedMediaHosts;
+
+  // Debug log (visible in Strapi Cloud logs)
+  console.log("[CSP DEBUG] Media hosts for CSP:", mediaHosts);
 
   return [
     "strapi::logger",
@@ -26,6 +35,8 @@ export default ({ env }) => {
               "data:",
               "blob:",
               "market-assets.strapi.io",
+              "strapi-ai-staging.s3.us-east-1.amazonaws.com",
+              "strapi-ai-production.s3.us-east-1.amazonaws.com",
               ...mediaHosts,
             ],
             "media-src": [
@@ -55,4 +66,3 @@ export default ({ env }) => {
     "strapi::public",
   ];
 };
-// Forced rebuild 1778233047
