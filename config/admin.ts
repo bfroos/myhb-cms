@@ -111,6 +111,30 @@ export default ({ env }) => {
       promoteEE: env.bool("FLAG_PROMOTE_EE", true),
     },
 
+    // ADMIN PANEL CSP (CRITICAL FOR THUMBNAIL PREVIEW!)
+    contentSecurityPolicy: {
+      useDefaults: true,
+      directives: {
+        'img-src': [
+          "'self'",
+          'data:',
+          'blob:',
+          'market-assets.strapi.io',
+          'strapi-ai-staging.s3.us-east-1.amazonaws.com',
+          'strapi-ai-production.s3.us-east-1.amazonaws.com',
+          'media.myhb.app',
+          'media.myhealthandbeauty.app',
+        ],
+        'media-src': [
+          "'self'",
+          'data:',
+          'blob:',
+          'media.myhb.app',
+          'media.myhealthandbeauty.app',
+        ],
+      },
+    },
+
     preview: {
       enabled: true,
       config: {
