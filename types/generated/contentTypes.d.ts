@@ -1649,6 +1649,98 @@ export interface ApiJobJob extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiLandingPageLandingPage extends Struct.CollectionTypeSchema {
+  collectionName: 'landing_pages';
+  info: {
+    description: 'Dynamic-zone landing pages built from Vue blocks';
+    displayName: 'Landing Page';
+    pluralName: 'landing-pages';
+    singularName: 'landing-page';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  pluginOptions: {
+    i18n: {
+      localized: true;
+    };
+  };
+  attributes: {
+    blocks: Schema.Attribute.DynamicZone<
+      [
+        'blocks.landing-hero',
+        'blocks.trust-bar',
+        'blocks.quick-info',
+        'blocks.before-after',
+        'blocks.benefit-grid',
+        'blocks.seo-collapsible',
+        'blocks.doctor',
+        'blocks.price-overview',
+        'blocks.price-teaser',
+        'blocks.faq-accordion',
+        'blocks.local-section',
+        'blocks.location-card',
+        'blocks.final-cta',
+        'blocks.mobile-sticky-cta',
+        'blocks.landing-reviews',
+        'blocks.press-logos',
+        'blocks.guarantees',
+        'blocks.awards',
+        'blocks.live-counter',
+        'blocks.promo-banner',
+        'blocks.promo-strip',
+        'blocks.promo-hero',
+        'blocks.promo-floating-sticker',
+      ]
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    internalLabel: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    locale: Schema.Attribute.String;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::landing-page.landing-page'
+    >;
+    name: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    publishedAt: Schema.Attribute.DateTime;
+    seo: Schema.Attribute.Component<'shared.seo', false> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    slug: Schema.Attribute.UID<'name'> &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiLocationLocation extends Struct.CollectionTypeSchema {
   collectionName: 'locations';
   info: {
@@ -1925,6 +2017,29 @@ export interface ApiPagePage extends Struct.CollectionTypeSchema {
         'blocks.treatment-plan',
         'blocks.treatment-teasers',
         'blocks.trust-grid',
+        'blocks.landing-hero',
+        'blocks.trust-bar',
+        'blocks.quick-info',
+        'blocks.before-after',
+        'blocks.benefit-grid',
+        'blocks.seo-collapsible',
+        'blocks.doctor',
+        'blocks.price-overview',
+        'blocks.price-teaser',
+        'blocks.faq-accordion',
+        'blocks.local-section',
+        'blocks.location-card',
+        'blocks.final-cta',
+        'blocks.mobile-sticky-cta',
+        'blocks.landing-reviews',
+        'blocks.press-logos',
+        'blocks.guarantees',
+        'blocks.awards',
+        'blocks.live-counter',
+        'blocks.promo-banner',
+        'blocks.promo-strip',
+        'blocks.promo-hero',
+        'blocks.promo-floating-sticker',
       ]
     > &
       Schema.Attribute.SetPluginOptions<{
@@ -2211,6 +2326,7 @@ export interface ApiProductPageProductPage extends Struct.SingleTypeSchema {
         'blocks.media-card',
         'blocks.my-club',
         'blocks.page-header',
+        'blocks.price-teaser',
         'blocks.process-steps',
         'blocks.product-category-price-overview',
         'blocks.reviews',
@@ -2608,6 +2724,29 @@ export interface ApiTreatmentAdsPageTreatmentAdsPage
         'blocks.text-content',
         'blocks.trust-grid',
         'blocks.location-map',
+        'blocks.landing-hero',
+        'blocks.trust-bar',
+        'blocks.quick-info',
+        'blocks.before-after',
+        'blocks.benefit-grid',
+        'blocks.seo-collapsible',
+        'blocks.doctor',
+        'blocks.price-overview',
+        'blocks.price-teaser',
+        'blocks.faq-accordion',
+        'blocks.local-section',
+        'blocks.location-card',
+        'blocks.final-cta',
+        'blocks.mobile-sticky-cta',
+        'blocks.landing-reviews',
+        'blocks.press-logos',
+        'blocks.guarantees',
+        'blocks.awards',
+        'blocks.live-counter',
+        'blocks.promo-banner',
+        'blocks.promo-strip',
+        'blocks.promo-hero',
+        'blocks.promo-floating-sticker',
       ]
     > &
       Schema.Attribute.SetPluginOptions<{
@@ -2832,6 +2971,29 @@ export interface ApiTreatmentPageTreatmentPage
         'blocks.text-content',
         'blocks.trust-grid',
         'blocks.location-map',
+        'blocks.landing-hero',
+        'blocks.trust-bar',
+        'blocks.quick-info',
+        'blocks.before-after',
+        'blocks.benefit-grid',
+        'blocks.seo-collapsible',
+        'blocks.doctor',
+        'blocks.price-overview',
+        'blocks.price-teaser',
+        'blocks.faq-accordion',
+        'blocks.local-section',
+        'blocks.location-card',
+        'blocks.final-cta',
+        'blocks.mobile-sticky-cta',
+        'blocks.landing-reviews',
+        'blocks.press-logos',
+        'blocks.guarantees',
+        'blocks.awards',
+        'blocks.live-counter',
+        'blocks.promo-banner',
+        'blocks.promo-strip',
+        'blocks.promo-hero',
+        'blocks.promo-floating-sticker',
       ]
     > &
       Schema.Attribute.SetPluginOptions<{
@@ -3605,6 +3767,7 @@ declare module '@strapi/strapi' {
       'api::homepage.homepage': ApiHomepageHomepage;
       'api::job-page.job-page': ApiJobPageJobPage;
       'api::job.job': ApiJobJob;
+      'api::landing-page.landing-page': ApiLandingPageLandingPage;
       'api::location.location': ApiLocationLocation;
       'api::locations-page.locations-page': ApiLocationsPageLocationsPage;
       'api::page.page': ApiPagePage;

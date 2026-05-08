@@ -1,4 +1,6 @@
 export default ({ env }) => {
+  const isDevelopment = env("NODE_ENV") === "development";
+
   const toHost = (value?: string) => {
     if (!value) return "";
 
@@ -52,7 +54,11 @@ export default ({ env }) => {
         contentSecurityPolicy: {
           useDefaults: false, // CRITICAL: Must be false to override img-src!
           directives: {
-            "connect-src": ["'self'", "https:"],
+            "connect-src": [
+              "'self'",
+              "https:",
+              ...(isDevelopment ? ["http:", "ws:", "wss:"] : []),
+            ],
             "img-src": [
               "'self'",
               "data:",
@@ -81,7 +87,10 @@ export default ({ env }) => {
             "form-action": ["'self'"],
             "frame-ancestors": ["'self'"],
             "object-src": ["'none'"],
-            "script-src": ["'self'"],
+            "script-src": [
+              "'self'",
+              ...(isDevelopment ? ["'unsafe-inline'", "'unsafe-eval'"] : []),
+            ],
             "script-src-attr": ["'none'"],
             "style-src": ["'self'", "https:", "'unsafe-inline'"],
             upgradeInsecureRequests: null,

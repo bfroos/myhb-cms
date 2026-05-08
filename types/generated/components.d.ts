@@ -1,5 +1,70 @@
 import type { Schema, Struct } from '@strapi/strapi';
 
+export interface BlocksAwards extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_awardss';
+  info: {
+    displayName: 'Awards';
+    icon: 'layout';
+  };
+  attributes: {
+    elevated: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    eyebrow: Schema.Attribute.String;
+    headline: Schema.Attribute.String;
+    items: Schema.Attribute.JSON;
+    themeClass: Schema.Attribute.Enumeration<
+      ['theme-light', 'theme-soft', 'theme-neutral', 'theme-strong']
+    > &
+      Schema.Attribute.DefaultTo<'theme-light'>;
+  };
+}
+
+export interface BlocksBeforeAfter extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_before_afters';
+  info: {
+    displayName: 'Before After';
+    icon: 'layout';
+  };
+  attributes: {
+    elevated: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    headline: Schema.Attribute.String;
+    pairs: Schema.Attribute.JSON;
+    pairsMedia: Schema.Attribute.Component<'blocks.before-after-pair', true>;
+    themeClass: Schema.Attribute.Enumeration<
+      ['theme-light', 'theme-soft', 'theme-neutral', 'theme-strong']
+    > &
+      Schema.Attribute.DefaultTo<'theme-light'>;
+  };
+}
+
+export interface BlocksBeforeAfterPair extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_before_after_pairs';
+  info: {
+    displayName: 'Before After Pair';
+    icon: 'images';
+  };
+  attributes: {
+    afterAlt: Schema.Attribute.String;
+    afterImage: Schema.Attribute.Media<'images'>;
+    beforeAlt: Schema.Attribute.String;
+    beforeImage: Schema.Attribute.Media<'images'>;
+  };
+}
+
+export interface BlocksBenefitGrid extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_benefit_grids';
+  info: {
+    displayName: 'Benefit Grid';
+    icon: 'layout';
+  };
+  attributes: {
+    items: Schema.Attribute.JSON;
+    themeClass: Schema.Attribute.Enumeration<
+      ['theme-light', 'theme-soft', 'theme-neutral', 'theme-strong']
+    > &
+      Schema.Attribute.DefaultTo<'theme-light'>;
+  };
+}
+
 export interface BlocksBenefitsList extends Struct.ComponentSchema {
   collectionName: 'components_blocks_benefits_lists';
   info: {
@@ -52,6 +117,28 @@ export interface BlocksDirections extends Struct.ComponentSchema {
   };
 }
 
+export interface BlocksDoctor extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_doctors';
+  info: {
+    displayName: 'Doctor';
+    icon: 'layout';
+  };
+  attributes: {
+    checks: Schema.Attribute.JSON;
+    cta: Schema.Attribute.JSON;
+    elevated: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    eyebrow: Schema.Attribute.String;
+    headline: Schema.Attribute.String;
+    image: Schema.Attribute.JSON;
+    imageMedia: Schema.Attribute.Media<'images'>;
+    text: Schema.Attribute.Text;
+    themeClass: Schema.Attribute.Enumeration<
+      ['theme-light', 'theme-soft', 'theme-neutral', 'theme-strong']
+    > &
+      Schema.Attribute.DefaultTo<'theme-light'>;
+  };
+}
+
 export interface BlocksEmployee extends Struct.ComponentSchema {
   collectionName: 'components_blocks_employees';
   info: {
@@ -99,6 +186,58 @@ export interface BlocksFaq extends Struct.ComponentSchema {
   };
 }
 
+export interface BlocksFaqAccordion extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_faq_accordions';
+  info: {
+    displayName: 'FAQ Accordion';
+    icon: 'layout';
+  };
+  attributes: {
+    elevated: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    headline: Schema.Attribute.String;
+    items: Schema.Attribute.JSON;
+    themeClass: Schema.Attribute.Enumeration<
+      ['theme-light', 'theme-soft', 'theme-neutral', 'theme-strong']
+    > &
+      Schema.Attribute.DefaultTo<'theme-light'>;
+  };
+}
+
+export interface BlocksFinalCta extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_final_ctas';
+  info: {
+    displayName: 'Final CTA';
+    icon: 'layout';
+  };
+  attributes: {
+    elevated: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    headline: Schema.Attribute.String;
+    primaryCta: Schema.Attribute.JSON;
+    secondaryCta: Schema.Attribute.JSON;
+    text: Schema.Attribute.Text;
+    themeClass: Schema.Attribute.Enumeration<
+      ['theme-light', 'theme-soft', 'theme-neutral', 'theme-strong']
+    > &
+      Schema.Attribute.DefaultTo<'theme-light'>;
+  };
+}
+
+export interface BlocksGuarantees extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_guaranteess';
+  info: {
+    displayName: 'Guarantees';
+    icon: 'layout';
+  };
+  attributes: {
+    elevated: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    items: Schema.Attribute.JSON;
+    themeClass: Schema.Attribute.Enumeration<
+      ['theme-light', 'theme-soft', 'theme-neutral', 'theme-strong']
+    > &
+      Schema.Attribute.DefaultTo<'theme-light'>;
+  };
+}
+
 export interface BlocksHighlightsStrip extends Struct.ComponentSchema {
   collectionName: 'components_blocks_highlights_strips';
   info: {
@@ -116,6 +255,106 @@ export interface BlocksHighlightsStrip extends Struct.ComponentSchema {
     type: Schema.Attribute.Enumeration<['numbers', 'icons']> &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<'numbers'>;
+  };
+}
+
+export interface BlocksLandingHero extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_landing_heros';
+  info: {
+    displayName: 'Landing Hero';
+    icon: 'layout';
+  };
+  attributes: {
+    checks: Schema.Attribute.JSON;
+    elevated: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    eyebrow: Schema.Attribute.String;
+    headline: Schema.Attribute.String;
+    image: Schema.Attribute.JSON;
+    imageMedia: Schema.Attribute.Media<'images'>;
+    priceLabel: Schema.Attribute.String;
+    primaryCta: Schema.Attribute.JSON;
+    secondaryCta: Schema.Attribute.JSON;
+    text: Schema.Attribute.Text;
+    themeClass: Schema.Attribute.Enumeration<
+      ['theme-light', 'theme-soft', 'theme-neutral', 'theme-strong']
+    > &
+      Schema.Attribute.DefaultTo<'theme-light'>;
+  };
+}
+
+export interface BlocksLandingReviews extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_landing_reviewss';
+  info: {
+    displayName: 'Landing Reviews';
+    icon: 'layout';
+  };
+  attributes: {
+    count: Schema.Attribute.String;
+    elevated: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    rating: Schema.Attribute.Decimal;
+    reviews: Schema.Attribute.JSON;
+    themeClass: Schema.Attribute.Enumeration<
+      ['theme-light', 'theme-soft', 'theme-neutral', 'theme-strong']
+    > &
+      Schema.Attribute.DefaultTo<'theme-light'>;
+  };
+}
+
+export interface BlocksLiveCounter extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_live_counters';
+  info: {
+    displayName: 'Live Counter';
+    icon: 'layout';
+  };
+  attributes: {
+    elevated: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    label: Schema.Attribute.String;
+    perDay: Schema.Attribute.Integer;
+    start: Schema.Attribute.Integer;
+    sub: Schema.Attribute.String;
+    themeClass: Schema.Attribute.Enumeration<
+      ['theme-light', 'theme-soft', 'theme-neutral', 'theme-strong']
+    > &
+      Schema.Attribute.DefaultTo<'theme-light'>;
+  };
+}
+
+export interface BlocksLocalSection extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_local_sections';
+  info: {
+    displayName: 'Local Section';
+    icon: 'layout';
+  };
+  attributes: {
+    checks: Schema.Attribute.JSON;
+    elevated: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    headline: Schema.Attribute.String;
+    map: Schema.Attribute.JSON;
+    text: Schema.Attribute.Text;
+    themeClass: Schema.Attribute.Enumeration<
+      ['theme-light', 'theme-soft', 'theme-neutral', 'theme-strong']
+    > &
+      Schema.Attribute.DefaultTo<'theme-light'>;
+  };
+}
+
+export interface BlocksLocationCard extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_location_cards';
+  info: {
+    displayName: 'Location Card';
+    icon: 'layout';
+  };
+  attributes: {
+    address: Schema.Attribute.JSON;
+    elevated: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    googleMapsApiKey: Schema.Attribute.String;
+    hours: Schema.Attribute.JSON;
+    lat: Schema.Attribute.Decimal;
+    lng: Schema.Attribute.Decimal;
+    phone: Schema.Attribute.String;
+    placeId: Schema.Attribute.String;
+    whatsapp: Schema.Attribute.String;
+    zoom: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<14>;
   };
 }
 
@@ -193,6 +432,25 @@ export interface BlocksMediaCard extends Struct.ComponentSchema {
   };
 }
 
+export interface BlocksMobileStickyCta extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_mobile_sticky_ctas';
+  info: {
+    displayName: 'Mobile Sticky CTA';
+    icon: 'layout';
+  };
+  attributes: {
+    bookLabel: Schema.Attribute.String;
+    callLabel: Schema.Attribute.String;
+    phone: Schema.Attribute.String;
+    themeClass: Schema.Attribute.Enumeration<
+      ['theme-light', 'theme-soft', 'theme-neutral', 'theme-strong']
+    > &
+      Schema.Attribute.DefaultTo<'theme-light'>;
+    whatsapp: Schema.Attribute.String;
+    whatsappLabel: Schema.Attribute.String;
+  };
+}
+
 export interface BlocksMyClub extends Struct.ComponentSchema {
   collectionName: 'components_blocks_my_clubs';
   info: {
@@ -232,6 +490,80 @@ export interface BlocksPageHeader extends Struct.ComponentSchema {
   };
 }
 
+export interface BlocksPressLogo extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_press_logos';
+  info: {
+    displayName: 'Press Logo';
+    icon: 'image';
+  };
+  attributes: {
+    logo: Schema.Attribute.Media<'images'>;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
+export interface BlocksPressLogos extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_press_logoss';
+  info: {
+    displayName: 'Press Logos';
+    icon: 'layout';
+  };
+  attributes: {
+    elevated: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    eyebrow: Schema.Attribute.String;
+    logoItems: Schema.Attribute.Component<'blocks.press-logo', true>;
+    logos: Schema.Attribute.JSON;
+    themeClass: Schema.Attribute.Enumeration<
+      ['theme-light', 'theme-soft', 'theme-neutral', 'theme-strong']
+    > &
+      Schema.Attribute.DefaultTo<'theme-light'>;
+  };
+}
+
+export interface BlocksPriceOverview extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_price_overviews';
+  info: {
+    displayName: 'Price Overview';
+    icon: 'layout';
+  };
+  attributes: {
+    cta: Schema.Attribute.JSON;
+    elevated: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    headline: Schema.Attribute.String;
+    items: Schema.Attribute.JSON;
+    themeClass: Schema.Attribute.Enumeration<
+      ['theme-light', 'theme-soft', 'theme-neutral', 'theme-strong']
+    > &
+      Schema.Attribute.DefaultTo<'theme-light'>;
+  };
+}
+
+export interface BlocksPriceTeaser extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_price_teasers';
+  info: {
+    displayName: 'Price Teaser';
+    icon: 'layout';
+  };
+  attributes: {
+    cta: Schema.Attribute.JSON;
+    currency: Schema.Attribute.String;
+    elevated: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    eyebrow: Schema.Attribute.String;
+    footnote: Schema.Attribute.String;
+    headline: Schema.Attribute.String;
+    items: Schema.Attribute.JSON;
+    limit: Schema.Attribute.Integer;
+    locale: Schema.Attribute.String;
+    source: Schema.Attribute.Enumeration<['manual', 'context']> &
+      Schema.Attribute.DefaultTo<'manual'>;
+    subline: Schema.Attribute.String;
+    themeClass: Schema.Attribute.Enumeration<
+      ['theme-light', 'theme-soft', 'theme-neutral', 'theme-strong']
+    > &
+      Schema.Attribute.DefaultTo<'theme-light'>;
+  };
+}
+
 export interface BlocksProcessSteps extends Struct.ComponentSchema {
   collectionName: 'components_blocks_process_steps';
   info: {
@@ -268,6 +600,110 @@ export interface BlocksProductCategoryPriceOverview
   };
 }
 
+export interface BlocksPromoBanner extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_promo_banners';
+  info: {
+    displayName: 'Promo Banner';
+    icon: 'layout';
+  };
+  attributes: {
+    checks: Schema.Attribute.JSON;
+    elevated: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    eyebrow: Schema.Attribute.String;
+    finePrint: Schema.Attribute.String;
+    headline: Schema.Attribute.String;
+    primaryCta: Schema.Attribute.JSON;
+    rotate: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<-8>;
+    secondaryCta: Schema.Attribute.JSON;
+    stickerMedia: Schema.Attribute.Media<'images'>;
+    stickerSrc: Schema.Attribute.String;
+    text: Schema.Attribute.Text;
+    themeClass: Schema.Attribute.Enumeration<
+      ['theme-light', 'theme-soft', 'theme-neutral', 'theme-strong']
+    > &
+      Schema.Attribute.DefaultTo<'theme-light'>;
+  };
+}
+
+export interface BlocksPromoFloatingSticker extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_promo_floating_stickers';
+  info: {
+    displayName: 'Promo Floating Sticker';
+    icon: 'layout';
+  };
+  attributes: {
+    ariaLabel: Schema.Attribute.String;
+    dismissible: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    href: Schema.Attribute.String;
+    offset: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<24>;
+    position: Schema.Attribute.Enumeration<
+      ['bottom-right', 'bottom-left', 'top-right', 'top-left']
+    > &
+      Schema.Attribute.DefaultTo<'bottom-right'>;
+    rotate: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<-8>;
+    size: Schema.Attribute.Enumeration<['sm', 'md', 'lg', 'xl']> &
+      Schema.Attribute.DefaultTo<'lg'>;
+    stickerMedia: Schema.Attribute.Media<'images'>;
+    stickerSrc: Schema.Attribute.String;
+  };
+}
+
+export interface BlocksPromoHero extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_promo_heros';
+  info: {
+    displayName: 'Promo Hero';
+    icon: 'layout';
+  };
+  attributes: {
+    cta: Schema.Attribute.JSON;
+    elevated: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    eyebrow: Schema.Attribute.String;
+    finePrint: Schema.Attribute.String;
+    headline: Schema.Attribute.String;
+    image: Schema.Attribute.JSON;
+    imageMedia: Schema.Attribute.Media<'images'>;
+    stickerMedia: Schema.Attribute.Media<'images'>;
+    stickerSrc: Schema.Attribute.String;
+    text: Schema.Attribute.Text;
+    themeClass: Schema.Attribute.Enumeration<
+      ['theme-light', 'theme-soft', 'theme-neutral', 'theme-strong']
+    > &
+      Schema.Attribute.DefaultTo<'theme-light'>;
+  };
+}
+
+export interface BlocksPromoStrip extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_promo_strips';
+  info: {
+    displayName: 'Promo Strip';
+    icon: 'layout';
+  };
+  attributes: {
+    cta: Schema.Attribute.JSON;
+    headline: Schema.Attribute.String;
+    stickerMedia: Schema.Attribute.Media<'images'>;
+    stickerSrc: Schema.Attribute.String;
+    text: Schema.Attribute.Text;
+  };
+}
+
+export interface BlocksQuickInfo extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_quick_infos';
+  info: {
+    displayName: 'Quick Info';
+    icon: 'layout';
+  };
+  attributes: {
+    elevated: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    headline: Schema.Attribute.String;
+    items: Schema.Attribute.JSON;
+    themeClass: Schema.Attribute.Enumeration<
+      ['theme-light', 'theme-soft', 'theme-neutral', 'theme-strong']
+    > &
+      Schema.Attribute.DefaultTo<'theme-light'>;
+  };
+}
+
 export interface BlocksReviews extends Struct.ComponentSchema {
   collectionName: 'components_blocks_reviews';
   info: {
@@ -287,6 +723,23 @@ export interface BlocksReviews extends Struct.ComponentSchema {
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<'neutral'>;
     reviews: Schema.Attribute.Relation<'oneToMany', 'api::review.review'>;
+  };
+}
+
+export interface BlocksSeoCollapsible extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_seo_collapsibles';
+  info: {
+    displayName: 'SEO Collapsible';
+    icon: 'layout';
+  };
+  attributes: {
+    elevated: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    items: Schema.Attribute.JSON;
+    openFirst: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    themeClass: Schema.Attribute.Enumeration<
+      ['theme-light', 'theme-soft', 'theme-neutral', 'theme-strong']
+    > &
+      Schema.Attribute.DefaultTo<'theme-light'>;
   };
 }
 
@@ -454,6 +907,22 @@ export interface BlocksTreatmentTeasers extends Struct.ComponentSchema {
       'oneToMany',
       'api::treatment-page.treatment-page'
     >;
+  };
+}
+
+export interface BlocksTrustBar extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_trust_bars';
+  info: {
+    displayName: 'Trust Bar';
+    icon: 'layout';
+  };
+  attributes: {
+    elevated: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    items: Schema.Attribute.JSON;
+    themeClass: Schema.Attribute.Enumeration<
+      ['theme-light', 'theme-soft', 'theme-neutral', 'theme-strong']
+    > &
+      Schema.Attribute.DefaultTo<'theme-light'>;
   };
 }
 
@@ -1418,21 +1887,45 @@ export interface TreatmentPlanTreatmentPlanStepAds
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
+      'blocks.awards': BlocksAwards;
+      'blocks.before-after': BlocksBeforeAfter;
+      'blocks.before-after-pair': BlocksBeforeAfterPair;
+      'blocks.benefit-grid': BlocksBenefitGrid;
       'blocks.benefits-list': BlocksBenefitsList;
       'blocks.comparison-block': BlocksComparisonBlock;
       'blocks.directions': BlocksDirections;
+      'blocks.doctor': BlocksDoctor;
       'blocks.employee': BlocksEmployee;
       'blocks.employee-list': BlocksEmployeeList;
       'blocks.faq': BlocksFaq;
+      'blocks.faq-accordion': BlocksFaqAccordion;
+      'blocks.final-cta': BlocksFinalCta;
+      'blocks.guarantees': BlocksGuarantees;
       'blocks.highlights-strip': BlocksHighlightsStrip;
+      'blocks.landing-hero': BlocksLandingHero;
+      'blocks.landing-reviews': BlocksLandingReviews;
+      'blocks.live-counter': BlocksLiveCounter;
+      'blocks.local-section': BlocksLocalSection;
+      'blocks.location-card': BlocksLocationCard;
       'blocks.location-map': BlocksLocationMap;
       'blocks.media-bento': BlocksMediaBento;
       'blocks.media-card': BlocksMediaCard;
+      'blocks.mobile-sticky-cta': BlocksMobileStickyCta;
       'blocks.my-club': BlocksMyClub;
       'blocks.page-header': BlocksPageHeader;
+      'blocks.press-logo': BlocksPressLogo;
+      'blocks.press-logos': BlocksPressLogos;
+      'blocks.price-overview': BlocksPriceOverview;
+      'blocks.price-teaser': BlocksPriceTeaser;
       'blocks.process-steps': BlocksProcessSteps;
       'blocks.product-category-price-overview': BlocksProductCategoryPriceOverview;
+      'blocks.promo-banner': BlocksPromoBanner;
+      'blocks.promo-floating-sticker': BlocksPromoFloatingSticker;
+      'blocks.promo-hero': BlocksPromoHero;
+      'blocks.promo-strip': BlocksPromoStrip;
+      'blocks.quick-info': BlocksQuickInfo;
       'blocks.reviews': BlocksReviews;
+      'blocks.seo-collapsible': BlocksSeoCollapsible;
       'blocks.stories': BlocksStories;
       'blocks.table-of-contents': BlocksTableOfContents;
       'blocks.text-content': BlocksTextContent;
@@ -1440,6 +1933,7 @@ declare module '@strapi/strapi' {
       'blocks.treatment-hero': BlocksTreatmentHero;
       'blocks.treatment-plan': BlocksTreatmentPlan;
       'blocks.treatment-teasers': BlocksTreatmentTeasers;
+      'blocks.trust-bar': BlocksTrustBar;
       'blocks.trust-grid': BlocksTrustGrid;
       'blog.call-to-action': BlogCallToAction;
       'blog.callout': BlogCallout;
