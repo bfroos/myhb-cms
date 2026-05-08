@@ -3,9 +3,12 @@ export default ({ env }) => {
     url ? url.replace(/^https?:\/\//, "").replace(/\/$/, "") : "";
 
   // Current media host (new) + optional previous media host (old)
+  // Explicitly include both R2 custom domains for CSP compatibility with Admin UI
   const mediaHosts = [
     toHost(env("CF_PUBLIC_ACCESS_URL")),
     toHost(env("CF_PUBLIC_ACCESS_URL_OLD")),
+    "media.myhb.app",
+    "media.myhealthandbeauty.app",
   ].filter(Boolean);
 
   return [
