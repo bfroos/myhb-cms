@@ -27,7 +27,7 @@ export default ({ env }) => {
       name: "strapi::security",
       config: {
         contentSecurityPolicy: {
-          useDefaults: true,
+          useDefaults: false, // CRITICAL: Must be false to override img-src!
           directives: {
             "connect-src": ["'self'", "https:"],
             "img-src": [
@@ -46,12 +46,21 @@ export default ({ env }) => {
               "market-assets.strapi.io",
               ...mediaHosts,
             ],
-            // Allow frontend domains to be embedded in iframes for Preview feature
             "frame-src": [
               "'self'",
               env("CLIENT_URL", "https://www.myhealthandbeauty.com"),
               env("CLIENT_URL_ADS", "https://go.myhealthandbeauty.com"),
             ],
+            // Strapi defaults (must include manually when useDefaults: false)
+            "default-src": ["'self'"],
+            "base-uri": ["'self'"],
+            "font-src": ["'self'", "https:", "data:"],
+            "form-action": ["'self'"],
+            "frame-ancestors": ["'self'"],
+            "object-src": ["'none'"],
+            "script-src": ["'self'"],
+            "script-src-attr": ["'none'"],
+            "style-src": ["'self'", "https:", "'unsafe-inline'"],
             upgradeInsecureRequests: null,
           },
         },
