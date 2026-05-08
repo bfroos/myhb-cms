@@ -1,6 +1,22 @@
 export default ({ env }) => {
-  const toHost = (url?: string) =>
-    url ? url.replace(/^https?:\/\//, "").replace(/\/$/, "") : "";
+  const toHost = (value?: string) => {
+    if (!value) return "";
+
+    const source = value.trim().replace(/\/$/, "");
+    if (!source) return "";
+
+    try {
+      return new URL(source).host;
+    } catch {
+      return source.replace(/^https?:\/\//, "").replace(/\/.*$/, "");
+    }
+  };
+
+  const toHostList = (value?: string) =>
+    (value ?? "")
+      .split(",")
+      .map(toHost)
+      .filter(Boolean);
 
   // Hardcoded R2 custom domains for CSP (fallback if env vars fail)
   const hardcodedMediaHosts = [
@@ -12,10 +28,17 @@ export default ({ env }) => {
   const envMediaHosts = [
     toHost(env("CF_PUBLIC_ACCESS_URL")),
     toHost(env("CF_PUBLIC_ACCESS_URL_OLD")),
+    toHost(env("CF_ENDPOINT")),
+    ...toHostList(env("MEDIA_LIBRARY_CSP_HOSTS")),
+    "*.r2.dev",
+    "*.r2.cloudflarestorage.com",
+    "imagedelivery.net",
   ].filter(Boolean);
 
   // Use env vars if available, otherwise hardcoded
-  const mediaHosts = envMediaHosts.length > 0 ? envMediaHosts : hardcodedMediaHosts;
+  const mediaHosts = Array.from(
+    new Set(envMediaHosts.length > 0 ? envMediaHosts : hardcodedMediaHosts),
+  );
 
   // Debug log (visible in Strapi Cloud logs)
   console.log("[CSP DEBUG] Media hosts for CSP:", mediaHosts);
