@@ -52,7 +52,7 @@ export default ({ env }) => {
       name: "strapi::security",
       config: {
         contentSecurityPolicy: {
-          useDefaults: false, // CRITICAL: Must be false to override img-src!
+          useDefaults: true, // CRITICAL: Must be true to override img-src!
           directives: {
             "connect-src": [
               "'self'",
