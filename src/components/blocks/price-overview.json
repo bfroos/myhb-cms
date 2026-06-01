@@ -2,18 +2,28 @@
   "collectionName": "components_blocks_price_overviews",
   "info": {
     "displayName": "Price Overview",
-    "icon": "layout"
+    "icon": "layout",
+    "description": "Displays treatments or product categories with pricing"
   },
   "options": {},
   "attributes": {
     "headline": {
       "type": "string"
     },
-    "items": {
-      "type": "json"
+    "treatments": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::treatment.treatment"
+    },
+    "product_categories": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product-category.product-category"
     },
     "cta": {
-      "type": "json"
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.button"
     },
     "elevated": {
       "type": "boolean",
