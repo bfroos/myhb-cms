@@ -246,7 +246,7 @@ export const blockPriceOverviewPopulate = {
         },
       },
     },
-    productCategories: {
+    product_categories: {
       fields: ["name", "slug"],
       populate: {
         products: {
