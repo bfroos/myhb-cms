@@ -235,6 +235,52 @@ export const blockProductCategoryPriceOverviewPopulate = {
   },
 } as const;
 
+export const blockPriceOverviewPopulate = {
+  populate: {
+    cta: sharedButtonPopulate as object,
+    treatments: {
+      fields: ["name", "priceInEuroCent", "isStartingPrice"],
+      populate: {
+        treatmentPage: {
+          fields: ["name", "pathKey"],
+        },
+      },
+    },
+    productCategories: {
+      fields: ["name", "slug"],
+      populate: {
+        products: {
+          fields: ["name", "slug"],
+          populate: {
+            variants: {
+              fields: ["label", "slug", "isActive", "priceInEuroCent"],
+              populate: {
+                volume: {
+                  fields: ["quantity", "unit"],
+                },
+              },
+            },
+            manufacturer: {
+              fields: ["name"],
+              populate: {
+                logo: mediaPopulate,
+              },
+            },
+          },
+        },
+        treatments: {
+          fields: ["name", "priceInEuroCent", "isStartingPrice"],
+          populate: {
+            treatmentPage: {
+              fields: ["name", "pathKey"],
+            },
+          },
+        },
+      },
+    },
+  },
+} as const;
+
 export const blockReviewsPopulate = {
   populate: {
     reviews: {
@@ -476,7 +522,7 @@ export const allBlocksPopulate = {
     "blocks.benefit-grid": landingBlockPopulate,
     "blocks.seo-collapsible": landingBlockPopulate,
     "blocks.doctor": blockDoctorLandingPopulate,
-    "blocks.price-overview": landingBlockPopulate,
+    "blocks.price-overview": blockPriceOverviewPopulate,
     "blocks.price-teaser": landingBlockPopulate,
     "blocks.faq-accordion": landingBlockPopulate,
     "blocks.local-section": landingBlockPopulate,
