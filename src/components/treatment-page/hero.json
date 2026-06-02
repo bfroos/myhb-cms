@@ -28,21 +28,15 @@
     },
     "showDiscount": {
       "type": "boolean",
-      "required": true,
       "default": false
     },
     "showBookingButton": {
       "type": "boolean",
-      "required": true,
       "default": true
     },
     "showPrice": {
       "type": "boolean",
-      "required": true,
       "default": true
-    },
-    "introductionText": {
-      "type": "text"
     }
   },
   "config": {}
