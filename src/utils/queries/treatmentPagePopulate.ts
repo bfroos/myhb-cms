@@ -114,7 +114,21 @@ const treatmentPagePopulateBase = {
     fields: ["headline", "intro", "content"],
     populate: {
       employee: {
-        populate: "*",
+        // Only the fields actually rendered by EmployeeBlock.vue.
+        // Avoid populate:"*" which recursively pulls employee.locations.description
+        // (general "Botox® & Hyaluron..." texts) into the Nuxt payload — unwanted
+        // on Profhilo/other Ads landing pages and pure over-fetching everywhere.
+        fields: [
+          "academicTitle",
+          "firstName",
+          "lastName",
+          "department",
+          "role",
+          "hideFromPublic",
+        ],
+        populate: {
+          photo: mediaPopulate as object,
+        },
       },
     },
   },
