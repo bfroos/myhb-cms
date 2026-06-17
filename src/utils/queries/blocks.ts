@@ -427,6 +427,14 @@ export const blockTrustGridPopulate = {
   },
 } as const;
 
+export const blockTrustBarPopulate = {
+  populate: {
+    items: {
+      populate: "*",
+    },
+  },
+} as const;
+
 export const landingBlockPopulate = {
   populate: {},
 } as const;
@@ -516,7 +524,7 @@ export const allBlocksPopulate = {
     "blocks.treatment-teasers": blockTreatmentTeasersPopulate,
     "blocks.trust-grid": blockTrustGridPopulate,
     "blocks.landing-hero": blockLandingHeroPopulate,
-    "blocks.trust-bar": landingBlockPopulate,
+    "blocks.trust-bar": blockTrustBarPopulate,
     "blocks.quick-info": landingBlockPopulate,
     "blocks.before-after": blockBeforeAfterPopulate,
     "blocks.benefit-grid": landingBlockPopulate,
