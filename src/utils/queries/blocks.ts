@@ -474,6 +474,14 @@ export const blockFinalCtaPopulate = {
   },
 } as const;
 
+export const blockAwardsPopulate = {
+  populate: {
+    items: {
+      populate: "*",
+    },
+  },
+} as const;
+
 export const landingBlockPopulate = {
   populate: {},
 } as const;
@@ -579,7 +587,7 @@ export const allBlocksPopulate = {
     "blocks.landing-reviews": landingBlockPopulate,
     "blocks.press-logos": blockPressLogosPopulate,
     "blocks.guarantees": blockGuaranteesPopulate,
-    "blocks.awards": landingBlockPopulate,
+    "blocks.awards": blockAwardsPopulate,
     "blocks.live-counter": landingBlockPopulate,
     "blocks.promo-banner": blockPromoBannerPopulate,
     "blocks.promo-strip": blockPromoStripPopulate,
