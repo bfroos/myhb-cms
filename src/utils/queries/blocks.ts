@@ -435,6 +435,14 @@ export const blockTrustBarPopulate = {
   },
 } as const;
 
+export const blockBenefitGridPopulate = {
+  populate: {
+    items: {
+      populate: "*",
+    },
+  },
+} as const;
+
 export const landingBlockPopulate = {
   populate: {},
 } as const;
@@ -527,7 +535,7 @@ export const allBlocksPopulate = {
     "blocks.trust-bar": blockTrustBarPopulate,
     "blocks.quick-info": landingBlockPopulate,
     "blocks.before-after": blockBeforeAfterPopulate,
-    "blocks.benefit-grid": landingBlockPopulate,
+    "blocks.benefit-grid": blockBenefitGridPopulate,
     "blocks.seo-collapsible": landingBlockPopulate,
     "blocks.doctor": blockDoctorLandingPopulate,
     "blocks.price-overview": blockPriceOverviewPopulate,
