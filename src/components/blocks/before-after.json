@@ -9,9 +9,6 @@
     "headline": {
       "type": "string"
     },
-    "pairs": {
-      "type": "json"
-    },
     "pairsMedia": {
       "type": "component",
       "component": "blocks.before-after-pair",
