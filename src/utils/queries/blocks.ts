@@ -467,6 +467,13 @@ export const blockSeoCollapsiblePopulate = {
   },
 } as const;
 
+export const blockFinalCtaPopulate = {
+  populate: {
+    primaryCta: sharedButtonPopulate as object,
+    secondaryCta: sharedButtonPopulate as object,
+  },
+} as const;
+
 export const landingBlockPopulate = {
   populate: {},
 } as const;
@@ -567,7 +574,7 @@ export const allBlocksPopulate = {
     "blocks.faq-accordion": landingBlockPopulate,
     "blocks.local-section": landingBlockPopulate,
     "blocks.location-card": landingBlockPopulate,
-    "blocks.final-cta": landingBlockPopulate,
+    "blocks.final-cta": blockFinalCtaPopulate,
     "blocks.mobile-sticky-cta": landingBlockPopulate,
     "blocks.landing-reviews": landingBlockPopulate,
     "blocks.press-logos": blockPressLogosPopulate,

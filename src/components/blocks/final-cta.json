@@ -13,10 +13,14 @@
       "type": "text"
     },
     "primaryCta": {
-      "type": "json"
+      "type": "component",
+      "component": "shared.button",
+      "repeatable": false
     },
     "secondaryCta": {
-      "type": "json"
+      "type": "component",
+      "component": "shared.button",
+      "repeatable": false
     },
     "elevated": {
       "type": "boolean",
