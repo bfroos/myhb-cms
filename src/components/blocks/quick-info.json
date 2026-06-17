@@ -10,7 +10,9 @@
       "type": "string"
     },
     "items": {
-      "type": "json"
+      "type": "component",
+      "component": "shared.icon-heading-text",
+      "repeatable": true
     },
     "elevated": {
       "type": "boolean",
