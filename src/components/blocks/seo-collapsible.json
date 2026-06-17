@@ -7,7 +7,9 @@
   "options": {},
   "attributes": {
     "items": {
-      "type": "json"
+      "type": "component",
+      "component": "shared.collabsible-item",
+      "repeatable": true
     },
     "openFirst": {
       "type": "boolean",

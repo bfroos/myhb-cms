@@ -459,6 +459,14 @@ export const blockQuickInfoPopulate = {
   },
 } as const;
 
+export const blockSeoCollapsiblePopulate = {
+  populate: {
+    items: {
+      populate: "*",
+    },
+  },
+} as const;
+
 export const landingBlockPopulate = {
   populate: {},
 } as const;
@@ -552,7 +560,7 @@ export const allBlocksPopulate = {
     "blocks.quick-info": blockQuickInfoPopulate,
     "blocks.before-after": blockBeforeAfterPopulate,
     "blocks.benefit-grid": blockBenefitGridPopulate,
-    "blocks.seo-collapsible": landingBlockPopulate,
+    "blocks.seo-collapsible": blockSeoCollapsiblePopulate,
     "blocks.doctor": blockDoctorLandingPopulate,
     "blocks.price-overview": blockPriceOverviewPopulate,
     "blocks.price-teaser": landingBlockPopulate,
