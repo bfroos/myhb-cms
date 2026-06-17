@@ -16,6 +16,17 @@
       "allowedTypes": [
         "images"
       ]
+    },
+    "link": {
+      "type": "string"
+    },
+    "openInNewWindow": {
+      "type": "boolean",
+      "default": true
+    },
+    "noFollow": {
+      "type": "boolean",
+      "default": true
     }
   }
 }

@@ -9,9 +9,6 @@
     "eyebrow": {
       "type": "string"
     },
-    "logos": {
-      "type": "json"
-    },
     "logoItems": {
       "type": "component",
       "component": "blocks.press-logo",
