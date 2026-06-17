@@ -443,6 +443,14 @@ export const blockBenefitGridPopulate = {
   },
 } as const;
 
+export const blockGuaranteesPopulate = {
+  populate: {
+    items: {
+      populate: "*",
+    },
+  },
+} as const;
+
 export const landingBlockPopulate = {
   populate: {},
 } as const;
@@ -547,7 +555,7 @@ export const allBlocksPopulate = {
     "blocks.mobile-sticky-cta": landingBlockPopulate,
     "blocks.landing-reviews": landingBlockPopulate,
     "blocks.press-logos": blockPressLogosPopulate,
-    "blocks.guarantees": landingBlockPopulate,
+    "blocks.guarantees": blockGuaranteesPopulate,
     "blocks.awards": landingBlockPopulate,
     "blocks.live-counter": landingBlockPopulate,
     "blocks.promo-banner": blockPromoBannerPopulate,
