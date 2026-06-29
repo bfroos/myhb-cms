@@ -15,12 +15,18 @@ export function isTreatmentPageUid(uid: string): uid is TreatmentPageUid {
  *
  * Because `parent` is not localized, the relation is the same across locales,
  * but the `slug` of each ancestor must be fetched in the requested locale.
+ *
+ * Cycle protection: a `visited` set tracks every documentId already seen in the
+ * current ancestor chain. If a documentId reappears (circular parent reference,
+ * e.g. A → B → A) we stop walking instead of looping until the depth limit and
+ * producing a corrupted, repeated pathKey. Self-parenting is also rejected.
  */
 async function buildAncestorSlugs(
   documentId: string,
   uid: TreatmentPageUid,
   locale: string,
   strapi: any,
+  visited: Set<string> = new Set<string>(),
   depth = 0
 ): Promise<string[]> {
   if (depth > 10) {
@@ -29,6 +35,15 @@ async function buildAncestorSlugs(
     );
     return [];
   }
+
+  // Cycle guard: this documentId is already part of the current ancestor chain.
+  if (visited.has(documentId)) {
+    strapi.log.warn(
+      `[treatmentPagePathUtils] Circular parent reference detected at documentId=${documentId}. Aborting ancestor walk.`
+    );
+    return [];
+  }
+  visited.add(documentId);
 
   const page = await strapi.documents(uid).findOne({
     documentId,
@@ -47,11 +62,20 @@ async function buildAncestorSlugs(
   const parent = (page as any).parent;
   if (!parent?.documentId) return [];
 
+  // Reject self-reference or a parent that is already in the chain (cycle).
+  if (parent.documentId === documentId || visited.has(parent.documentId)) {
+    strapi.log.warn(
+      `[treatmentPagePathUtils] Circular/self parent reference detected (documentId=${documentId} -> parent=${parent.documentId}). Aborting ancestor walk.`
+    );
+    return [];
+  }
+
   const parentAncestors = await buildAncestorSlugs(
     parent.documentId,
     uid,
     locale,
     strapi,
+    visited,
     depth + 1
   );
 
@@ -250,6 +274,10 @@ async function getChildDocumentIds(
 /**
  * Recursively syncs `pathKey` and `ancestorSlugs` for all descendants
  * of a given document.
+ *
+ * Cycle protection: a `visitedDescendants` set ensures each document is
+ * processed at most once, so a circular children/parent relation cannot
+ * cause infinite cascading or repeated republish thrashing.
  */
 export async function cascadeUpdateDescendants(
   documentId: string,
@@ -257,7 +285,8 @@ export async function cascadeUpdateDescendants(
   locale: string,
   strapi: any,
   inProgress: Set<string>,
-  depth = 0
+  depth = 0,
+  visitedDescendants: Set<string> = new Set<string>()
 ): Promise<void> {
   if (depth > 10) {
     strapi.log.warn(
@@ -269,6 +298,15 @@ export async function cascadeUpdateDescendants(
   const childIds = await getChildDocumentIds(documentId, uid, locale, strapi);
 
   for (const childId of childIds) {
+    // Skip documents already handled in this cascade (cycle protection).
+    if (visitedDescendants.has(childId) || childId === documentId) {
+      strapi.log.warn(
+        `[treatmentPagePathUtils] Skipping already-visited or self descendant childId=${childId} (cycle protection).`
+      );
+      continue;
+    }
+    visitedDescendants.add(childId);
+
     await syncPathKeysForDocument(childId, uid, locale, strapi, inProgress);
     await cascadeUpdateDescendants(
       childId,
@@ -276,7 +314,8 @@ export async function cascadeUpdateDescendants(
       locale,
       strapi,
       inProgress,
-      depth + 1
+      depth + 1,
+      visitedDescendants
     );
   }
 }
