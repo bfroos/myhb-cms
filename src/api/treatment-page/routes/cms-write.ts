@@ -1,7 +1,5 @@
 /**
- * Routes for the in-place write endpoints (prevention + media propagation).
- * Requires a valid Strapi API token (default auth). uid allowlist enforced in
- * the controller.
+ * Routes for in-place write + media propagation + translation audit.
  */
 
 export default {
@@ -10,19 +8,19 @@ export default {
       method: "POST",
       path: "/cms-update-entry",
       handler: "api::treatment-page.cms-write.updateEntry",
-      config: {
-        policies: [],
-        middlewares: [],
-      },
+      config: { policies: [], middlewares: [] },
     },
     {
       method: "POST",
       path: "/cms-propagate-media",
       handler: "api::treatment-page.cms-write.propagateMedia",
-      config: {
-        policies: [],
-        middlewares: [],
-      },
+      config: { policies: [], middlewares: [] },
+    },
+    {
+      method: "GET",
+      path: "/cms-audit-translations",
+      handler: "api::treatment-page.cms-write.auditTranslations",
+      config: { auth: false, policies: [], middlewares: [] },
     },
   ],
 };
