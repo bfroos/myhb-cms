@@ -1,10 +1,5 @@
 /**
- * In-place write endpoints (prevention for the "delete + recreate" data-loss
- * issue, plus media propagation across locales).
- *
- * The MCP bridge cannot update Strapi entries in place (Strapi v5 needs PUT,
- * the bridge only does POST/PATCH→405), so content edits previously used
- * delete-and-recreate. These endpoints let the bridge UPDATE in place.
+ * In-place write endpoints + translation/media audit.
  *
  *   POST /api/cms-update-entry
  *     body: { uid, documentId, locale, data, publish?: boolean }
@@ -12,8 +7,13 @@
  *   POST /api/cms-propagate-media
  *     body: { documentIds: string[], fromLocale?: "de", toLocales?: string[], publish?: boolean }
  *     Copies hero.cover / treatmentDetails.image / benefits.media from the
- *     source locale onto every existing target-locale version (merge via
- *     component id, so localized text is preserved). Optionally publishes.
+ *     source locale onto every existing target-locale version. Reads the FULL
+ *     target component and re-sends it with the media added, so localized text
+ *     is preserved (never nulled).
+ *
+ *   GET /api/cms-audit-translations?token=<SECRET>
+ *     Returns, per German doc, for each locale: exists / has hero text /
+ *     has hero image / published.
  */
 
 import type { Context } from "koa";
@@ -25,6 +25,8 @@ const ALLOWED_UIDS = new Set<string>([
 
 const TP_UID = "api::treatment-page.treatment-page";
 const DEFAULT_LOCALES = ["en", "tr", "ar", "nl", "fr"];
+const AUDIT_LOCALES = ["de", "en", "tr", "ar", "nl", "fr"];
+const AUDIT_TOKEN = "myhb-audit-2026";
 
 export default {
   async updateEntry(ctx: Context) {
@@ -37,28 +39,19 @@ export default {
       publish?: boolean;
     };
 
-    if (!uid || !ALLOWED_UIDS.has(uid)) {
-      return ctx.badRequest("uid missing or not allowed");
-    }
+    if (!uid || !ALLOWED_UIDS.has(uid)) return ctx.badRequest("uid missing or not allowed");
     if (!documentId || !locale || !data || typeof data !== "object") {
       return ctx.badRequest("documentId, locale and data are required");
     }
 
     const docs = strapi.documents(uid as any);
-
     try {
-      const updated = await docs.update({
-        documentId,
-        locale,
-        data: data as any,
-      });
-
+      const updated = await docs.update({ documentId, locale, data: data as any });
       let published = false;
       if (publish) {
         await docs.publish({ documentId, locale });
         published = true;
       }
-
       return {
         ok: true,
         documentId,
@@ -68,9 +61,7 @@ export default {
         pathKey: (updated as any)?.pathKey ?? null,
       };
     } catch (e: any) {
-      return ctx.badRequest("update failed", {
-        error: String(e?.message ?? e),
-      });
+      return ctx.badRequest("update failed", { error: String(e?.message ?? e) });
     }
   },
 
@@ -94,6 +85,11 @@ export default {
 
     const docs = strapi.documents(TP_UID as any);
     const report: any[] = [];
+    const fullPop = {
+      hero: { populate: "*" },
+      treatmentDetails: { populate: "*" },
+      benefits: { populate: "*" },
+    } as any;
 
     for (const documentId of documentIds) {
       try {
@@ -101,18 +97,12 @@ export default {
           documentId,
           locale: fromLocale,
           status: "draft",
-          populate: {
-            hero: { populate: { cover: true } },
-            treatmentDetails: { populate: { image: true } },
-            benefits: { populate: { media: true } },
-          } as any,
+          populate: fullPop,
         })) as any;
-
         if (!src) {
           report.push({ documentId, error: `no ${fromLocale} version` });
           continue;
         }
-
         const heroCover = src?.hero?.cover?.id ?? null;
         const tdImage = src?.treatmentDetails?.image?.id ?? null;
         const benMedia = src?.benefits?.media?.id ?? null;
@@ -122,34 +112,29 @@ export default {
             documentId,
             locale,
             status: "draft",
-            populate: {
-              hero: true,
-              treatmentDetails: true,
-              benefits: true,
-            } as any,
+            populate: fullPop,
           })) as any;
-
           if (!loc) {
             report.push({ documentId, locale, skipped: "no translation" });
             continue;
           }
 
           const data: Record<string, unknown> = {};
-          if (heroCover && loc?.hero?.id) {
-            data.hero = { id: loc.hero.id, cover: heroCover };
+          // Merge: re-send the FULL existing component + the media id, so no
+          // localized field is lost.
+          if (heroCover && loc?.hero) {
+            data.hero = { ...loc.hero, cover: heroCover };
           }
-          if (tdImage && loc?.treatmentDetails?.id) {
-            data.treatmentDetails = { id: loc.treatmentDetails.id, image: tdImage };
+          if (tdImage && loc?.treatmentDetails) {
+            data.treatmentDetails = { ...loc.treatmentDetails, image: tdImage };
           }
-          if (benMedia && loc?.benefits?.id) {
-            data.benefits = { id: loc.benefits.id, media: benMedia };
+          if (benMedia && loc?.benefits) {
+            data.benefits = { ...loc.benefits, media: benMedia };
           }
-
           if (Object.keys(data).length === 0) {
             report.push({ documentId, locale, set: [] });
             continue;
           }
-
           await docs.update({ documentId, locale, data: data as any });
           let published = false;
           if (publish) {
@@ -162,7 +147,47 @@ export default {
         report.push({ documentId, error: String(e?.message ?? e) });
       }
     }
-
     return { ok: true, fromLocale, count: documentIds.length, report };
+  },
+
+  async auditTranslations(ctx: Context) {
+    const { token } = ctx.query as { token?: string };
+    if (token !== AUDIT_TOKEN) return ctx.unauthorized("invalid token");
+
+    const docs = strapi.documents(TP_UID as any);
+    const byLocale: Record<string, Map<string, any>> = {};
+    for (const locale of AUDIT_LOCALES) {
+      const list = (await docs.findMany({
+        locale,
+        status: "draft",
+        fields: ["internalLabel", "slug", "publishedAt"],
+        populate: {
+          hero: { fields: ["headline"], populate: { cover: { fields: ["id"] } } },
+        } as any,
+        limit: 9999,
+      })) as any[];
+      byLocale[locale] = new Map(list.map((x) => [x.documentId, x]));
+    }
+
+    const deList = Array.from(byLocale["de"].values());
+    const rows = deList.map((de: any) => {
+      const row: any = { documentId: de.documentId, label: de.internalLabel, locales: {} };
+      for (const locale of AUDIT_LOCALES) {
+        const e = byLocale[locale].get(de.documentId);
+        if (!e) {
+          row.locales[locale] = { exists: false };
+        } else {
+          row.locales[locale] = {
+            exists: true,
+            text: !!e?.hero?.headline,
+            image: !!e?.hero?.cover,
+            published: !!e?.publishedAt,
+          };
+        }
+      }
+      return row;
+    });
+
+    return { ok: true, locales: AUDIT_LOCALES, count: rows.length, rows };
   },
 };
