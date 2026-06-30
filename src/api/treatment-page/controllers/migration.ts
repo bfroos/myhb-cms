@@ -1,21 +1,14 @@
 /**
  * One-time migration controller.
  *
- * Copies the (locale-independent) parent relation from the German source
- * locale onto the requested target locales, recomputes pathKey/ancestorSlugs
- * and publishes each affected entry.
+ * Copies the parent relation from the German source locale onto the requested
+ * target locales, sanitizes invalid slugs, recomputes pathKey/ancestorSlugs and
+ * publishes each affected entry. Remove this controller + its route once the
+ * migration has run.
  *
- * Background: the `parent` relation is stored per locale-entry. Translated
- * treatment pages were created without a parent, so their published pathKey
- * collapsed to the bare slug (category segment missing). This migration sets
- * the parent for tr/ar from the German tree and republishes with the correct
- * hierarchical pathKey.
- *
- * Trigger (one-time):
+ * Trigger:
  *   GET /api/migrate-treatment-parents?token=<SECRET>&dryRun=true
  *   GET /api/migrate-treatment-parents?token=<SECRET>&locales=tr,ar
- *
- * Remove this controller + its route once the migration has run.
  */
 
 import type { Context } from "koa";
@@ -23,6 +16,7 @@ import { computePathKeyData } from "../../../utils/treatmentPagePathUtils";
 
 const UID = "api::treatment-page.treatment-page" as const;
 const SECRET = "myhb-parent-migration-2026-7Kx9";
+const SLUG_RE = /^[A-Za-z0-9-_.~]+$/;
 
 export default {
   async migrateParents(ctx: Context) {
@@ -50,7 +44,6 @@ export default {
 
     const docs = strapi.documents(UID as any);
 
-    // Load the German tree (source of truth) ordered parents-first.
     const deEntries = (await docs.findMany({
       locale: "de",
       status: "draft",
@@ -68,10 +61,11 @@ export default {
     const report: any = {
       dryRun: isDry,
       locales: targetLocales,
-      counts: { processed: 0, created: 0, skipped: 0, errors: 0 },
+      counts: { processed: 0, created: 0, skipped: 0, slugFixed: 0, errors: 0 },
       processed: [],
       created: [],
       skipped: [],
+      slugFixed: [],
       errors: [],
     };
 
@@ -88,8 +82,6 @@ export default {
           })) as any;
 
           if (!entry) {
-            // Only auto-create missing top-level category pages (needed as
-            // ancestors). Missing child translations are skipped on purpose.
             if (parentDocId !== null) {
               report.skipped.push({
                 documentId,
@@ -114,11 +106,31 @@ export default {
             report.counts.created += 1;
           }
 
+          // Sanitize an invalid/empty slug (e.g. non-latin chars) by falling
+          // back to the German slug, which is guaranteed to match the schema
+          // regex. Without this the update/publish fails validation.
+          const currentSlug = entry?.slug as string | null | undefined;
+          const slugData: Record<string, unknown> = { parent: parentDocId };
+          if (!currentSlug || !SLUG_RE.test(currentSlug)) {
+            if (de.slug && SLUG_RE.test(de.slug)) {
+              slugData.slug = de.slug;
+              if (!isDry) {
+                report.slugFixed.push({
+                  documentId,
+                  locale,
+                  from: currentSlug ?? null,
+                  to: de.slug,
+                });
+                report.counts.slugFixed += 1;
+              }
+            }
+          }
+
           if (!isDry) {
             await docs.update({
               documentId,
               locale,
-              data: { parent: parentDocId } as any,
+              data: slugData as any,
             });
           }
 
