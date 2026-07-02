@@ -1,43 +1,46 @@
 {
-  "collectionName": "components_blocks_price_overviews",
-  "info": {
-    "displayName": "Price Overview",
-    "icon": "layout",
-    "description": "Displays treatments or product categories with pricing"
-  },
-  "options": {},
-  "attributes": {
-    "headline": {
-      "type": "string"
+    "collectionName": "components_blocks_price_overviews",
+    "info": {
+          "displayName": "Price Overview",
+          "icon": "layout",
+          "description": "Displays treatments or product categories with pricing"
     },
-    "treatments": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::treatment.treatment"
-    },
-    "product_categories": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::product-category.product-category"
-    },
-    "cta": {
-      "type": "component",
-      "repeatable": false,
-      "component": "shared.button"
-    },
-    "elevated": {
-      "type": "boolean",
-      "default": true
-    },
-    "themeClass": {
-      "type": "enumeration",
-      "enum": [
-        "theme-light",
-        "theme-soft",
-        "theme-neutral",
-        "theme-strong"
-      ],
-      "default": "theme-light"
+    "options": {},
+    "attributes": {
+          "headline": {
+                  "type": "string"
+          },
+          "treatments": {
+                  "type": "relation",
+                  "relation": "oneToMany",
+                  "target": "api::treatment.treatment"
+          },
+          "product_categories": {
+                  "type": "relation",
+                  "relation": "oneToMany",
+                  "target": "api::product-category.product-category"
+          },
+          "cta": {
+                  "type": "component",
+                  "repeatable": false,
+                  "component": "shared.button"
+          },
+          "elevated": {
+                  "type": "boolean",
+                  "default": true
+          },
+          "themeClass": {
+                  "type": "enumeration",
+                  "enum": [
+                            "theme-light",
+                            "theme-soft",
+                            "theme-neutral",
+                            "theme-strong"
+                  ],
+                  "default": "theme-light"
+          },
+          "priceNote": {
+                  "type": "text"
+          }
     }
-  }
 }
