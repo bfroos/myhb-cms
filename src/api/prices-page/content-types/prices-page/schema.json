@@ -1,104 +1,108 @@
 {
-  "kind": "singleType",
-  "collectionName": "prices_pages",
-  "info": {
-    "singularName": "prices-page",
-    "pluralName": "prices-pages",
-    "displayName": "Prices Page"
-  },
-  "options": {
-    "draftAndPublish": true
-  },
-  "pluginOptions": {
-    "i18n": {
-      "localized": true
+    "kind": "singleType",
+    "collectionName": "prices_pages",
+    "info": {
+          "singularName": "prices-page",
+          "pluralName": "prices-pages",
+          "displayName": "Prices Page"
+    },
+    "options": {
+          "draftAndPublish": true
+    },
+    "pluginOptions": {
+          "i18n": {
+                  "localized": true
+          }
+    },
+    "attributes": {
+          "internalLabel": {
+                  "type": "string",
+                  "pluginOptions": {
+                            "i18n": {
+                                        "localized": false
+                            }
+                  },
+                  "required": true
+          },
+          "topBlocks": {
+                  "type": "dynamiczone",
+                  "pluginOptions": {
+                            "i18n": {
+                                        "localized": true
+                            }
+                  },
+                  "components": [
+                            "blocks.benefits-list",
+                            "blocks.comparison-block",
+                            "blocks.directions",
+                            "blocks.employee",
+                            "blocks.employee-list",
+                            "blocks.faq",
+                            "blocks.highlights-strip",
+                            "blocks.location-map",
+                            "blocks.media-bento",
+                            "blocks.media-card",
+                            "blocks.my-club",
+                            "blocks.page-header",
+                            "blocks.price-overview",
+                            "blocks.price-teaser",
+                            "blocks.process-steps",
+                            "blocks.product-category-price-overview",
+                            "blocks.reviews",
+                            "blocks.stories",
+                            "blocks.table-of-contents",
+                            "blocks.text-content",
+                            "blocks.treatment-details",
+                            "blocks.treatment-hero",
+                            "blocks.treatment-plan",
+                            "blocks.treatment-teasers",
+                            "blocks.trust-grid"
+                  ]
+          },
+          "bottomBlocks": {
+                  "type": "dynamiczone",
+                  "pluginOptions": {
+                            "i18n": {
+                                        "localized": true
+                            }
+                  },
+                  "components": [
+                            "blocks.benefits-list",
+                            "blocks.comparison-block",
+                            "blocks.directions",
+                            "blocks.employee",
+                            "blocks.employee-list",
+                            "blocks.faq",
+                            "blocks.highlights-strip",
+                            "blocks.location-map",
+                            "blocks.media-bento",
+                            "blocks.media-card",
+                            "blocks.my-club",
+                            "blocks.page-header",
+                            "blocks.price-overview",
+                            "blocks.price-teaser",
+                            "blocks.process-steps",
+                            "blocks.product-category-price-overview",
+                            "blocks.reviews",
+                            "blocks.stories",
+                            "blocks.table-of-contents",
+                            "blocks.text-content",
+                            "blocks.treatment-details",
+                            "blocks.treatment-hero",
+                            "blocks.treatment-plan",
+                            "blocks.treatment-teasers",
+                            "blocks.trust-grid"
+                  ]
+          },
+          "seo": {
+                  "type": "component",
+                  "pluginOptions": {
+                            "i18n": {
+                                        "localized": true
+                            }
+                  },
+                  "component": "shared.seo",
+                  "repeatable": false
+          }
     }
-  },
-  "attributes": {
-    "internalLabel": {
-      "type": "string",
-      "pluginOptions": {
-        "i18n": {
-          "localized": false
-        }
-      },
-      "required": true
-    },
-    "topBlocks": {
-      "type": "dynamiczone",
-      "pluginOptions": {
-        "i18n": {
-          "localized": true
-        }
-      },
-      "components": [
-        "blocks.benefits-list",
-        "blocks.comparison-block",
-        "blocks.directions",
-        "blocks.employee",
-        "blocks.employee-list",
-        "blocks.faq",
-        "blocks.highlights-strip",
-        "blocks.location-map",
-        "blocks.media-bento",
-        "blocks.media-card",
-        "blocks.my-club",
-        "blocks.page-header",
-        "blocks.process-steps",
-        "blocks.product-category-price-overview",
-        "blocks.reviews",
-        "blocks.stories",
-        "blocks.table-of-contents",
-        "blocks.text-content",
-        "blocks.treatment-details",
-        "blocks.treatment-hero",
-        "blocks.treatment-plan",
-        "blocks.treatment-teasers",
-        "blocks.trust-grid"
-      ]
-    },
-    "bottomBlocks": {
-      "type": "dynamiczone",
-      "pluginOptions": {
-        "i18n": {
-          "localized": true
-        }
-      },
-      "components": [
-        "blocks.benefits-list",
-        "blocks.comparison-block",
-        "blocks.directions",
-        "blocks.employee",
-        "blocks.employee-list",
-        "blocks.faq",
-        "blocks.highlights-strip",
-        "blocks.location-map",
-        "blocks.media-bento",
-        "blocks.media-card",
-        "blocks.my-club",
-        "blocks.page-header",
-        "blocks.process-steps",
-        "blocks.product-category-price-overview",
-        "blocks.reviews",
-        "blocks.stories",
-        "blocks.table-of-contents",
-        "blocks.text-content",
-        "blocks.treatment-details",
-        "blocks.treatment-hero",
-        "blocks.treatment-plan",
-        "blocks.treatment-teasers",
-        "blocks.trust-grid"
-      ]
-    },
-    "seo": {
-      "type": "component",
-      "pluginOptions": {
-        "i18n": {
-          "localized": true
-        }
-      },
-      "component": "shared.seo",
-      "repeatable": false
-    }
-  }
 }
