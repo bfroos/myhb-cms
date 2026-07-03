@@ -362,6 +362,82 @@ export default {
 
         return result;
       });
+
+      // -----------------------------------------------------------------------
+      // Middleware 3: Delete-Guard fuer Treatment-Pages
+      //
+      // Schuetzt vor dem versehentlichen Loeschen PUBLIZIERTER treatment-pages
+      // (Hauptursache der wiederkehrenden DE-Verluste durch "Loeschen+Neu").
+      // - Blockiert "delete", wenn fuer die documentId (und ggf. Locale) eine
+      //   veroeffentlichte Version existiert.
+      // - Loeschen reiner Entwuerfe (kein Published) bleibt erlaubt.
+      // - Depublizieren ("unpublish") bleibt erlaubt (andere Action).
+      // - Bewusste Loeschungen: ENV ALLOW_TREATMENT_PAGE_DELETE=1 setzen
+      //   (oder die Seite vorher depublizieren).
+      // -----------------------------------------------------------------------
+      strapi.documents.use(async (context: any, next: any) => {
+        const { uid, action, params } = context;
+
+        if (
+          action !== "delete" ||
+          typeof uid !== "string" ||
+          !isTreatmentPageUid(uid)
+        ) {
+          return next();
+        }
+
+        // Bewusste Loeschungen zulassen, wenn explizit freigeschaltet
+        if (process.env.ALLOW_TREATMENT_PAGE_DELETE === "1") {
+          strapi.log.warn(
+            "[delete-guard] Loeschung erlaubt (ALLOW_TREATMENT_PAGE_DELETE=1): uid=" +
+              uid +
+              " documentId=" +
+              (params && params.documentId)
+          );
+          return next();
+        }
+
+        const documentId: string | undefined = params?.documentId;
+        if (!documentId) return next();
+
+        const locale: string | undefined =
+          typeof params?.locale === "string" ? params.locale : undefined;
+
+        // Existiert eine veroeffentlichte Version (ggf. fuer diese Locale)?
+        const publishedQuery: any = {
+          documentId,
+          status: "published",
+          fields: ["documentId"],
+        };
+        if (locale) publishedQuery.locale = locale;
+
+        let publishedExists = false;
+        try {
+          publishedExists = Boolean(
+            await strapi.documents(uid).findOne(publishedQuery)
+          );
+        } catch (err) {
+          strapi.log.error(
+            "[delete-guard] Pruefung fehlgeschlagen fuer documentId=" +
+              documentId +
+              ": " +
+              err
+          );
+        }
+
+        if (publishedExists) {
+          const msg =
+            "Loeschen blockiert: treatment-page " +
+            documentId +
+            (locale ? " (Locale " + locale + ")" : "") +
+            " ist veroeffentlicht. Bitte zuerst depublizieren, oder " +
+            "ALLOW_TREATMENT_PAGE_DELETE=1 setzen, um bewusst zu loeschen.";
+          strapi.log.warn("[delete-guard] BLOCKIERT: " + msg);
+          throw new Error(msg);
+        }
+
+        return next();
+      });
     }
   },
 
