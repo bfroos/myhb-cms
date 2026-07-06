@@ -8,6 +8,6 @@ export default ({ env }) => ({
   // Admin-Login-Problemen seit dem 5.44->5.48 Upgrade + MCP-Aktivierung (Commit 3309d18).
   // Wieder aktivieren: enabled: true.
   mcp: {
-    enabled: false,
+    enabled: true,
   },
 });
