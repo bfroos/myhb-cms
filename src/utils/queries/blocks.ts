@@ -291,6 +291,7 @@ export const blockPriceTeaserPopulate = {
         },
       },
     },
+    cta: sharedButtonPopulate as object,
   },
 } as const;
 

@@ -20,44 +20,12 @@
       "relation": "oneToMany",
       "target": "api::treatment.treatment"
     },
-    "items": {
-      "type": "json"
-    },
-    "source": {
-      "type": "enumeration",
-      "enum": [
-        "manual",
-        "context"
-      ],
-      "default": "manual"
-    },
-    "limit": {
-      "type": "integer"
-    },
     "cta": {
-      "type": "json"
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.button"
     },
     "footnote": {
-      "type": "string"
-    },
-    "elevated": {
-      "type": "boolean",
-      "default": true
-    },
-    "themeClass": {
-      "type": "enumeration",
-      "enum": [
-        "theme-light",
-        "theme-soft",
-        "theme-neutral",
-        "theme-strong"
-      ],
-      "default": "theme-light"
-    },
-    "currency": {
-      "type": "string"
-    },
-    "locale": {
       "type": "string"
     }
   }
