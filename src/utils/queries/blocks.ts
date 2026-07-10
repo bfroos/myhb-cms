@@ -281,6 +281,19 @@ export const blockPriceOverviewPopulate = {
   },
 } as const;
 
+export const blockPriceTeaserPopulate = {
+  populate: {
+    treatments: {
+      fields: ["name", "priceInEuroCent", "isStartingPrice"],
+      populate: {
+        treatmentPage: {
+          fields: ["name", "pathKey"],
+        },
+      },
+    },
+  },
+} as const;
+
 export const blockReviewsPopulate = {
   populate: {
     reviews: {
@@ -578,7 +591,7 @@ export const allBlocksPopulate = {
     "blocks.seo-collapsible": blockSeoCollapsiblePopulate,
     "blocks.doctor": blockDoctorLandingPopulate,
     "blocks.price-overview": blockPriceOverviewPopulate,
-    "blocks.price-teaser": landingBlockPopulate,
+    "blocks.price-teaser": blockPriceTeaserPopulate,
     "blocks.faq-accordion": landingBlockPopulate,
     "blocks.local-section": landingBlockPopulate,
     "blocks.location-card": landingBlockPopulate,
