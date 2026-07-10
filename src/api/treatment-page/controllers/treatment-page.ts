@@ -39,6 +39,25 @@ function getTreatmentPagePopulateForFindByLocationAndPath(siteMode?: string) {
     : treatmentPagePopulateForFindByLocationAndPath;
 }
 
+/**
+ * Base fields returned for a treatment page on the location+path endpoint.
+ * appTreatmentSlug is added for SEO pages only (see below) because it is used
+ * to build in-app booking deeplinks (treatment preselected). The ads page
+ * content type does not have that field.
+ */
+const LOCATION_TREATMENT_PAGE_BASE_FIELDS = [
+  "slug",
+  "pathKey",
+  "name",
+  "ancestorSlugs",
+];
+
+function getTreatmentPageFieldsForFindByLocationAndPath(siteMode?: string) {
+  return siteMode === "ads"
+    ? LOCATION_TREATMENT_PAGE_BASE_FIELDS
+    : [...LOCATION_TREATMENT_PAGE_BASE_FIELDS, "appTreatmentSlug"];
+}
+
 function getLocationFieldsForSiteMode(siteMode?: string) {
   return siteMode === "ads" ? locationFieldsForAdsPage : locationFieldsForPage;
 }
@@ -343,7 +362,9 @@ export default factories.createCoreController(
               $eq: pathKey,
             },
           },
-          fields: ["slug", "pathKey", "name", "ancestorSlugs"],
+          fields: getTreatmentPageFieldsForFindByLocationAndPath(
+            siteMode,
+          ) as any,
           populate: getTreatmentPagePopulateForFindByLocationAndPath(
             siteMode,
           ) as any,
