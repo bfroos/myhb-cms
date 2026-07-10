@@ -15,6 +15,11 @@
     "subline": {
       "type": "string"
     },
+    "treatments": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::treatment.treatment"
+    },
     "items": {
       "type": "json"
     },
