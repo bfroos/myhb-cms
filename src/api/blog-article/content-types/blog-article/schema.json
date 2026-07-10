@@ -88,7 +88,11 @@
         "blog.text",
         "blog.image",
         "blog.newsletter",
-        "blog.cta"
+        "blog.cta",
+        "blocks.faq",
+        "blocks.faq-accordion",
+        "blocks.media-card",
+        "blocks.media-bento"
       ]
     },
     "footnotes": {
