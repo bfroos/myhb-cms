@@ -56,7 +56,8 @@
           "localized": false
         }
       },
-      "customField": "plugin::amount-cents.price"
+      "customField": "plugin::amount-cents.price",
+      "description": "DEPRECATED: durch Relation 'prices' ersetzt"
     },
     "isStartingPrice": {
       "type": "boolean",
@@ -66,7 +67,14 @@
         }
       },
       "required": true,
-      "default": true
+      "default": true,
+      "description": "DEPRECATED: durch Relation 'prices' ersetzt"
+    },
+    "prices": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::price.price",
+      "mappedBy": "treatmentCategory"
     },
     "description": {
       "type": "text",
