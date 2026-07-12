@@ -364,16 +364,31 @@ export default {
       });
 
       // -----------------------------------------------------------------------
-      // Middleware 3: Delete-Guard fuer Treatment-Pages
+      // Middleware 3: Delete-Guard fuer Treatment-Pages (GEHAERTET 2026-07-12)
       //
-      // Schuetzt vor dem versehentlichen Loeschen PUBLIZIERTER treatment-pages
-      // (Hauptursache der wiederkehrenden DE-Verluste durch "Loeschen+Neu").
-      // - Blockiert "delete", wenn fuer die documentId (und ggf. Locale) eine
-      //   veroeffentlichte Version existiert.
-      // - Loeschen reiner Entwuerfe (kein Published) bleibt erlaubt.
-      // - Depublizieren ("unpublish") bleibt erlaubt (andere Action).
-      // - Bewusste Loeschungen: ENV ALLOW_TREATMENT_PAGE_DELETE=1 setzen
-      //   (oder die Seite vorher depublizieren).
+      // Hintergrund: Am 10.07.2026 wurden zwei PUBLIZIERTE Haar-Seiten
+      // (PRP-Haartherapie, Mesotherapie Haare) komplett geloescht, obwohl der
+      // urspruengliche Guard nur das Loeschen *veroeffentlichter* Seiten
+      // blockte. Zwei Luecken wurden ausgenutzt bzw. blieben offen:
+      //   (a) Umgehung: erst "unpublish", dann den Entwurf loeschen -> beide
+      //       Einzelschritte waren erlaubt.
+      //   (b) Prueffehler: schlug die published-Pruefung (findOne) fehl, blieb
+      //       publishedExists=false und das Loeschen wurde ERLAUBT (fail-open).
+      //
+      // Diese Fassung ist FAIL-CLOSED und blockt JEDES Loeschen einer
+      // treatment-page (published, draft, unpublished, Locale-Delete sowie den
+      // Zwei-Schritt unpublish->delete). Keine findOne-Pruefung mehr -> kein
+      // fail-open moeglich.
+      //
+      // Bewusste Loeschung: NUR mit ALLOW_TREATMENT_PAGE_DELETE=1.
+      // WICHTIG: dieses Flag ausschliesslich temporaer/lokal setzen und danach
+      // wieder entfernen - NIE dauerhaft in Strapi Cloud hinterlegen.
+      //
+      // Grenze: greift nur auf dem Document-Service-Pfad (REST-API, Admin-UI,
+      // MCP-Bridge). Direkter DB-/knex-Zugriff und `strapi transfer/import`
+      // umgehen die Middleware weiterhin -> zusaetzlich die Delete-Berechtigung
+      // des verwendeten API-Tokens entziehen und keine destruktiven Imports
+      // gegen Prod fahren.
       // -----------------------------------------------------------------------
       strapi.documents.use(async (context: any, next: any) => {
         const { uid, action, params } = context;
@@ -386,57 +401,38 @@ export default {
           return next();
         }
 
-        // Bewusste Loeschungen zulassen, wenn explizit freigeschaltet
+        const documentId: string | undefined = params?.documentId;
+        const locale: string | undefined =
+          typeof params?.locale === "string" ? params.locale : undefined;
+        const stamp =
+          "uid=" +
+          uid +
+          " documentId=" +
+          (documentId ?? "(ohne)") +
+          (locale ? " locale=" + locale : "") +
+          " ts=" +
+          new Date().toISOString();
+
+        // Bewusste Loeschung nur mit explizitem Freischalt-Flag.
         if (process.env.ALLOW_TREATMENT_PAGE_DELETE === "1") {
           strapi.log.warn(
-            "[delete-guard] Loeschung erlaubt (ALLOW_TREATMENT_PAGE_DELETE=1): uid=" +
-              uid +
-              " documentId=" +
-              (params && params.documentId)
+            "[delete-guard] BEWUSSTE Loeschung ERLAUBT (ALLOW_TREATMENT_PAGE_DELETE=1): " +
+              stamp
           );
           return next();
         }
 
-        const documentId: string | undefined = params?.documentId;
-        if (!documentId) return next();
-
-        const locale: string | undefined =
-          typeof params?.locale === "string" ? params.locale : undefined;
-
-        // Existiert eine veroeffentlichte Version (ggf. fuer diese Locale)?
-        const publishedQuery: any = {
-          documentId,
-          status: "published",
-          fields: ["documentId"],
-        };
-        if (locale) publishedQuery.locale = locale;
-
-        let publishedExists = false;
-        try {
-          publishedExists = Boolean(
-            await strapi.documents(uid).findOne(publishedQuery)
-          );
-        } catch (err) {
-          strapi.log.error(
-            "[delete-guard] Pruefung fehlgeschlagen fuer documentId=" +
-              documentId +
-              ": " +
-              err
-          );
-        }
-
-        if (publishedExists) {
-          const msg =
-            "Loeschen blockiert: treatment-page " +
-            documentId +
-            (locale ? " (Locale " + locale + ")" : "") +
-            " ist veroeffentlicht. Bitte zuerst depublizieren, oder " +
-            "ALLOW_TREATMENT_PAGE_DELETE=1 setzen, um bewusst zu loeschen.";
-          strapi.log.warn("[delete-guard] BLOCKIERT: " + msg);
-          throw new Error(msg);
-        }
-
-        return next();
+        // Fail-closed: ohne Flag wird JEDES delete einer treatment-page
+        // blockiert - unabhaengig vom Publish-Status oder der Locale.
+        const msg =
+          "Loeschen blockiert: treatment-page " +
+          (documentId ?? "(ohne documentId)") +
+          (locale ? " (Locale " + locale + ")" : "") +
+          " darf nicht geloescht werden (Delete-Guard). Zum bewussten " +
+          "Loeschen ALLOW_TREATMENT_PAGE_DELETE=1 nur temporaer/lokal setzen " +
+          "(niemals dauerhaft in Strapi Cloud).";
+        strapi.log.warn("[delete-guard] BLOCKIERT: " + msg + " " + stamp);
+        throw new Error(msg);
       });
     }
   },
