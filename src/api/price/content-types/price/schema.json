@@ -43,6 +43,15 @@
       },
       "min": 0
     },
+    "priceSuffix": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "description": "Optionaler Preiszusatz/-einheit, z.B. 'ab', 'pro Sitzung', 'pro Zone'"
+    },
     "description": {
       "type": "text",
       "pluginOptions": {
