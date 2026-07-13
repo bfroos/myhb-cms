@@ -1,19 +1,13 @@
 /**
- * One-time migration route. Remove together with controllers/migration.ts
- * once the parent-relation migration has run.
+ * Deaktivierte Einmal-Migrations-Route.
+ *
+ * Der frühere Endpoint `GET /migrate-treatment-parents` lief mit `auth: false`
+ * und einem hartkodierten Secret und konnte Mass-Update+Publish auslösen.
+ * Die Parent-Relation-Migration ist bereits abgeschlossen (TR/AR published),
+ * daher ist die Route entfernt. Diese Datei + controllers/migration.ts können
+ * später vollständig gelöscht werden.
  */
 
 export default {
-  routes: [
-    {
-      method: "GET",
-      path: "/migrate-treatment-parents",
-      handler: "api::treatment-page.migration.migrateParents",
-      config: {
-        auth: false,
-        policies: [],
-        middlewares: [],
-      },
-    },
-  ],
+  routes: [],
 };

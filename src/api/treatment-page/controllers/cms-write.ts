@@ -11,9 +11,9 @@
  *     target component and re-sends it with the media added, so localized text
  *     is preserved (never nulled).
  *
- *   GET /api/cms-audit-translations?token=<SECRET>
+ *   GET /api/cms-audit-translations
  *     Returns, per German doc, for each locale: exists / has hero text /
- *     has hero image / published.
+ *     has hero image / published. Requires a valid API token (route auth).
  */
 
 import type { Context } from "koa";
@@ -26,7 +26,6 @@ const ALLOWED_UIDS = new Set<string>([
 const TP_UID = "api::treatment-page.treatment-page";
 const DEFAULT_LOCALES = ["en", "tr", "ar", "nl", "fr"];
 const AUDIT_LOCALES = ["de", "en", "tr", "ar", "nl", "fr"];
-const AUDIT_TOKEN = "myhb-audit-2026";
 
 export default {
   async updateEntry(ctx: Context) {
@@ -151,9 +150,7 @@ export default {
   },
 
   async auditTranslations(ctx: Context) {
-    const { token } = ctx.query as { token?: string };
-    if (token !== AUDIT_TOKEN) return ctx.unauthorized("invalid token");
-
+    // Zugriff wird über die Route-Auth (gültiger API-Token) geschützt.
     const docs = strapi.documents(TP_UID as any);
     const byLocale: Record<string, Map<string, any>> = {};
     for (const locale of AUDIT_LOCALES) {
