@@ -16,6 +16,26 @@ function isObject(value: unknown): value is Record<string, any> {
 // Temporary kill switch for pathKey workflow (for debugging / A-B tests).
 const ENABLE_PATHKEY_WORKFLOW = true;
 
+// ----------------------------------------------------------------------------
+// Audit-Log Konfiguration
+//
+// Es werden nur die relevanten, risikobehafteten Content-Types protokolliert
+// (bewusst NICHT alle, um Rauschen/Volumen zu vermeiden). find/search wird
+// NICHT geloggt.
+// ----------------------------------------------------------------------------
+const AUDITED_UIDS = new Set<string>([
+  "api::treatment-page.treatment-page",
+  "api::treatment-ads-page.treatment-ads-page",
+]);
+const AUDITED_ACTIONS = new Set<string>([
+  "create",
+  "update",
+  "delete",
+  "publish",
+  "unpublish",
+]);
+const AUDIT_LOG_UID = "api::audit-log.audit-log";
+
 // ============================================================================
 // Component Sanitization Functions
 // ============================================================================
@@ -244,6 +264,52 @@ function sanitizeDataRecursive(data: any) {
 }
 
 // ============================================================================
+// Audit-Log Helper
+// ============================================================================
+
+/**
+ * Ermittelt den aktuellen Actor (Admin-User oder API-Token) aus dem
+ * Request-Context. In der Document-Service-Middleware ist der User nicht
+ * direkt verfuegbar, deshalb ueber strapi.requestContext.get().
+ */
+function resolveActor(strapi: any): {
+  actorType: string;
+  actorId: string;
+  actorLabel: string;
+} {
+  try {
+    const ctx = strapi?.requestContext?.get?.();
+    const state = ctx?.state;
+    const user = state?.user;
+    const auth = state?.auth;
+
+    if (user) {
+      const label =
+        [user.firstname, user.lastname].filter(Boolean).join(" ") ||
+        user.email ||
+        String(user.id ?? "");
+      return {
+        actorType: "admin-user",
+        actorId: String(user.id ?? ""),
+        actorLabel: label,
+      };
+    }
+
+    if (auth?.credentials) {
+      const strategy = auth?.strategy?.name ?? "token";
+      return {
+        actorType: strategy,
+        actorId: String(auth.credentials.id ?? ""),
+        actorLabel: String(auth.credentials.name ?? ""),
+      };
+    }
+  } catch {
+    // ignore – Actor-Ermittlung darf nie die eigentliche Operation stoeren
+  }
+  return { actorType: "unknown", actorId: "", actorLabel: "" };
+}
+
+// ============================================================================
 // Strapi Lifecycle Hooks
 // ============================================================================
 
@@ -256,6 +322,73 @@ export default {
    */
   register({ strapi }: any) {
     if (strapi.documents && typeof strapi.documents.use === "function") {
+      // -----------------------------------------------------------------------
+      // Middleware 0: Audit-Log (AEUSSERSTE Middleware)
+      //
+      // Protokolliert schreibende Aktionen auf treatment-page &
+      // treatment-ads-page in die audit-log-Collection. Bewusst als erste
+      // (= aeusserste) Middleware registriert, damit auch vom Delete-Guard
+      // (Middleware 3) BLOCKIERTE Loeschversuche erfasst werden
+      // (outcome="blocked-or-error"). Logging ist best-effort und bricht die
+      // eigentliche Operation niemals ab.
+      // -----------------------------------------------------------------------
+      strapi.documents.use(async (context: any, next: any) => {
+        const { uid, action, params } = context;
+
+        if (
+          typeof uid !== "string" ||
+          !AUDITED_UIDS.has(uid) ||
+          !AUDITED_ACTIONS.has(action)
+        ) {
+          return next();
+        }
+
+        const actor = resolveActor(strapi);
+        const documentId: string =
+          params?.documentId ?? params?.data?.documentId ?? "";
+        const entryLocale: string =
+          typeof params?.locale === "string" ? params.locale : "";
+
+        const baseEntry = {
+          action,
+          contentType: uid,
+          entryDocumentId: String(documentId || ""),
+          entryLocale,
+          actorType: actor.actorType,
+          actorId: actor.actorId,
+          actorLabel: actor.actorLabel,
+          occurredAt: new Date().toISOString(),
+        };
+
+        const writeAudit = (extra: Record<string, unknown>) => {
+          // Fire-and-forget: ein Fehler beim Logging darf die Operation nie stoeren.
+          try {
+            void strapi
+              .documents(AUDIT_LOG_UID)
+              .create({ data: { ...baseEntry, ...extra } })
+              .catch((err: any) => {
+                strapi.log.error(
+                  "[audit-log] Schreiben fehlgeschlagen: " + err
+                );
+              });
+          } catch (err) {
+            strapi.log.error("[audit-log] Schreiben fehlgeschlagen: " + err);
+          }
+        };
+
+        try {
+          const result = await next();
+          writeAudit({ outcome: "ok" });
+          return result;
+        } catch (err: any) {
+          writeAudit({
+            outcome: "blocked-or-error",
+            detail: String(err?.message ?? err).slice(0, 500),
+          });
+          throw err;
+        }
+      });
+
       // -----------------------------------------------------------------------
       // Middleware 1: Component sanitization on create / update
       // -----------------------------------------------------------------------
