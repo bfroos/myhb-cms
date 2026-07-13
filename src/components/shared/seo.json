@@ -8,12 +8,10 @@
   "attributes": {
     "metaTitle": {
       "type": "string",
-      "maxLength": 70,
       "required": false
     },
     "metaDescription": {
       "type": "text",
-      "maxLength": 160,
       "required": false
     },
     "keywords": {
