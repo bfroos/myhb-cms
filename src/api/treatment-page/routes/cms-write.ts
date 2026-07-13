@@ -20,7 +20,7 @@ export default {
       method: "GET",
       path: "/cms-audit-translations",
       handler: "api::treatment-page.cms-write.auditTranslations",
-      config: { auth: false, policies: [], middlewares: [] },
+      config: { policies: [], middlewares: [] },
     },
   ],
 };
