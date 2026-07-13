@@ -1,0 +1,50 @@
+{
+  "kind": "collectionType",
+  "collectionName": "audit_logs",
+  "info": {
+    "singularName": "audit-log",
+    "pluralName": "audit-logs",
+    "displayName": "Audit Log",
+    "description": "Protokolliert schreibende Aktionen (create/update/delete/publish/unpublish) auf treatment-page & treatment-ads-page inkl. Actor und Outcome."
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": false
+    }
+  },
+  "attributes": {
+    "action": {
+      "type": "string"
+    },
+    "contentType": {
+      "type": "string"
+    },
+    "entryDocumentId": {
+      "type": "string"
+    },
+    "entryLocale": {
+      "type": "string"
+    },
+    "actorType": {
+      "type": "string"
+    },
+    "actorId": {
+      "type": "string"
+    },
+    "actorLabel": {
+      "type": "string"
+    },
+    "outcome": {
+      "type": "string"
+    },
+    "detail": {
+      "type": "text"
+    },
+    "occurredAt": {
+      "type": "datetime"
+    }
+  }
+}
