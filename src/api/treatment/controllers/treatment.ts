@@ -36,13 +36,11 @@ function withForcedPricesPopulate(query: Record<string, any> | undefined): Recor
 export default factories.createCoreController('api::treatment.treatment', () => ({
   async find(ctx) {
     ctx.query = withForcedPricesPopulate(ctx.query);
-    // @ts-expect-error - super is available on the core controller factory
     return await super.find(ctx);
   },
 
   async findOne(ctx) {
     ctx.query = withForcedPricesPopulate(ctx.query);
-    // @ts-expect-error - super is available on the core controller factory
     return await super.findOne(ctx);
   },
 }));
