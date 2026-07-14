@@ -4,7 +4,7 @@
   "private": true,
   "description": "A Strapi application",
   "scripts": {
-    "prebuild": "npm -w amount-cents run build && DATABASE_CLIENT=sqlite strapi ts:generate-types",
+    "prebuild": "npm -w amount-cents run build",
     "build": "strapi build",
     "console": "strapi console",
     "deploy": "strapi deploy",
