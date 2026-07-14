@@ -4,4 +4,4 @@
 
 import { factories } from '@strapi/strapi';
 
-export default factories.createCoreController('api::price.price');
+export default factories.createCoreController('api::price.price' as any);
