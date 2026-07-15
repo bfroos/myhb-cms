@@ -4,6 +4,7 @@ import {
   syncPathKeysForDocument,
   cascadeUpdateDescendants,
 } from "./utils/treatmentPagePathUtils";
+import { runAsInternalTreatmentPageOp } from "./utils/treatmentPageDeleteGuard";
 
 // ============================================================================
 // Helper Functions
@@ -521,7 +522,9 @@ export default {
       // MCP-Bridge). Direkter DB-/knex-Zugriff und `strapi transfer/import`
       // umgehen die Middleware weiterhin -> zusaetzlich die Delete-Berechtigung
       // des verwendeten API-Tokens entziehen und keine destruktiven Imports
-      // gegen Prod fahren.
+      // gegen Prod fahren. ERGAENZUNG 2026-07-14: db-Lifecycle-Guard
+      // (content-types/*/lifecycles.ts) faengt zusaetzlich Loeschpfade ab, die
+      // RBAC + Document-Service umgehen (z.B. die KI-Uebersetzung).
       // -----------------------------------------------------------------------
       strapi.documents.use(async (context: any, next: any) => {
         const { uid, action, params } = context;
@@ -566,6 +569,30 @@ export default {
           "(niemals dauerhaft in Strapi Cloud).";
         strapi.log.warn("[delete-guard] BLOCKIERT: " + msg + " " + stamp);
         throw new Error(msg);
+      });
+
+      // -----------------------------------------------------------------------
+      // Middleware 4: Whitelist interner publish/unpublish/discardDraft-Ops
+      //
+      // Bei publish/unpublish/discardDraft loescht Strapi INTERN Versions-/
+      // Locale-Zeilen der treatment-page. Diese internen Deletes muessen erlaubt
+      // bleiben. Wir markieren solche Operationen via AsyncLocalStorage, damit
+      // der db-Lifecycle-Delete-Guard (content-types/.../lifecycles.ts) sie
+      // durchlaesst und alle ANDEREN (Bypass-)Deletes - z.B. die KI-Uebersetzung,
+      // die RBAC + Document-Service umgeht - weiterhin blockiert.
+      // -----------------------------------------------------------------------
+      strapi.documents.use(async (context: any, next: any) => {
+        const { uid, action } = context;
+        if (
+          typeof uid === "string" &&
+          isTreatmentPageUid(uid) &&
+          (action === "publish" ||
+            action === "unpublish" ||
+            action === "discardDraft")
+        ) {
+          return runAsInternalTreatmentPageOp(() => next());
+        }
+        return next();
       });
     }
   },
