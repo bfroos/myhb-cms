@@ -572,7 +572,7 @@ export default {
       });
 
       // -----------------------------------------------------------------------
-      // Middleware 4: Whitelist interner publish/unpublish/discardDraft-Ops
+      // Middleware 4: Whitelist interner Schreib-Ops (create/update/publish/unpublish/discardDraft)
       //
       // Bei publish/unpublish/discardDraft loescht Strapi INTERN Versions-/
       // Locale-Zeilen der treatment-page. Diese internen Deletes muessen erlaubt
@@ -583,12 +583,24 @@ export default {
       // -----------------------------------------------------------------------
       strapi.documents.use(async (context: any, next: any) => {
         const { uid, action } = context;
+        // Alle SCHREIB-Aktionen ausser "delete" duerfen intern Versions-/
+        // Locale-Zeilen loeschen (z.B. publish loescht die alte published-
+        // Version; die Bridge publiziert via update+status=published in EINEM
+        // "update"-Call). Nur "delete" wird NICHT gewhitelistet -> der
+        // db-Guard blockt echte Loeschungen weiter. Der KI-Loeschpfad laeuft
+        // NICHT ueber den Document-Service (kein Audit-Eintrag) -> bekommt
+        // keine ALS-Freigabe und bleibt blockiert.
+        const INTERNAL_DELETE_ALLOWING_ACTIONS = new Set([
+          "create",
+          "update",
+          "publish",
+          "unpublish",
+          "discardDraft",
+        ]);
         if (
           typeof uid === "string" &&
           isTreatmentPageUid(uid) &&
-          (action === "publish" ||
-            action === "unpublish" ||
-            action === "discardDraft")
+          INTERNAL_DELETE_ALLOWING_ACTIONS.has(action)
         ) {
           return runAsInternalTreatmentPageOp(() => next());
         }
