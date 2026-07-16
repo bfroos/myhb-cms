@@ -20,10 +20,10 @@
   ],
   "dependencies": {
     "@arshiash80/strapi-plugin-iconhub": "^1.1.1",
-    "@strapi/plugin-cloud": "5.48.1",
-    "@strapi/plugin-users-permissions": "5.48.1",
+    "@strapi/plugin-cloud": "5.50.1",
+    "@strapi/plugin-users-permissions": "5.50.1",
     "@strapi/sdk-plugin": "^5.4.0",
-    "@strapi/strapi": "5.48.1",
+    "@strapi/strapi": "5.50.1",
     "better-sqlite3": "12.4.1",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
@@ -35,7 +35,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@strapi/typescript-utils": "5.48.1",
+    "@strapi/typescript-utils": "5.50.1",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
