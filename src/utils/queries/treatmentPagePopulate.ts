@@ -31,13 +31,29 @@ function buildTreatmentPlanPopulate(
 function buildRelatedTreatmentsPopulate(
   relationKey: "treatmentPages" | "treatmentAdsPages",
 ) {
+  // Basis-Populate der verknüpften (Unter-)Behandlungen aus dem Teaser-Block
+  // wiederverwenden, aber das treatment zusätzlich mit "type" anreichern.
+  // Hintergrund: Kategorieseiten (z.B. /behandlungen/botox) haben selbst KEIN
+  // treatment (treatment == null). Der Standorte-Block leitet den
+  // Behandlungstyp daher aus der ersten verknüpften Unterbehandlung ab, um die
+  // buchbaren Standorte korrekt nach Typ zu filtern (minimally-invasive vs.
+  // operational etc.). Ohne "type" hier wäre diese Ableitung im Frontend nicht
+  // möglich und der Block bliebe auf Kategorieseiten leer.
+  const teaserTreatmentPagesPopulate = blockTreatmentTeasersPopulate.populate
+    .treatmentPages.populate as {
+    treatment: { fields: string[] };
+    [key: string]: unknown;
+  };
   return {
     fields: ["headline"],
     populate: {
       [relationKey]: {
         populate: {
-          ...(blockTreatmentTeasersPopulate.populate.treatmentPages
-            .populate as object),
+          ...(teaserTreatmentPagesPopulate as object),
+          treatment: {
+            ...(teaserTreatmentPagesPopulate.treatment as object),
+            fields: [...teaserTreatmentPagesPopulate.treatment.fields, "type"],
+          },
         },
       },
     },
