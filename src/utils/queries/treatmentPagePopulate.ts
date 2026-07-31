@@ -39,9 +39,13 @@ function buildRelatedTreatmentsPopulate(
   // buchbaren Standorte korrekt nach Typ zu filtern (minimally-invasive vs.
   // operational etc.). Ohne "type" hier wäre diese Ableitung im Frontend nicht
   // möglich und der Block bliebe auf Kategorieseiten leer.
+  //
+  // Die Cast-Kette geht bewusst über `unknown` und nutzt `readonly string[]`:
+  // Das Quell-Populate ist readonly (readonly-Tupel bei `fields`), daher würde
+  // ein direkter Cast auf einen mutable-Typ mit TS2352 fehlschlagen.
   const teaserTreatmentPagesPopulate = blockTreatmentTeasersPopulate.populate
-    .treatmentPages.populate as {
-    treatment: { fields: string[] };
+    .treatmentPages.populate as unknown as {
+    treatment: { fields: readonly string[] };
     [key: string]: unknown;
   };
   return {
