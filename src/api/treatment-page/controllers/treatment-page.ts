@@ -39,6 +39,50 @@ function getTreatmentPagePopulateForFindByLocationAndPath(siteMode?: string) {
     : treatmentPagePopulateForFindByLocationAndPath;
 }
 
+const LOCATION_OVERRIDE_UID =
+  "api::location-treatment-page.location-treatment-page";
+
+const OVERRIDABLE_BLOCK_KEYS = [
+  "hero",
+  "tableOfContents",
+  "reviews",
+  "about",
+  "treatmentDetails",
+  "treatmentPlan",
+  "benefits",
+  "suitability",
+  "medicalTeamHighlight",
+  "treatmentProcess",
+  "relatedTreatments",
+  "faq",
+  "blocks",
+] as const;
+
+function getOverridePopulate(siteMode?: string) {
+  const base = getTreatmentPagePopulateForFindByLocationAndPath(
+    siteMode
+  ) as Record<string, unknown>;
+  return {
+    blockOrder: true,
+    ...Object.fromEntries(
+      OVERRIDABLE_BLOCK_KEYS.filter((key) => base[key]).map((key) => [
+        key,
+        base[key],
+      ])
+    ),
+  };
+}
+
+function pickOverriddenBlocks(override: Record<string, any> | null) {
+  if (!override) return {};
+  return Object.fromEntries(
+    OVERRIDABLE_BLOCK_KEYS.filter((key) => override[key] != null).map((key) => [
+      key,
+      override[key],
+    ])
+  );
+}
+
 /**
  * Base fields returned for a treatment page on the location+path endpoint.
  * appTreatmentSlug is added for SEO pages only (see below) because it is used
@@ -408,9 +452,24 @@ export default factories.createCoreController(
         });
       }
 
+      const override = await strapi
+        .documents(LOCATION_OVERRIDE_UID as any)
+        .findFirst({
+          locale,
+          status,
+          filters: {
+            treatmentPage: { pathKey: { $eq: pathKey } },
+            location: { documentId: { $eq: (location as any).documentId } },
+          },
+          populate: getOverridePopulate(siteMode) as any,
+        });
+
       // Add ancestors to treatmentPage
       const treatmentPageWithAncestors = {
         ...treatmentPage,
+        ...pickOverriddenBlocks(override as any),
+        blockOrder:
+          (override as any)?.blockOrder?.map((entry: any) => entry.key) ?? null,
         ancestors,
       };
 
