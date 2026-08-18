@@ -26,6 +26,7 @@ import {
   LOCATION_TREATMENT_PAGE_UID,
   getOverridableBlockKeys,
   isOverridden,
+  toBlockRefKeys,
 } from "../../../utils/locationTreatmentPageBlocks";
 
 const SEO_TREATMENT_PAGE_UID = "api::treatment-page.treatment-page";
@@ -52,7 +53,15 @@ function getTreatmentPagePopulateForFindByLocationAndPath(siteMode?: string) {
 //
 // Ein Override-Datensatz ersetzt einzelne Bloecke der Behandlungsseite fuer
 // GENAU einen Standort. Existiert kein Datensatz, bleibt die Antwort exakt so
-// wie vorher (bis auf das zusaetzliche Feld blockOrder: null).
+// wie vorher (bis auf die additiven Felder blockOrder/hiddenBlocks = null).
+//
+// Semantik der Steuerfelder (Vertrag mit dem Frontend):
+//   blockOrder   = reine SORTIERUNG. Nicht gelistete Bloecke werden vom
+//                  Frontend in Default-Reihenfolge HINTEN angehaengt. Eine
+//                  unvollstaendige Liste blendet also nichts aus.
+//   hiddenBlocks = explizites AUSBLENDEN.
+// Beide sind null, wenn nicht gepflegt (nie []), damit das Frontend "nicht
+// gepflegt" nicht mit "nichts anzeigen" verwechselt.
 // ---------------------------------------------------------------------------
 
 /**
@@ -71,6 +80,7 @@ function getOverridePopulate(strapi: any, siteMode?: string) {
 
   return {
     blockOrder: true,
+    hiddenBlocks: true,
     blocks: allBlocksPopulate as object,
     ...Object.fromEntries(
       getOverridableBlockKeys(strapi)
@@ -96,24 +106,6 @@ function pickOverriddenBlocks(
   );
 }
 
-/**
- * blockOrder als flache Key-Liste. null bedeutet "keine abweichende
- * Reihenfolge" - ein leeres Array wird bewusst zu null normalisiert, damit das
- * Frontend es nicht als "keine Bloecke anzeigen" interpretiert.
- */
-function pickBlockOrder(override: Record<string, any> | null): string[] | null {
-  const entries = override?.blockOrder;
-  if (!Array.isArray(entries) || entries.length === 0) return null;
-
-  const keys = entries
-    .map((entry: any) => entry?.key)
-    .filter(
-      (key: any): key is string => typeof key === "string" && key.length > 0
-    );
-
-  return keys.length > 0 ? keys : null;
-}
-
 let cachedDefaultLocale: string | null | undefined;
 
 async function getDefaultLocale(strapi: any): Promise<string | null> {
@@ -127,6 +119,18 @@ async function getDefaultLocale(strapi: any): Promise<string | null> {
   }
   return cachedDefaultLocale;
 }
+
+type LocationOverrideResult = {
+  override: Record<string, any> | null;
+  blockOrder: string[] | null;
+  hiddenBlocks: string[] | null;
+};
+
+const EMPTY_OVERRIDE_RESULT: LocationOverrideResult = {
+  override: null,
+  blockOrder: null,
+  hiddenBlocks: null,
+};
 
 /**
  * Laedt den Standort-Override fuer eine Behandlungsseite.
@@ -147,7 +151,7 @@ async function findLocationOverride(
     treatmentPageDocumentId?: string;
     locationDocumentId?: string;
   }
-): Promise<{ override: Record<string, any> | null; blockOrder: string[] | null }> {
+): Promise<LocationOverrideResult> {
   const {
     siteMode,
     locale,
@@ -157,7 +161,7 @@ async function findLocationOverride(
   } = params;
 
   if (siteMode === "ads" || !treatmentPageDocumentId || !locationDocumentId) {
-    return { override: null, blockOrder: null };
+    return EMPTY_OVERRIDE_RESULT;
   }
 
   const filters = {
@@ -178,17 +182,22 @@ async function findLocationOverride(
     });
 
   if (override) {
-    return { override, blockOrder: pickBlockOrder(override) };
+    return {
+      override,
+      blockOrder: toBlockRefKeys((override as any).blockOrder),
+      hiddenBlocks: toBlockRefKeys((override as any).hiddenBlocks),
+    };
   }
 
-  // blockOrder ist im Schema als NICHT lokalisiert deklariert, die Inhalts-
-  // bloecke sind lokalisiert. Gibt es fuer die angefragte Locale keine
-  // Localization, ginge ohne diesen Fallback auch die sprachunabhaengige
-  // Reihenfolge verloren. Laeuft nur fuer Nicht-Default-Locales -> auf dem
-  // Hauptpfad (Default-Locale) entsteht KEIN zusaetzlicher Query.
+  // blockOrder und hiddenBlocks sind im Schema als NICHT lokalisiert
+  // deklariert, die Inhaltsbloecke sind lokalisiert. Gibt es fuer die
+  // angefragte Locale keine Localization, gingen ohne diesen Fallback auch die
+  // sprachunabhaengigen Steuerfelder verloren. Laeuft nur fuer
+  // Nicht-Default-Locales -> auf dem Hauptpfad entsteht KEIN zusaetzlicher
+  // Query.
   const defaultLocale = await getDefaultLocale(strapi);
   if (!locale || !defaultLocale || locale === defaultLocale) {
-    return { override: null, blockOrder: null };
+    return EMPTY_OVERRIDE_RESULT;
   }
 
   const fallback = await strapi
@@ -198,10 +207,14 @@ async function findLocationOverride(
       status,
       filters,
       sort: ["createdAt:asc"],
-      populate: { blockOrder: true } as any,
+      populate: { blockOrder: true, hiddenBlocks: true } as any,
     });
 
-  return { override: null, blockOrder: pickBlockOrder(fallback as any) };
+  return {
+    override: null,
+    blockOrder: toBlockRefKeys((fallback as any)?.blockOrder),
+    hiddenBlocks: toBlockRefKeys((fallback as any)?.hiddenBlocks),
+  };
 }
 
 /**
@@ -573,19 +586,23 @@ export default factories.createCoreController(
         });
       }
 
-      const { override, blockOrder } = await findLocationOverride(strapi, {
-        siteMode,
-        locale,
-        status,
-        treatmentPageDocumentId: (treatmentPage as any).documentId,
-        locationDocumentId: (location as any).documentId,
-      });
+      const { override, blockOrder, hiddenBlocks } = await findLocationOverride(
+        strapi,
+        {
+          siteMode,
+          locale,
+          status,
+          treatmentPageDocumentId: (treatmentPage as any).documentId,
+          locationDocumentId: (location as any).documentId,
+        }
+      );
 
       // Add ancestors to treatmentPage
       const treatmentPageWithAncestors = {
         ...treatmentPage,
         ...pickOverriddenBlocks(strapi, override),
         blockOrder,
+        hiddenBlocks,
         ancestors,
       };
 
