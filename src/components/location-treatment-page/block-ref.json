@@ -1,0 +1,32 @@
+{
+  "collectionName": "components_location_treatment_page_block_refs",
+  "info": {
+    "displayName": "Block Ref"
+  },
+  "options": {},
+  "attributes": {
+    "key": {
+      "type": "enumeration",
+      "required": true,
+      "enum": [
+        "hero",
+        "locationContact",
+        "aboutLocation",
+        "locationDirections",
+        "tableOfContents",
+        "about",
+        "reviews",
+        "treatmentDetails",
+        "treatmentPlan",
+        "benefits",
+        "suitability",
+        "medicalTeamHighlight",
+        "treatmentProcess",
+        "relatedTreatments",
+        "faq",
+        "blocks"
+      ]
+    }
+  },
+  "config": {}
+}

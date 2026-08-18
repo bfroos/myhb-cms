@@ -1,0 +1,215 @@
+{
+  "kind": "collectionType",
+  "collectionName": "location_treatment_pages",
+  "info": {
+    "singularName": "location-treatment-page",
+    "pluralName": "location-treatment-pages",
+    "displayName": "Location Treatment Page"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "treatmentPage": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::treatment-page.treatment-page",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    },
+    "location": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::location.location",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    },
+    "blockOrder": {
+      "type": "component",
+      "repeatable": true,
+      "component": "location-treatment-page.block-ref",
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    },
+    "hero": {
+      "type": "component",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "treatment-page.hero",
+      "repeatable": false
+    },
+    "tableOfContents": {
+      "type": "component",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "treatment-page.table-of-contents",
+      "repeatable": false
+    },
+    "reviews": {
+      "type": "component",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "treatment-page.reviews",
+      "repeatable": false
+    },
+    "about": {
+      "type": "component",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "treatment-page.about",
+      "repeatable": false
+    },
+    "treatmentDetails": {
+      "type": "component",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "treatment-page.treatment-details",
+      "repeatable": false
+    },
+    "treatmentPlan": {
+      "type": "component",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "treatment-page.treatment-plan",
+      "repeatable": false
+    },
+    "benefits": {
+      "type": "component",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "treatment-page.benefits",
+      "repeatable": false
+    },
+    "suitability": {
+      "type": "component",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "treatment-page.suitability",
+      "repeatable": false
+    },
+    "medicalTeamHighlight": {
+      "type": "component",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "treatment-page.medical-team-highlight",
+      "repeatable": false
+    },
+    "treatmentProcess": {
+      "type": "component",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "treatment-page.treatment-process",
+      "repeatable": false
+    },
+    "relatedTreatments": {
+      "type": "component",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "treatment-page.related-services",
+      "repeatable": false
+    },
+    "faq": {
+      "type": "component",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "treatment-page.faq",
+      "repeatable": false
+    },
+    "blocks": {
+      "type": "dynamiczone",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "components": [
+        "blocks.benefits-list",
+        "blocks.comparison-block",
+        "blocks.employee",
+        "blocks.faq",
+        "blocks.highlights-strip",
+        "blocks.media-bento",
+        "blocks.media-card",
+        "blocks.process-steps",
+        "blocks.text-content",
+        "blocks.trust-grid",
+        "blocks.location-map",
+        "blocks.landing-hero",
+        "blocks.trust-bar",
+        "blocks.quick-info",
+        "blocks.before-after",
+        "blocks.benefit-grid",
+        "blocks.seo-collapsible",
+        "blocks.doctor",
+        "blocks.price-overview",
+        "blocks.price-teaser",
+        "blocks.faq-accordion",
+        "blocks.local-section",
+        "blocks.location-card",
+        "blocks.final-cta",
+        "blocks.mobile-sticky-cta",
+        "blocks.landing-reviews",
+        "blocks.press-logos",
+        "blocks.guarantees",
+        "blocks.awards",
+        "blocks.live-counter",
+        "blocks.promo-banner",
+        "blocks.promo-strip",
+        "blocks.promo-hero",
+        "blocks.promo-floating-sticker"
+      ]
+    }
+  }
+}
