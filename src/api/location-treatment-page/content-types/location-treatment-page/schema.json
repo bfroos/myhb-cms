@@ -47,6 +47,16 @@
         }
       }
     },
+    "hiddenBlocks": {
+      "type": "component",
+      "repeatable": true,
+      "component": "location-treatment-page.block-ref",
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    },
     "hero": {
       "type": "component",
       "pluginOptions": {
