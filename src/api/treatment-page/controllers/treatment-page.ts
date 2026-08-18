@@ -5,7 +5,10 @@
 import { factories } from "@strapi/strapi";
 import type { Context } from "koa";
 import { getLocationStatus } from "../../../utils/locationStatus";
-import { blockTreatmentTeasersPopulate } from "../../../utils/queries/blocks";
+import {
+  allBlocksPopulate,
+  blockTreatmentTeasersPopulate,
+} from "../../../utils/queries/blocks";
 import {
   treatmentAdsPagePopulateForFindByLocationAndPath,
   treatmentAdsPagePopulateForFindByPath,
@@ -19,6 +22,11 @@ import {
   locationPopulateForPage,
 } from "../../../utils/queries/locationPopulate";
 import { getPreviewStatus } from "../../../utils/previewStatus";
+import {
+  LOCATION_TREATMENT_PAGE_UID,
+  getOverridableBlockKeys,
+  isOverridden,
+} from "../../../utils/locationTreatmentPageBlocks";
 
 const SEO_TREATMENT_PAGE_UID = "api::treatment-page.treatment-page";
 const ADS_TREATMENT_PAGE_UID = "api::treatment-ads-page.treatment-ads-page";
@@ -39,48 +47,161 @@ function getTreatmentPagePopulateForFindByLocationAndPath(siteMode?: string) {
     : treatmentPagePopulateForFindByLocationAndPath;
 }
 
-const LOCATION_OVERRIDE_UID =
-  "api::location-treatment-page.location-treatment-page";
+// ---------------------------------------------------------------------------
+// Standort-Overrides (location-treatment-page)
+//
+// Ein Override-Datensatz ersetzt einzelne Bloecke der Behandlungsseite fuer
+// GENAU einen Standort. Existiert kein Datensatz, bleibt die Antwort exakt so
+// wie vorher (bis auf das zusaetzliche Feld blockOrder: null).
+// ---------------------------------------------------------------------------
 
-const OVERRIDABLE_BLOCK_KEYS = [
-  "hero",
-  "tableOfContents",
-  "reviews",
-  "about",
-  "treatmentDetails",
-  "treatmentPlan",
-  "benefits",
-  "suitability",
-  "medicalTeamHighlight",
-  "treatmentProcess",
-  "relatedTreatments",
-  "faq",
-  "blocks",
-] as const;
-
-function getOverridePopulate(siteMode?: string) {
+/**
+ * Populate fuer den Override.
+ *
+ * Basis ist das Populate der Behandlungsseite, damit Override und Basisseite
+ * strukturell identisch ausgeliefert werden. `blocks` fehlt in diesem
+ * Basis-Populate (die Basisseite liefert auf der Standort-Route keine Dynamic
+ * Zone) und wird fuer den Override deshalb EXPLIZIT ergaenzt - sonst waere ein
+ * gepflegter blocks-Override wirkungslos, weil das Feld nie geladen wuerde.
+ */
+function getOverridePopulate(strapi: any, siteMode?: string) {
   const base = getTreatmentPagePopulateForFindByLocationAndPath(
     siteMode
   ) as Record<string, unknown>;
+
   return {
     blockOrder: true,
+    blocks: allBlocksPopulate as object,
     ...Object.fromEntries(
-      OVERRIDABLE_BLOCK_KEYS.filter((key) => base[key]).map((key) => [
-        key,
-        base[key],
-      ])
+      getOverridableBlockKeys(strapi)
+        .filter((key) => base[key])
+        .map((key) => [key, base[key]])
     ),
   };
 }
 
-function pickOverriddenBlocks(override: Record<string, any> | null) {
+/**
+ * Uebernimmt nur die Bloecke, die im Override tatsaechlich gepflegt sind.
+ * Leere Arrays zaehlen NICHT als Override (siehe isOverridden).
+ */
+function pickOverriddenBlocks(
+  strapi: any,
+  override: Record<string, any> | null
+) {
   if (!override) return {};
   return Object.fromEntries(
-    OVERRIDABLE_BLOCK_KEYS.filter((key) => override[key] != null).map((key) => [
-      key,
-      override[key],
-    ])
+    getOverridableBlockKeys(strapi)
+      .filter((key) => isOverridden(override[key]))
+      .map((key) => [key, override[key]])
   );
+}
+
+/**
+ * blockOrder als flache Key-Liste. null bedeutet "keine abweichende
+ * Reihenfolge" - ein leeres Array wird bewusst zu null normalisiert, damit das
+ * Frontend es nicht als "keine Bloecke anzeigen" interpretiert.
+ */
+function pickBlockOrder(override: Record<string, any> | null): string[] | null {
+  const entries = override?.blockOrder;
+  if (!Array.isArray(entries) || entries.length === 0) return null;
+
+  const keys = entries
+    .map((entry: any) => entry?.key)
+    .filter(
+      (key: any): key is string => typeof key === "string" && key.length > 0
+    );
+
+  return keys.length > 0 ? keys : null;
+}
+
+let cachedDefaultLocale: string | null | undefined;
+
+async function getDefaultLocale(strapi: any): Promise<string | null> {
+  if (cachedDefaultLocale !== undefined) return cachedDefaultLocale;
+  try {
+    cachedDefaultLocale =
+      (await strapi.plugin("i18n")?.service("locales")?.getDefaultLocale()) ??
+      null;
+  } catch {
+    cachedDefaultLocale = null;
+  }
+  return cachedDefaultLocale;
+}
+
+/**
+ * Laedt den Standort-Override fuer eine Behandlungsseite.
+ *
+ * - Ads-Modus: es gibt nichts zu laden. Die Relation des Overrides zeigt
+ *   ausschliesslich auf api::treatment-page.treatment-page; die Ads-Seiten sind
+ *   ein eigener Content-Type. Frueher wurde ueber pathKey gefiltert, wodurch
+ *   ein SEO-Override auf einer Ads-Seite landen konnte (gleiche pathKeys).
+ * - Gefiltert wird ueber die documentId der bereits aufgeloesten
+ *   Behandlungsseite: eindeutig, kein zusaetzlicher String-Join.
+ */
+async function findLocationOverride(
+  strapi: any,
+  params: {
+    siteMode?: string;
+    locale?: string;
+    status?: any;
+    treatmentPageDocumentId?: string;
+    locationDocumentId?: string;
+  }
+): Promise<{ override: Record<string, any> | null; blockOrder: string[] | null }> {
+  const {
+    siteMode,
+    locale,
+    status,
+    treatmentPageDocumentId,
+    locationDocumentId,
+  } = params;
+
+  if (siteMode === "ads" || !treatmentPageDocumentId || !locationDocumentId) {
+    return { override: null, blockOrder: null };
+  }
+
+  const filters = {
+    treatmentPage: { documentId: { $eq: treatmentPageDocumentId } },
+    location: { documentId: { $eq: locationDocumentId } },
+  };
+
+  const override = await strapi
+    .documents(LOCATION_TREATMENT_PAGE_UID as any)
+    .findFirst({
+      locale,
+      status,
+      filters,
+      // Deterministisch, falls trotz Uniqueness-Guard zwei Datensaetze
+      // existieren (siehe utils/locationTreatmentPageUniqueness.ts).
+      sort: ["createdAt:asc"],
+      populate: getOverridePopulate(strapi, siteMode) as any,
+    });
+
+  if (override) {
+    return { override, blockOrder: pickBlockOrder(override) };
+  }
+
+  // blockOrder ist im Schema als NICHT lokalisiert deklariert, die Inhalts-
+  // bloecke sind lokalisiert. Gibt es fuer die angefragte Locale keine
+  // Localization, ginge ohne diesen Fallback auch die sprachunabhaengige
+  // Reihenfolge verloren. Laeuft nur fuer Nicht-Default-Locales -> auf dem
+  // Hauptpfad (Default-Locale) entsteht KEIN zusaetzlicher Query.
+  const defaultLocale = await getDefaultLocale(strapi);
+  if (!locale || !defaultLocale || locale === defaultLocale) {
+    return { override: null, blockOrder: null };
+  }
+
+  const fallback = await strapi
+    .documents(LOCATION_TREATMENT_PAGE_UID as any)
+    .findFirst({
+      locale: defaultLocale,
+      status,
+      filters,
+      sort: ["createdAt:asc"],
+      populate: { blockOrder: true } as any,
+    });
+
+  return { override: null, blockOrder: pickBlockOrder(fallback as any) };
 }
 
 /**
@@ -452,24 +573,19 @@ export default factories.createCoreController(
         });
       }
 
-      const override = await strapi
-        .documents(LOCATION_OVERRIDE_UID as any)
-        .findFirst({
-          locale,
-          status,
-          filters: {
-            treatmentPage: { pathKey: { $eq: pathKey } },
-            location: { documentId: { $eq: (location as any).documentId } },
-          },
-          populate: getOverridePopulate(siteMode) as any,
-        });
+      const { override, blockOrder } = await findLocationOverride(strapi, {
+        siteMode,
+        locale,
+        status,
+        treatmentPageDocumentId: (treatmentPage as any).documentId,
+        locationDocumentId: (location as any).documentId,
+      });
 
       // Add ancestors to treatmentPage
       const treatmentPageWithAncestors = {
         ...treatmentPage,
-        ...pickOverriddenBlocks(override as any),
-        blockOrder:
-          (override as any)?.blockOrder?.map((entry: any) => entry.key) ?? null,
+        ...pickOverriddenBlocks(strapi, override),
+        blockOrder,
         ancestors,
       };
 
