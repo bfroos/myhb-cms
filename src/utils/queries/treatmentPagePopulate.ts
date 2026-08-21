@@ -1,4 +1,4 @@
-import { mediaPopulate } from "./strapi";
+import { mediaPopulate, mediaWithDatePopulate } from "./strapi";
 import { allBlocksPopulate, blockTreatmentTeasersPopulate } from "./blocks";
 import { seoPopulate } from "./components";
 
@@ -90,7 +90,8 @@ const treatmentPagePopulateBase = {
   about: {
     fields: ["headline", "intro", "content"],
     populate: {
-      media: mediaPopulate as object,
+      media: mediaWithDatePopulate as object,
+      poster: mediaPopulate as object,
     },
   },
   treatmentDetails: {
