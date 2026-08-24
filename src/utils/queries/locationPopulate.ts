@@ -1,4 +1,4 @@
-import { mediaPopulate } from "./strapi";
+import { mediaPopulate, mediaWithDatePopulate } from "./strapi";
 
 export const locationFieldsForPage = [
   "name",
@@ -85,19 +85,22 @@ export const locationPopulateForPage = {
       comingSoon: {
         fields: ["headline", "intro", "content"],
         populate: {
-          media: mediaPopulate as object,
+          media: mediaWithDatePopulate as object,
+          poster: mediaPopulate as object,
         },
       },
       openSoon: {
         fields: ["headline", "intro", "content"],
         populate: {
-          media: mediaPopulate as object,
+          media: mediaWithDatePopulate as object,
+          poster: mediaPopulate as object,
         },
       },
       open: {
         fields: ["headline", "intro", "content"],
         populate: {
-          media: mediaPopulate as object,
+          media: mediaWithDatePopulate as object,
+          poster: mediaPopulate as object,
         },
       },
     },
