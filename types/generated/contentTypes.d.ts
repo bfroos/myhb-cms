@@ -26,6 +26,11 @@ export interface AdminApiToken extends Struct.CollectionTypeSchema {
       Schema.Attribute.SetMinMaxLength<{
         minLength: 1;
       }>;
+    adminPermissions: Schema.Attribute.Relation<
+      'oneToMany',
+      'admin::permission'
+    >;
+    adminUserOwner: Schema.Attribute.Relation<'manyToOne', 'admin::user'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -39,6 +44,9 @@ export interface AdminApiToken extends Struct.CollectionTypeSchema {
         minLength: 1;
       }>;
     expiresAt: Schema.Attribute.DateTime;
+    kind: Schema.Attribute.Enumeration<['content-api', 'admin']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'content-api'>;
     lastUsedAt: Schema.Attribute.DateTime;
     lifespan: Schema.Attribute.BigInteger;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
@@ -56,7 +64,6 @@ export interface AdminApiToken extends Struct.CollectionTypeSchema {
     >;
     publishedAt: Schema.Attribute.DateTime;
     type: Schema.Attribute.Enumeration<['read-only', 'full-access', 'custom']> &
-      Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<'read-only'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -134,6 +141,7 @@ export interface AdminPermission extends Struct.CollectionTypeSchema {
         minLength: 1;
       }>;
     actionParameters: Schema.Attribute.JSON & Schema.Attribute.DefaultTo<{}>;
+    apiToken: Schema.Attribute.Relation<'manyToOne', 'admin::api-token'>;
     conditions: Schema.Attribute.JSON & Schema.Attribute.DefaultTo<[]>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -241,6 +249,7 @@ export interface AdminSession extends Struct.CollectionTypeSchema {
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'admin::session'> &
       Schema.Attribute.Private;
+    metadata: Schema.Attribute.JSON & Schema.Attribute.Private;
     origin: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.Private;
@@ -385,6 +394,8 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
     };
   };
   attributes: {
+    apiTokens: Schema.Attribute.Relation<'oneToMany', 'admin::api-token'> &
+      Schema.Attribute.Private;
     blocked: Schema.Attribute.Boolean &
       Schema.Attribute.Private &
       Schema.Attribute.DefaultTo<false>;
@@ -506,6 +517,49 @@ export interface ApiAboutUsPageAboutUsPage extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiAuditLogAuditLog extends Struct.CollectionTypeSchema {
+  collectionName: 'audit_logs';
+  info: {
+    description: 'Protokolliert schreibende Aktionen (create/update/delete/publish/unpublish) auf treatment-page & treatment-ads-page inkl. Actor und Outcome.';
+    displayName: 'Audit Log';
+    pluralName: 'audit-logs';
+    singularName: 'audit-log';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  pluginOptions: {
+    i18n: {
+      localized: false;
+    };
+  };
+  attributes: {
+    action: Schema.Attribute.String;
+    actorId: Schema.Attribute.String;
+    actorLabel: Schema.Attribute.String;
+    actorType: Schema.Attribute.String;
+    contentType: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    detail: Schema.Attribute.Text;
+    entryDocumentId: Schema.Attribute.String;
+    entryLocale: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::audit-log.audit-log'
+    > &
+      Schema.Attribute.Private;
+    occurredAt: Schema.Attribute.DateTime;
+    outcome: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiBlogArticleBlogArticle extends Struct.CollectionTypeSchema {
   collectionName: 'blog_articles';
   info: {
@@ -527,7 +581,16 @@ export interface ApiBlogArticleBlogArticle extends Struct.CollectionTypeSchema {
       'api::blog-category.blog-category'
     >;
     components: Schema.Attribute.DynamicZone<
-      ['blog.text', 'blog.image', 'blog.newsletter', 'blog.cta']
+      [
+        'blog.text',
+        'blog.image',
+        'blog.newsletter',
+        'blog.cta',
+        'blocks.faq',
+        'blocks.faq-accordion',
+        'blocks.media-card',
+        'blocks.media-bento',
+      ]
     > &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
@@ -1741,6 +1804,209 @@ export interface ApiLandingPageLandingPage extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiLocationTreatmentPageLocationTreatmentPage
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'location_treatment_pages';
+  info: {
+    displayName: 'Location Treatment Page';
+    pluralName: 'location-treatment-pages';
+    singularName: 'location-treatment-page';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  pluginOptions: {
+    i18n: {
+      localized: true;
+    };
+  };
+  attributes: {
+    about: Schema.Attribute.Component<'treatment-page.about', false> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    benefits: Schema.Attribute.Component<'treatment-page.benefits', false> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    blockOrder: Schema.Attribute.Component<
+      'location-treatment-page.block-ref',
+      true
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    blocks: Schema.Attribute.DynamicZone<
+      [
+        'blocks.benefits-list',
+        'blocks.comparison-block',
+        'blocks.employee',
+        'blocks.faq',
+        'blocks.highlights-strip',
+        'blocks.media-bento',
+        'blocks.media-card',
+        'blocks.process-steps',
+        'blocks.text-content',
+        'blocks.trust-grid',
+        'blocks.location-map',
+        'blocks.landing-hero',
+        'blocks.trust-bar',
+        'blocks.quick-info',
+        'blocks.before-after',
+        'blocks.benefit-grid',
+        'blocks.seo-collapsible',
+        'blocks.doctor',
+        'blocks.price-overview',
+        'blocks.price-teaser',
+        'blocks.faq-accordion',
+        'blocks.local-section',
+        'blocks.location-card',
+        'blocks.final-cta',
+        'blocks.mobile-sticky-cta',
+        'blocks.landing-reviews',
+        'blocks.press-logos',
+        'blocks.guarantees',
+        'blocks.awards',
+        'blocks.live-counter',
+        'blocks.promo-banner',
+        'blocks.promo-strip',
+        'blocks.promo-hero',
+        'blocks.promo-floating-sticker',
+      ]
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    faq: Schema.Attribute.Component<'treatment-page.faq', false> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    hero: Schema.Attribute.Component<'treatment-page.hero', false> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    hiddenBlocks: Schema.Attribute.Component<
+      'location-treatment-page.block-ref',
+      true
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    locale: Schema.Attribute.String;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::location-treatment-page.location-treatment-page'
+    >;
+    location: Schema.Attribute.Relation<'manyToOne', 'api::location.location'> &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    medicalTeamHighlight: Schema.Attribute.Component<
+      'treatment-page.medical-team-highlight',
+      false
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    publishedAt: Schema.Attribute.DateTime;
+    relatedTreatments: Schema.Attribute.Component<
+      'treatment-page.related-services',
+      false
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    reviews: Schema.Attribute.Component<'treatment-page.reviews', false> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    suitability: Schema.Attribute.Component<
+      'treatment-page.suitability',
+      false
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    tableOfContents: Schema.Attribute.Component<
+      'treatment-page.table-of-contents',
+      false
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    treatmentDetails: Schema.Attribute.Component<
+      'treatment-page.treatment-details',
+      false
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    treatmentPage: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::treatment-page.treatment-page'
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    treatmentPlan: Schema.Attribute.Component<
+      'treatment-page.treatment-plan',
+      false
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    treatmentProcess: Schema.Attribute.Component<
+      'treatment-page.treatment-process',
+      false
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiLocationLocation extends Struct.CollectionTypeSchema {
   collectionName: 'locations';
   info: {
@@ -2087,6 +2353,96 @@ export interface ApiPagePage extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiPricePrice extends Struct.CollectionTypeSchema {
+  collectionName: 'prices';
+  info: {
+    displayName: 'Price';
+    pluralName: 'prices';
+    singularName: 'price';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  pluginOptions: {
+    i18n: {
+      localized: true;
+    };
+  };
+  attributes: {
+    basePrice: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }> &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    isActive: Schema.Attribute.Boolean &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<true>;
+    locale: Schema.Attribute.String;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::price.price'>;
+    order: Schema.Attribute.Integer &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<0>;
+    priceSuffix: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    publishedAt: Schema.Attribute.DateTime;
+    startingPrice: Schema.Attribute.Decimal &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }> &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+    title: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    treatmentCategory: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::treatment.treatment'
+    >;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiPricesPagePricesPage extends Struct.SingleTypeSchema {
   collectionName: 'prices_pages';
   info: {
@@ -2117,6 +2473,8 @@ export interface ApiPricesPagePricesPage extends Struct.SingleTypeSchema {
         'blocks.media-card',
         'blocks.my-club',
         'blocks.page-header',
+        'blocks.price-overview',
+        'blocks.price-teaser',
         'blocks.process-steps',
         'blocks.product-category-price-overview',
         'blocks.reviews',
@@ -2171,6 +2529,8 @@ export interface ApiPricesPagePricesPage extends Struct.SingleTypeSchema {
         'blocks.media-card',
         'blocks.my-club',
         'blocks.page-header',
+        'blocks.price-overview',
+        'blocks.price-teaser',
         'blocks.process-steps',
         'blocks.product-category-price-overview',
         'blocks.reviews',
@@ -2812,6 +3172,9 @@ export interface ApiTreatmentAdsPageTreatmentAdsPage
         i18n: {
           localized: true;
         };
+        translate: {
+          translate: 'copy';
+        };
       }>;
     publishedAt: Schema.Attribute.DateTime;
     relatedTreatments: Schema.Attribute.Component<
@@ -2848,6 +3211,9 @@ export interface ApiTreatmentAdsPageTreatmentAdsPage
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
+        };
+        translate: {
+          translate: 'copy';
         };
       }>;
     suitability: Schema.Attribute.Component<
@@ -3059,6 +3425,9 @@ export interface ApiTreatmentPageTreatmentPage
         i18n: {
           localized: true;
         };
+        translate: {
+          translate: 'copy';
+        };
       }>;
     publishedAt: Schema.Attribute.DateTime;
     relatedTreatments: Schema.Attribute.Component<
@@ -3095,6 +3464,9 @@ export interface ApiTreatmentPageTreatmentPage
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
+        };
+        translate: {
+          translate: 'copy';
         };
       }>;
     suitability: Schema.Attribute.Component<
@@ -3218,6 +3590,7 @@ export interface ApiTreatmentTreatment extends Struct.CollectionTypeSchema {
           localized: false;
         };
       }>;
+    prices: Schema.Attribute.Relation<'oneToMany', 'api::price.price'>;
     products: Schema.Attribute.Relation<'manyToMany', 'api::product.product'>;
     publishedAt: Schema.Attribute.DateTime;
     reviews: Schema.Attribute.Relation<'manyToMany', 'api::review.review'>;
@@ -3475,6 +3848,102 @@ export interface PluginReviewWorkflowsWorkflowStage
       'manyToOne',
       'plugin::review-workflows.workflow'
     >;
+  };
+}
+
+export interface PluginTranslateBatchTranslateJob
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'translate_batch_translate_jobs';
+  info: {
+    displayName: 'Translate Batch Translate Job';
+    pluralName: 'batch-translate-jobs';
+    singularName: 'batch-translate-job';
+  };
+  options: {
+    comment: '';
+    draftAndPublish: false;
+  };
+  pluginOptions: {
+    'content-manager': {
+      visible: false;
+    };
+    'content-type-builder': {
+      visible: false;
+    };
+  };
+  attributes: {
+    autoPublish: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    contentType: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    entityIds: Schema.Attribute.JSON;
+    failureReason: Schema.Attribute.JSON;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'plugin::translate.batch-translate-job'
+    > &
+      Schema.Attribute.Private;
+    progress: Schema.Attribute.Float & Schema.Attribute.DefaultTo<0>;
+    publishedAt: Schema.Attribute.DateTime;
+    sourceLocale: Schema.Attribute.String;
+    status: Schema.Attribute.Enumeration<
+      [
+        'created',
+        'setup',
+        'running',
+        'paused',
+        'finished',
+        'cancelled',
+        'failed',
+      ]
+    > &
+      Schema.Attribute.DefaultTo<'created'>;
+    targetLocale: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface PluginTranslateUpdatedEntry
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'translate_updated_entries';
+  info: {
+    displayName: 'Translate updated Entry';
+    pluralName: 'updated-entries';
+    singularName: 'updated-entry';
+  };
+  options: {
+    comment: '';
+    draftAndPublish: false;
+  };
+  pluginOptions: {
+    'content-manager': {
+      visible: false;
+    };
+    'content-type-builder': {
+      visible: false;
+    };
+  };
+  attributes: {
+    contentType: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    groupID: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localesWithUpdates: Schema.Attribute.JSON;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'plugin::translate.updated-entry'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
   };
 }
 
@@ -3742,7 +4211,7 @@ export interface PluginUsersPermissionsUser
 }
 
 declare module '@strapi/strapi' {
-  export module Public {
+  export namespace Public {
     export interface ContentTypeSchemas {
       'admin::api-token': AdminApiToken;
       'admin::api-token-permission': AdminApiTokenPermission;
@@ -3753,6 +4222,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::about-us-page.about-us-page': ApiAboutUsPageAboutUsPage;
+      'api::audit-log.audit-log': ApiAuditLogAuditLog;
       'api::blog-article.blog-article': ApiBlogArticleBlogArticle;
       'api::blog-category.blog-category': ApiBlogCategoryBlogCategory;
       'api::blog-page.blog-page': ApiBlogPageBlogPage;
@@ -3768,9 +4238,11 @@ declare module '@strapi/strapi' {
       'api::job-page.job-page': ApiJobPageJobPage;
       'api::job.job': ApiJobJob;
       'api::landing-page.landing-page': ApiLandingPageLandingPage;
+      'api::location-treatment-page.location-treatment-page': ApiLocationTreatmentPageLocationTreatmentPage;
       'api::location.location': ApiLocationLocation;
       'api::locations-page.locations-page': ApiLocationsPageLocationsPage;
       'api::page.page': ApiPagePage;
+      'api::price.price': ApiPricePrice;
       'api::prices-page.prices-page': ApiPricesPagePricesPage;
       'api::product-category.product-category': ApiProductCategoryProductCategory;
       'api::product-manufacturer.product-manufacturer': ApiProductManufacturerProductManufacturer;
@@ -3787,6 +4259,8 @@ declare module '@strapi/strapi' {
       'plugin::i18n.locale': PluginI18NLocale;
       'plugin::review-workflows.workflow': PluginReviewWorkflowsWorkflow;
       'plugin::review-workflows.workflow-stage': PluginReviewWorkflowsWorkflowStage;
+      'plugin::translate.batch-translate-job': PluginTranslateBatchTranslateJob;
+      'plugin::translate.updated-entry': PluginTranslateUpdatedEntry;
       'plugin::upload.file': PluginUploadFile;
       'plugin::upload.folder': PluginUploadFolder;
       'plugin::users-permissions.permission': PluginUsersPermissionsPermission;

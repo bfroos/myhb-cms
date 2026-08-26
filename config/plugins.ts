@@ -28,4 +28,22 @@ export default ({ env }) => ({
     enabled: true,
     resolve: "./src/plugins/amount-cents",
   },
+  translate: {
+    enabled: true,
+    resolve: "./node_modules/strapi-plugin-translate",
+    config: {
+      provider: "deepl",
+      providerOptions: {
+        apiKey: env("DEEPL_API_KEY"),
+        // strapi-provider-translate-deepl@1.3.0-next.4 has a hardcoded
+        // allowlist of target locales in its parseLocale() switch-case, and
+        // it's stale: "AR" (Arabic) is missing even though DeepL's actual API
+        // supports it. localeMap is the documented escape hatch — an entry
+        // here is checked before the allowlist throws "unsupported locale".
+        localeMap: {
+          AR: "AR",
+        },
+      },
+    },
+  },
 });

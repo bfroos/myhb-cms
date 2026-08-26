@@ -39,6 +39,9 @@
       "pluginOptions": {
         "i18n": {
           "localized": true
+        },
+        "translate": {
+          "translate": "copy"
         }
       },
       "required": true,
@@ -278,6 +281,9 @@
       "pluginOptions": {
         "i18n": {
           "localized": true
+        },
+        "translate": {
+          "translate": "copy"
         }
       },
       "unique": true
