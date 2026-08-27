@@ -1,27 +1,3 @@
-/**
- * Replays a bundle produced by scripts/export-translations.mjs into a running
- * Strapi over the Content API.
- *
- *   STRAPI_URL=https://... STRAPI_API_TOKEN=... \
- *     node scripts/inject-translations.mjs --file=../_local/translations.ndjson
- *
- * Dry run unless --apply is passed. It prints exactly what it would send,
- * including every price it would write, so the run can be reviewed first.
- *
- * What it will never do:
- *   - touch the German locale. German is the source and is not in the bundle.
- *   - create or delete a document. It only ever writes a locale of a document
- *     the destination already has.
- *   - carry a numeric media id across. Media travels as a documentId and is
- *     re-resolved here, because the same asset has different numeric ids in
- *     different instances and sending the local one attaches the wrong image.
- *
- * Drift: each record carries the updatedAt it was captured at. If the
- * destination has been edited since, the record is skipped and listed, so an
- * editor's change is never silently reverted. --force overrides that.
- *
- * The token needs update on the imported content types and find on Upload.
- */
 import fs from "node:fs";
 
 const args = process.argv.slice(2);
@@ -85,8 +61,6 @@ if (!records.length) {
   process.exit(1);
 }
 
-/* -- media map ----------------------------------------------------------- */
-// Every asset the bundle points at, resolved against THIS instance's numbering.
 const wantedMedia = new Set();
 const walk = (value, visit) => {
   if (Array.isArray(value)) return value.forEach((v) => walk(v, visit));
@@ -100,10 +74,11 @@ for (const record of records) {
   });
 }
 
+// The same asset has a different numeric id in every instance; only the
+// documentId is stable. Resolving it here is what keeps the images correct.
 const mediaMap = new Map();
 if (wantedMedia.size) {
   const ids = [...wantedMedia];
-  // Chunked: the whole list in one query string overflows the URL limit.
   for (let i = 0; i < ids.length; i += 50) {
     const chunk = ids.slice(i, i + 50);
     const query = chunk
@@ -132,10 +107,6 @@ console.log(
       : ""),
 );
 
-/* -- payload ------------------------------------------------------------- */
-// Sentinels become destination-local references. A media asset the destination
-// does not have is dropped rather than guessed at: an empty image falls back to
-// German, a wrong image is a visible defect.
 let droppedMedia = 0;
 function resolve(value) {
   if (Array.isArray(value)) {
@@ -161,7 +132,6 @@ function resolve(value) {
   return out;
 }
 
-/* -- run ----------------------------------------------------------------- */
 const report = {
   created: [],
   updated: [],
@@ -183,9 +153,6 @@ for (const record of records) {
     `/api/${apiPath}/${documentId}?locale=${locale}&status=published&populate[blocks]=true`,
   );
 
-  // 404 here means either "this locale does not exist yet" (fine, we add it) or
-  // "no such document at all" (out of scope: this script fills in locales, it
-  // does not add pages). Asking for German tells the two apart.
   if (current.status === 404) {
     const german = await api(
       `/api/${apiPath}/${documentId}?locale=de&status=published`,
@@ -242,7 +209,6 @@ for (const record of records) {
   (existing ? report.updated : report.created).push(label);
 }
 
-/* -- summary ------------------------------------------------------------- */
 const counts = Object.fromEntries(
   Object.entries(report).map(([key, value]) => [key, value.length]),
 );
