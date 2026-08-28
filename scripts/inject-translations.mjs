@@ -48,11 +48,15 @@ if (!fs.existsSync(FILE)) {
   process.exit(1);
 }
 
-const records = fs
+const lines = fs
   .readFileSync(FILE, "utf8")
   .split("\n")
   .filter(Boolean)
-  .map((line) => JSON.parse(line))
+  .map((l) => JSON.parse(l));
+
+const legend = lines[0]?.__legend ?? {};
+const records = lines
+  .filter((r) => !r.__legend)
   .filter((r) => !ONLY_LOCALES.length || ONLY_LOCALES.includes(r.locale))
   .filter((r) => !ONLY_TYPES.length || ONLY_TYPES.includes(r.uid))
   .filter((r) => r.locale !== "de")
@@ -63,13 +67,23 @@ if (!records.length) {
   process.exit(1);
 }
 
-const wantedMedia = new Set();
 const walk = (value, visit) => {
   if (Array.isArray(value)) return value.forEach((v) => walk(v, visit));
   if (!value || typeof value !== "object") return;
   visit(value);
   Object.values(value).forEach((v) => walk(v, visit));
 };
+
+const chunk = (list, size) => {
+  const out = [];
+  for (let i = 0; i < list.length; i += size) out.push(list.slice(i, i + size));
+  return out;
+};
+
+const idFilter = (ids) =>
+  ids.map((id, n) => `filters[documentId][$in][${n}]=${encodeURIComponent(id)}`).join("&");
+
+const wantedMedia = new Set();
 for (const record of records) {
   walk(record.data, (node) => {
     if (typeof node.__media === "string") wantedMedia.add(node.__media);
@@ -79,74 +93,92 @@ for (const record of records) {
 // The same asset has a different numeric id in every instance; only the
 // documentId is stable. Resolving it here is what keeps the images correct.
 const mediaMap = new Map();
-if (wantedMedia.size) {
-  const ids = [...wantedMedia];
-  for (let i = 0; i < ids.length; i += 50) {
-    const chunk = ids.slice(i, i + 50);
-    const query = chunk
-      .map((id, n) => `filters[documentId][$in][${n}]=${encodeURIComponent(id)}`)
-      .join("&");
-    const { ok, status, body } = await api(
-      `/api/upload/files?${query}&pagination[pageSize]=100`,
-    );
-    if (!ok) {
-      console.error(
-        `Could not read media (${status}). The token needs find on Upload.`,
-      );
-      process.exit(1);
-    }
-    for (const file of Array.isArray(body) ? body : (body?.results ?? [])) {
-      if (file?.documentId && file?.id) mediaMap.set(file.documentId, file.id);
-    }
+for (const ids of chunk([...wantedMedia], 50)) {
+  const { ok, status, body } = await api(
+    `/api/upload/files?${idFilter(ids)}&pagination[pageSize]=100`,
+  );
+  if (!ok) {
+    console.error(`Could not read media (${status}). The token needs find on Upload.`);
+    process.exit(1);
+  }
+  for (const file of Array.isArray(body) ? body : (body?.results ?? [])) {
+    if (file?.documentId && file?.id) mediaMap.set(file.documentId, file.id);
   }
 }
+console.log(`media: ${mediaMap.size}/${wantedMedia.size} resolved`);
 
-const unresolvedMedia = [...wantedMedia].filter((id) => !mediaMap.has(id));
-console.log(
-  `media: ${mediaMap.size}/${wantedMedia.size} resolved` +
-    (unresolvedMedia.length
-      ? `, ${unresolvedMedia.length} missing on the destination`
-      : ""),
-);
+// Strapi resolves a relation inside the target locale and rejects the whole
+// write if the target has no such locale, so check first and drop the misses.
+const wantedRelations = new Map();
+for (const record of records) {
+  walk(record.data, (node) => {
+    if (typeof node.__relation !== "string" || !node.__t) return;
+    const key = `${node.__t}|${record.locale}`;
+    if (!wantedRelations.has(key)) wantedRelations.set(key, new Set());
+    wantedRelations.get(key).add(node.__relation);
+  });
+}
+
+const resolvableRelations = new Map();
+for (const [key, ids] of wantedRelations) {
+  const [uid, locale] = key.split("|");
+  const meta = legend[uid];
+  if (!meta || !meta.localized) continue;
+
+  const found = new Set();
+  let listable = true;
+  for (const part of chunk([...ids], 50)) {
+    const { ok, body } = await api(
+      `/api/${meta.path}?locale=${locale}&fields[0]=documentId&pagination[pageSize]=100&${idFilter(part)}`,
+    );
+    if (!ok || !Array.isArray(body?.data)) { listable = false; break; }
+    for (const row of body.data) if (row?.documentId) found.add(row.documentId);
+  }
+  if (listable) resolvableRelations.set(key, found);
+}
+
+const relationTotal = [...wantedRelations.values()].reduce((n, s) => n + s.size, 0);
+const relationFound = [...resolvableRelations.values()].reduce((n, s) => n + s.size, 0);
+console.log(`relations: ${relationFound}/${relationTotal} resolvable in their locale`);
 
 let droppedMedia = 0;
-function resolve(value) {
+let droppedRelations = 0;
+
+function resolve(value, locale) {
   if (Array.isArray(value)) {
-    return value.map(resolve).filter((v) => v !== undefined);
+    return value.map((v) => resolve(v, locale)).filter((v) => v !== undefined);
   }
   if (!value || typeof value !== "object") return value;
 
   if (typeof value.__media === "string") {
     const id = mediaMap.get(value.__media);
-    if (id === undefined) {
-      droppedMedia += 1;
-      return undefined;
-    }
+    if (id === undefined) { droppedMedia += 1; return undefined; }
     return id;
   }
-  if (typeof value.__relation === "string") return value.__relation;
+  if (typeof value.__relation === "string") {
+    const set = resolvableRelations.get(`${value.__t}|${locale}`);
+    if (set && !set.has(value.__relation)) { droppedRelations += 1; return undefined; }
+    return value.__relation;
+  }
 
+  // Strapi's validator reads a dynamic-zone item's __component before the rest
+  // of its keys and rejects the item outright when it comes last.
   const out = {};
+  if (typeof value.__component === "string") out.__component = value.__component;
   for (const [key, item] of Object.entries(value)) {
-    const next = resolve(item);
+    if (key === "__component") continue;
+    const next = resolve(item, locale);
     if (next !== undefined) out[key] = next;
   }
   return out;
 }
 
 const report = {
-  created: [],
-  updated: [],
-  skippedDrift: [],
-  skippedMissingDoc: [],
-  blocked: [],
-  failed: [],
+  created: [], updated: [], skippedDrift: [], skippedMissingDoc: [], blocked: [], failed: [],
 };
 let pricesOmitted = 0;
 
-console.log(
-  `\n${APPLY ? "APPLYING" : "DRY RUN"} ${records.length} records -> ${URL_BASE}\n`,
-);
+console.log(`\n${APPLY ? "APPLYING" : "DRY RUN"} ${records.length} records -> ${URL_BASE}\n`);
 
 for (const record of records) {
   const { apiPath, documentId, locale, name, snapshotAt } = record;
@@ -154,19 +186,12 @@ for (const record of records) {
   const target =
     record.kind === "singleType" ? `/api/${apiPath}` : `/api/${apiPath}/${documentId}`;
 
-  const current = await api(
-    `${target}?locale=${locale}&status=published&populate[blocks]=true`,
-  );
+  const current = await api(`${target}?locale=${locale}&status=published`);
 
   if (current.status === 404) {
     const german = await api(`${target}?locale=de&status=published`);
-    if (!german.ok) {
-      report.skippedMissingDoc.push(label);
-      continue;
-    }
+    if (!german.ok) { report.skippedMissingDoc.push(label); continue; }
   } else if (!current.ok) {
-    // A denied read must never be mistaken for "absent": that would skip the
-    // drift check and overwrite an edited entry as if it were new.
     report.blocked.push(`${label} (${current.status} reading destination)`);
     continue;
   }
@@ -182,36 +207,22 @@ for (const record of records) {
     }
   }
 
-  const shapeChange =
-    existing &&
-    record.fingerprint &&
-    (existing.blocks ?? []).map((b) => b.__component).join(">") !==
-      record.fingerprint;
-
-  const data = resolve(record.data);
+  const data = resolve(record.data, locale);
   pricesOmitted += record.prices?.length ?? 0;
 
   if (!APPLY) {
     (existing ? report.updated : report.created).push(label);
-    for (const price of record.prices ?? []) {
-      console.log(`  price kept on destination  ${label}  ${price.path}`);
-    }
-    if (shapeChange) {
-      console.log(`  shape  ${label}  block layout will be replaced`);
-    }
     continue;
   }
 
-  const put = await api(
-    `${target}?locale=${locale}&status=published`,
-    { method: "PUT", body: JSON.stringify({ data }) },
-  );
+  const put = await api(`${target}?locale=${locale}&status=published`, {
+    method: "PUT",
+    body: JSON.stringify({ data }),
+  });
 
   if (!put.ok) {
     const detail = put.body?.error?.message ?? put.body?.raw ?? "";
-    report.failed.push(
-      `${label} (${put.status}) ${String(detail).slice(0, 120)}`,
-    );
+    report.failed.push(`${label} (${put.status}) ${String(detail).slice(0, 120)}`);
     continue;
   }
   (existing ? report.updated : report.created).push(label);
@@ -221,12 +232,13 @@ const counts = Object.fromEntries(
   Object.entries(report).map(([key, value]) => [key, value.length]),
 );
 console.log(
-  `\nRESULT ${JSON.stringify({ mode: APPLY ? "APPLY" : "DRY-RUN", ...counts, pricesOmitted, droppedMedia })}`,
+  `\nRESULT ${JSON.stringify({ mode: APPLY ? "APPLY" : "DRY-RUN", ...counts, pricesOmitted, droppedMedia, droppedRelations })}`,
 );
 
 for (const key of ["skippedDrift", "skippedMissingDoc", "blocked", "failed"]) {
   if (!report[key].length) continue;
   console.log(`\n${key}:`);
-  for (const line of report[key]) console.log(`  ${line}`);
+  for (const line of report[key].slice(0, 40)) console.log(`  ${line}`);
+  if (report[key].length > 40) console.log(`  ... and ${report[key].length - 40} more`);
 }
 if (!APPLY) console.log("\nNothing was written. Re-run with --apply.");

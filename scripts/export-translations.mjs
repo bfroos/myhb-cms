@@ -30,32 +30,79 @@ const SYSTEM_KEYS = new Set([
 
 const PRICE_KEY = /(^|[a-z])(price|amount|cents)/i;
 
-const isMedia = (v) =>
-  !!v && typeof v === "object" && typeof v.mime === "string" && "url" in v;
-const isRelation = (v) =>
-  !!v && typeof v === "object" && typeof v.documentId === "string";
+const app = await createStrapi(await compileStrapi()).load();
+const populateBuilder = app.plugin("content-manager").service("populate-builder");
 
-function portable(value, path, prices, isRoot = false) {
-  if (Array.isArray(value)) {
-    return value.map((item, i) => portable(item, `${path}[${i}]`, prices));
-  }
-  if (!value || typeof value !== "object") return value;
+// uid -> { path, localized }. The injector needs this to check whether a
+// relation target exists in the destination locale before sending it.
+const legend = {};
+const noteTarget = (uid) => {
+  if (legend[uid] || !uid) return;
+  const ct = app.contentType(uid);
+  if (!ct) return;
+  legend[uid] = {
+    path: ct.kind === "singleType" ? ct.info.singularName : ct.info.pluralName,
+    localized: !!ct.pluginOptions?.i18n?.localized,
+  };
+};
 
-  if (!isRoot) {
-    if (isMedia(value)) return { __media: value.documentId };
-    if (isRelation(value) && !value.__component) {
-      return { __relation: value.documentId };
+const refRelation = (x, target) =>
+  x && typeof x === "object" && x.documentId
+    ? { __relation: x.documentId, __t: target }
+    : undefined;
+const refMedia = (x) =>
+  x && typeof x === "object" && x.documentId ? { __media: x.documentId } : undefined;
+
+function portableAttr(item, attr, path, prices) {
+  if (item === null || item === undefined) return item;
+
+  switch (attr.type) {
+    case "relation": {
+      noteTarget(attr.target);
+      return Array.isArray(item)
+        ? item.map((x) => refRelation(x, attr.target)).filter(Boolean)
+        : refRelation(item, attr.target);
     }
+    case "media":
+      return Array.isArray(item)
+        ? item.map(refMedia).filter(Boolean)
+        : refMedia(item);
+    case "component": {
+      const schema = app.components[attr.component];
+      return Array.isArray(item)
+        ? item.map((x, i) => portable(x, schema, `${path}[${i}]`, prices))
+        : portable(item, schema, path, prices);
+    }
+    case "dynamiczone":
+      if (!Array.isArray(item)) return undefined;
+      return item.map((x, i) =>
+        portable(x, app.components[x.__component], `${path}[${i}]`, prices),
+      );
+    default:
+      return item;
   }
+}
 
+function portable(value, schema, path, prices) {
+  if (!value || typeof value !== "object") return value;
   const out = {};
+  if (typeof value.__component === "string") out.__component = value.__component;
   for (const [key, item] of Object.entries(value)) {
-    if (SYSTEM_KEYS.has(key) && key !== "__component") continue;
+    if (key === "__component") continue;
+    if (SYSTEM_KEYS.has(key)) continue;
+
+    const attr = schema?.attributes?.[key];
+    if (!attr) continue;
+
+    const next = path ? `${path}.${key}` : key;
+
     if (PRICE_KEY.test(key) && (typeof item === "number" || typeof item === "string")) {
-      prices.push({ path: path ? `${path}.${key}` : key, value: item });
+      prices.push({ path: next, value: item });
       continue;
     }
-    out[key] = portable(item, path ? `${path}.${key}` : key, prices);
+
+    const built = portableAttr(item, attr, next, prices);
+    if (built !== undefined) out[key] = built;
   }
   return out;
 }
@@ -65,10 +112,7 @@ const fingerprint = (entry) =>
     ? entry.blocks.map((b) => b.__component).join(">")
     : "";
 
-const app = await createStrapi(await compileStrapi()).load();
-const populateBuilder = app.plugin("content-manager").service("populate-builder");
-
-const out = fs.createWriteStream(OUT, { encoding: "utf8" });
+const rows = [];
 let records = 0;
 let priceFields = 0;
 
@@ -103,10 +147,10 @@ for (const uid of TYPES) {
       if (!entry) { missing += 1; continue; }
 
       const prices = [];
-      const data = portable(entry, "", prices, true);
+      const data = portable(entry, contentType, "", prices);
       priceFields += prices.length;
 
-      out.write(JSON.stringify({
+      rows.push(JSON.stringify({
         uid,
         apiPath,
         kind: contentType.kind,
@@ -117,7 +161,7 @@ for (const uid of TYPES) {
         fingerprint: fingerprint(entry),
         prices,
         data,
-      }) + "\n");
+      }));
 
       written += 1;
       records += 1;
@@ -127,9 +171,12 @@ for (const uid of TYPES) {
   }
 }
 
+const out = fs.createWriteStream(OUT, { encoding: "utf8" });
+out.write(JSON.stringify({ __legend: legend }) + "\n");
+for (const row of rows) out.write(row + "\n");
 out.end();
 await new Promise((resolve) => out.on("finish", resolve));
 
-console.log(`\nRESULT ${JSON.stringify({ records, priceFields, out: OUT })}`);
+console.log(`\nRESULT ${JSON.stringify({ records, priceFields, targets: Object.keys(legend).length, out: OUT })}`);
 
 await app.destroy();
