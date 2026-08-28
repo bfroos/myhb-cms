@@ -75,18 +75,19 @@ for (const uid of TYPES) {
   const populate = await populateBuilder(uid).populateDeep(Infinity).build();
   const docs = app.documents(uid);
 
-  const apiPath = app.contentType(uid)?.info?.pluralName;
+  const contentType = app.contentType(uid);
+  const isSingle = contentType?.kind === "singleType";
+  const apiPath = isSingle
+    ? contentType?.info?.singularName
+    : contentType?.info?.pluralName;
   if (!apiPath) {
-    console.error(`No pluralName for ${uid}; skipping.`);
+    console.error(`No REST path for ${uid}; skipping.`);
     continue;
   }
 
-  const german = await docs.findMany({
-    locale: SOURCE_LOCALE,
-    status: "published",
-    fields: ["name"],
-    limit: 5000,
-  });
+  const german = isSingle
+    ? [await docs.findFirst({ locale: SOURCE_LOCALE, status: "published" })].filter(Boolean)
+    : await docs.findMany({ locale: SOURCE_LOCALE, status: "published", limit: 5000 });
   const scope = LIMIT === Infinity ? german : german.slice(0, LIMIT);
 
   for (const locale of LOCALES) {
@@ -107,6 +108,7 @@ for (const uid of TYPES) {
       out.write(JSON.stringify({
         uid,
         apiPath,
+        kind: contentType.kind,
         documentId: source.documentId,
         locale,
         name: source.name ?? null,

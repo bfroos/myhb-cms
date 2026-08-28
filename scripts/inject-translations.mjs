@@ -12,6 +12,7 @@ const APPLY = has("apply");
 const FORCE = has("force");
 const LIMIT = Number(arg("limit", "0")) || Infinity;
 const ONLY_LOCALES = arg("locales", "").split(",").filter(Boolean);
+const ONLY_TYPES = arg("types", "").split(",").filter(Boolean);
 
 const URL_BASE = (process.env.STRAPI_URL || "").replace(/\/+$/, "");
 const TOKEN = process.env.STRAPI_API_TOKEN;
@@ -53,6 +54,7 @@ const records = fs
   .filter(Boolean)
   .map((line) => JSON.parse(line))
   .filter((r) => !ONLY_LOCALES.length || ONLY_LOCALES.includes(r.locale))
+  .filter((r) => !ONLY_TYPES.length || ONLY_TYPES.includes(r.uid))
   .filter((r) => r.locale !== "de")
   .slice(0, LIMIT === Infinity ? undefined : LIMIT);
 
@@ -147,15 +149,17 @@ console.log(
 
 for (const record of records) {
   const { apiPath, documentId, locale, name, snapshotAt } = record;
-  const label = `${locale} ${name ?? documentId}`;
+  const label = `${locale} ${name ?? apiPath}`;
+  const target =
+    record.kind === "singleType" ? `/api/${apiPath}` : `/api/${apiPath}/${documentId}`;
 
   const current = await api(
-    `/api/${apiPath}/${documentId}?locale=${locale}&status=published&populate[blocks]=true`,
+    `${target}?locale=${locale}&status=published&populate[blocks]=true`,
   );
 
   if (current.status === 404) {
     const german = await api(
-      `/api/${apiPath}/${documentId}?locale=de&status=published`,
+      `${target}?locale=de&status=published`,
     );
     if (!german.ok) {
       report.skippedMissingDoc.push(label);
@@ -195,7 +199,7 @@ for (const record of records) {
   }
 
   const put = await api(
-    `/api/${apiPath}/${documentId}?locale=${locale}&status=published`,
+    `${target}?locale=${locale}&status=published`,
     { method: "PUT", body: JSON.stringify({ data }) },
   );
 
