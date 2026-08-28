@@ -53,6 +53,7 @@ function portable(value, path, prices, isRoot = false) {
     if (SYSTEM_KEYS.has(key) && key !== "__component") continue;
     if (PRICE_KEY.test(key) && (typeof item === "number" || typeof item === "string")) {
       prices.push({ path: path ? `${path}.${key}` : key, value: item });
+      continue;
     }
     out[key] = portable(item, path ? `${path}.${key}` : key, prices);
   }

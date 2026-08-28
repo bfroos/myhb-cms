@@ -8,8 +8,13 @@ be committed.
 
 ## Injecting
 
-Needs a Content API token with **update** on the imported content types and
-**find** on Upload.
+Needs a Content API token with **findOne** and **update** on the imported
+content types, and **find** on Upload.
+
+`findOne` matters: it is how the script reads the destination entry to decide
+whether it exists and whether it has been edited since the snapshot. Production
+denies `findOne` anonymously on some types, and without it every record is
+reported as `blocked` rather than written.
 
 Dry run first — it writes nothing and prints every change it would make,
 including every price:
@@ -38,6 +43,11 @@ node scripts/inject-translations.mjs --file=translations-full.ndjson --apply
 | `--limit=20` | first N records, for a trial run |
 | `--force` | ignore the drift check (see below) |
 
+Roll out in batches: one content type and one locale at a time, check the site,
+then widen. Records the script could not read on the destination are counted as
+`blocked` and never written - a denied read is never treated as "does not
+exist".
+
 Roll out in stages with `--types` and `--locales` rather than all at once.
 
 ## What it will not do
@@ -55,9 +65,10 @@ Roll out in stages with `--types` and `--locales` rather than all at once.
 
 ## Prices
 
-Prices travel with the content. The dry run prints every one it would write, and
-the drift check stops anything edited after the snapshot. Read that list before
-applying: a wrong price on the live site is a legal exposure, not a cosmetic bug.
+Prices are stripped at export and never travel. The destination keeps whatever
+it already holds, and a locale with no price of its own falls back to the German
+one in the frontend. The dry run lists the fields it left alone as
+`pricesOmitted`.
 
 ## Exporting
 
@@ -70,4 +81,5 @@ node scripts/export-translations.mjs \
   --out=../_local/translations-full.ndjson
 ```
 
-`api::price.price` is deliberately never exported.
+`api::price.price` is never exported, and price-like fields are stripped from
+every other type.

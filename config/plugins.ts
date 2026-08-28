@@ -29,7 +29,7 @@ export default ({ env }) => ({
     resolve: "./src/plugins/amount-cents",
   },
   translate: {
-    enabled: true,
+    enabled: env.bool("TRANSLATE_ENABLED", false),
     resolve: "./node_modules/strapi-plugin-translate",
     config: {
       provider: "deepl",

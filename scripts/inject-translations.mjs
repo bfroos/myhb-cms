@@ -139,9 +139,10 @@ const report = {
   updated: [],
   skippedDrift: [],
   skippedMissingDoc: [],
+  blocked: [],
   failed: [],
 };
-let pricesToWrite = 0;
+let pricesOmitted = 0;
 
 console.log(
   `\n${APPLY ? "APPLYING" : "DRY RUN"} ${records.length} records -> ${URL_BASE}\n`,
@@ -158,13 +159,16 @@ for (const record of records) {
   );
 
   if (current.status === 404) {
-    const german = await api(
-      `${target}?locale=de&status=published`,
-    );
+    const german = await api(`${target}?locale=de&status=published`);
     if (!german.ok) {
       report.skippedMissingDoc.push(label);
       continue;
     }
+  } else if (!current.ok) {
+    // A denied read must never be mistaken for "absent": that would skip the
+    // drift check and overwrite an edited entry as if it were new.
+    report.blocked.push(`${label} (${current.status} reading destination)`);
+    continue;
   }
 
   const existing = current.ok ? current.body?.data : null;
@@ -185,12 +189,12 @@ for (const record of records) {
       record.fingerprint;
 
   const data = resolve(record.data);
-  pricesToWrite += record.prices?.length ?? 0;
+  pricesOmitted += record.prices?.length ?? 0;
 
   if (!APPLY) {
     (existing ? report.updated : report.created).push(label);
     for (const price of record.prices ?? []) {
-      console.log(`  price  ${label}  ${price.path} = ${price.value}`);
+      console.log(`  price kept on destination  ${label}  ${price.path}`);
     }
     if (shapeChange) {
       console.log(`  shape  ${label}  block layout will be replaced`);
@@ -217,10 +221,10 @@ const counts = Object.fromEntries(
   Object.entries(report).map(([key, value]) => [key, value.length]),
 );
 console.log(
-  `\nRESULT ${JSON.stringify({ mode: APPLY ? "APPLY" : "DRY-RUN", ...counts, pricesToWrite, droppedMedia })}`,
+  `\nRESULT ${JSON.stringify({ mode: APPLY ? "APPLY" : "DRY-RUN", ...counts, pricesOmitted, droppedMedia })}`,
 );
 
-for (const key of ["skippedDrift", "skippedMissingDoc", "failed"]) {
+for (const key of ["skippedDrift", "skippedMissingDoc", "blocked", "failed"]) {
   if (!report[key].length) continue;
   console.log(`\n${key}:`);
   for (const line of report[key]) console.log(`  ${line}`);
