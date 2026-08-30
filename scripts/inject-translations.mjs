@@ -14,6 +14,7 @@ const LIMIT = Number(arg("limit", "0")) || Infinity;
 const ONLY_LOCALES = arg("locales", "").split(",").filter(Boolean);
 const ONLY_TYPES = arg("types", "").split(",").filter(Boolean);
 const BASELINE = arg("baseline", "");
+const ALLOW_PRICE_RECORDS = has("allow-price-records");
 
 const URL_BASE = (process.env.STRAPI_URL || "").replace(/\/+$/, "");
 const TOKEN = process.env.STRAPI_API_TOKEN;
@@ -198,8 +199,49 @@ function resolve(value, locale) {
   return out;
 }
 
+// Strapi deletes and recreates any component sent without its id, taking with
+// it every field this bundle does not carry - prices among them. Sending the
+// destination's own component ids makes it update in place instead, so those
+// fields survive. The ids belong to the draft: the published rows are separate
+// component instances and using those is rejected as "not related to the
+// entity".
+// Only the entry's own components are given back their id. Going deeper put an
+// id on nested objects that are not components, which Strapi rejects outright,
+// and the fields worth protecting - prices among them - sit at this level.
+function withDestinationId(value, dest) {
+  if (Array.isArray(value)) {
+    if (!Array.isArray(dest)) return value;
+    return value.map((item, i) => withDestinationId(item, dest[i]));
+  }
+  if (!value || typeof value !== "object") return value;
+  if (!dest || typeof dest !== "object" || Array.isArray(dest)) return value;
+  if (value.__component && dest.__component && value.__component !== dest.__component) {
+    return value;
+  }
+  if (typeof dest.id !== "number") return value;
+
+  const out = {};
+  if (typeof value.__component === "string") out.__component = value.__component;
+  out.id = dest.id;
+  for (const [key, item] of Object.entries(value)) {
+    if (key === "__component") continue;
+    out[key] = item;
+  }
+  return out;
+}
+
+function attachIds(payload, dest) {
+  if (!payload || typeof payload !== "object" || !dest) return payload;
+  const out = {};
+  for (const [key, value] of Object.entries(payload)) {
+    out[key] = withDestinationId(value, dest[key]);
+  }
+  return out;
+}
+
 const report = {
-  created: [], updated: [], skippedDrift: [], skippedMissingDoc: [], blocked: [], failed: [],
+  created: [], updated: [], skippedDrift: [], skippedMissingDoc: [], blocked: [],
+  skippedPrice: [], failed: [],
 };
 let pricesOmitted = 0;
 
@@ -222,14 +264,25 @@ console.log(`\n${APPLY ? "APPLYING" : "DRY RUN"} ${records.length} records -> ${
 for (const record of records) {
   const { apiPath, documentId, locale, name, snapshotAt } = record;
   const label = `${locale} ${name ?? apiPath}`;
+
+  // Writing a component without its id makes Strapi delete and recreate it, so
+  // any field this bundle omits - prices among them - is lost. Rather than try
+  // to reconstruct them, entries that carry a price are not written at all.
+  if ((record.prices?.length ?? 0) > 0 && !ALLOW_PRICE_RECORDS) {
+    report.skippedPrice.push(`${label} (${record.prices.length} price field(s))`);
+    continue;
+  }
   const target =
     record.kind === "singleType" ? `/api/${apiPath}` : `/api/${apiPath}/${documentId}`;
 
   // The draft holds the most recent edit, so reading only the published
   // version would miss an editor's unpublished work and overwrite it.
-  let current = await api(`${target}?locale=${locale}&status=draft`);
+  // One level is enough: the price-bearing components sit directly on the
+  // entry, and deriving a deeper populate from the payload produced invalid
+  // parameters for plain string arrays.
+  let current = await api(`${target}?locale=${locale}&status=draft&populate=*`);
   if (current.status === 404 || (current.ok && !current.body?.data)) {
-    current = await api(`${target}?locale=${locale}&status=published`);
+    current = await api(`${target}?locale=${locale}&status=published&populate=*`);
   }
 
   if (current.status === 404) {
@@ -255,7 +308,8 @@ for (const record of records) {
     }
   }
 
-  const data = resolve(record.data, locale);
+  let data = resolve(record.data, locale);
+  if (existing) data = attachIds(data, existing);
   pricesOmitted += record.prices?.length ?? 0;
 
   if (!APPLY) {
@@ -283,7 +337,7 @@ console.log(
   `\nRESULT ${JSON.stringify({ mode: APPLY ? "APPLY" : "DRY-RUN", ...counts, pricesOmitted, droppedMedia, droppedRelations })}`,
 );
 
-for (const key of ["skippedDrift", "skippedMissingDoc", "blocked", "failed"]) {
+for (const key of ["skippedDrift", "skippedMissingDoc", "blocked", "skippedPrice", "failed"]) {
   if (!report[key].length) continue;
   console.log(`\n${key}:`);
   for (const line of report[key].slice(0, 40)) console.log(`  ${line}`);
