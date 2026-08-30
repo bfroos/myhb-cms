@@ -170,9 +170,15 @@ for (const uid of TYPES) {
       const data = portable(entry, contentType, "", prices);
       priceFields += prices.length;
 
+      const componentKeys = Object.entries(contentType.attributes)
+        .filter(([k, a]) =>
+          (a.type === "component" || a.type === "dynamiczone") && data[k] !== undefined)
+        .map(([k]) => k);
+
       rows.push(JSON.stringify({
         uid,
         apiPath,
+        componentKeys,
         kind: contentType.kind,
         documentId: source.documentId,
         locale,

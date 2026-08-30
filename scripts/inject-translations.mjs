@@ -15,6 +15,7 @@ const ONLY_LOCALES = arg("locales", "").split(",").filter(Boolean);
 const ONLY_TYPES = arg("types", "").split(",").filter(Boolean);
 const BASELINE = arg("baseline", "");
 const SKIP_PRICE_RECORDS = has("skip-price-records");
+const STATE = arg("state", "");
 
 const URL_BASE = (process.env.STRAPI_URL || "").replace(/\/+$/, "");
 const TOKEN = process.env.STRAPI_API_TOKEN;
@@ -212,9 +213,23 @@ function resolve(value, locale) {
 // fields survive. The ids belong to the draft: the published rows are separate
 // component instances and using those is rejected as "not related to the
 // entity".
-// Only the entry's own components are given back their id. Going deeper put an
-// id on nested objects that are not components, which Strapi rejects outright,
-// and the fields worth protecting - prices among them - sit at this level.
+// Strapi deletes and recreates any component sent without its id, taking with
+// it every field this bundle does not carry. Sending the destination's own ids
+// makes it update in place instead. The ids come from the draft: published rows
+// are separate component instances and Strapi rejects those as "not related to
+// the entity".
+//
+// Only keys that actually hold objects are populated - asking Strapi to
+// populate a plain string array is rejected outright.
+const populateFor = (record) => {
+  const keys = record.componentKeys ?? [];
+  return keys
+    .map((k) => `populate[${encodeURIComponent(k)}][populate]=*`)
+    .join("&");
+};
+
+let idsAttached = 0;
+
 function withDestinationId(value, dest) {
   if (Array.isArray(value)) {
     if (!Array.isArray(dest)) return value;
@@ -225,14 +240,16 @@ function withDestinationId(value, dest) {
   if (value.__component && dest.__component && value.__component !== dest.__component) {
     return value;
   }
-  if (typeof dest.id !== "number") return value;
 
   const out = {};
   if (typeof value.__component === "string") out.__component = value.__component;
-  out.id = dest.id;
+  if (typeof dest.id === "number") {
+    out.id = dest.id;
+    idsAttached += 1;
+  }
   for (const [key, item] of Object.entries(value)) {
     if (key === "__component") continue;
-    out[key] = item;
+    out[key] = withDestinationId(item, dest[key]);
   }
   return out;
 }
@@ -245,6 +262,32 @@ function attachIds(payload, dest) {
   }
   return out;
 }
+
+// A second pass would otherwise see its own first-pass writes as editor drift.
+// Recording what this importer wrote lets pass two recognise its own work while
+// still protecting anything a person changed - which a blanket --force cannot.
+const priorWrites = new Map();
+if (STATE && fs.existsSync(STATE)) {
+  for (const line of fs.readFileSync(STATE, "utf8").split(String.fromCharCode(10)).filter(Boolean)) {
+    try {
+      const e = JSON.parse(line);
+      priorWrites.set(`${e.uid}|${e.documentId}|${e.locale}`, new Date(e.at));
+    } catch {}
+  }
+  console.log(`state: ${priorWrites.size} entries written by a previous pass`);
+}
+const recordWrite = (record) => {
+  if (!STATE) return;
+  fs.appendFileSync(
+    STATE,
+    JSON.stringify({
+      uid: record.uid,
+      documentId: record.documentId,
+      locale: record.locale,
+      at: new Date().toISOString(),
+    }) + String.fromCharCode(10),
+  );
+};
 
 const report = {
   created: [], updated: [], skippedDrift: [], skippedMissingDoc: [], blocked: [],
@@ -284,12 +327,11 @@ for (const record of records) {
 
   // The draft holds the most recent edit, so reading only the published
   // version would miss an editor's unpublished work and overwrite it.
-  // One level is enough: the price-bearing components sit directly on the
-  // entry, and deriving a deeper populate from the payload produced invalid
-  // parameters for plain string arrays.
-  let current = await api(`${target}?locale=${locale}&status=draft&populate=*`);
+  const populate = populateFor(record);
+  const deep = populate ? `&${populate}` : "&populate=*";
+  let current = await api(`${target}?locale=${locale}&status=draft${deep}`);
   if (current.status === 404 || (current.ok && !current.body?.data)) {
-    current = await api(`${target}?locale=${locale}&status=published&populate=*`);
+    current = await api(`${target}?locale=${locale}&status=published${deep}`);
   }
 
   if (current.status === 404) {
@@ -307,7 +349,14 @@ for (const record of records) {
   // edited locally, which would mask a destination change made in between.
   const against = baselineAt ?? (snapshotAt ? new Date(snapshotAt) : null);
   if (existing && !FORCE && against && existing.updatedAt) {
-    if (new Date(existing.updatedAt) > against) {
+    // Our own earlier write is not drift. Anything changed after that write is,
+    // so an editor who touched it since is still protected.
+    const ours = priorWrites.get(`${record.uid}|${documentId}|${locale}`);
+    const changedSinceOurWrite =
+      ours && new Date(existing.updatedAt).getTime() > ours.getTime() + 5000;
+    if (ours && !changedSinceOurWrite) {
+      // fall through and write
+    } else if (new Date(existing.updatedAt) > against) {
       report.skippedDrift.push(
         `${label} (destination ${existing.updatedAt} > ${baselineAt ? "baseline" : "snapshot"} ${against.toISOString()})`,
       );
@@ -335,6 +384,7 @@ for (const record of records) {
     continue;
   }
   (existing ? report.updated : report.created).push(label);
+  recordWrite(record);
 }
 
 const counts = Object.fromEntries(
