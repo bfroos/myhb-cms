@@ -203,12 +203,17 @@ const report = {
 };
 let pricesOmitted = 0;
 
+// Applying without a baseline silently downgrades the drift check to each
+// record's own updatedAt, which can sit after a destination change it should
+// have caught. Make the safe path the default and --force the explicit opt-out.
+if (APPLY && !BASELINE && !FORCE) {
+  console.error("--apply requires --baseline=<when you copied the destination>.");
+  console.error("Use --force only if you deliberately want no drift protection.");
+  process.exit(1);
+}
 if (!BASELINE && !FORCE) {
   console.log(
     "warning: no --baseline given, falling back to each record's own updatedAt.",
-  );
-  console.log(
-    "         Pass --baseline=<when you copied the destination> for a real drift check.",
   );
 }
 
