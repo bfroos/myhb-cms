@@ -170,11 +170,17 @@ if (unlistableTargets.size) {
 let droppedMedia = 0;
 let droppedRelations = 0;
 
+// Nothing this bundle cannot carry may erase what the destination holds. An
+// empty array clears a relation, a null clears a field, and an empty object
+// empties a component - so all three are omitted instead of sent, and the
+// destination keeps its own value.
 function resolve(value, locale) {
   if (Array.isArray(value)) {
-    return value.map((v) => resolve(v, locale)).filter((v) => v !== undefined);
+    const items = value.map((v) => resolve(v, locale)).filter((v) => v !== undefined);
+    return items.length ? items : undefined;
   }
-  if (!value || typeof value !== "object") return value;
+  if (value === null) return undefined;
+  if (typeof value !== "object") return value;
 
   if (typeof value.__media === "string") {
     const id = mediaMap.get(value.__media);
@@ -196,7 +202,8 @@ function resolve(value, locale) {
     const next = resolve(item, locale);
     if (next !== undefined) out[key] = next;
   }
-  return out;
+  const meaningful = Object.keys(out).filter((k) => k !== "__component");
+  return meaningful.length ? out : undefined;
 }
 
 // Strapi deletes and recreates any component sent without its id, taking with
