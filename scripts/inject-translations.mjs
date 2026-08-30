@@ -241,9 +241,34 @@ const populateFor = (record) => {
 
 let idsAttached = 0;
 
+let zonesPreserved = 0;
+let relationsRestored = 0;
+
 function withDestinationId(value, dest) {
   if (Array.isArray(value)) {
     if (!Array.isArray(dest)) return value;
+    // A dynamic zone or repeatable component is replaced wholesale on write.
+    // Where the destination holds more entries than this bundle carries, the
+    // extras would simply be deleted along with anything they link to, so the
+    // whole field is left alone instead.
+    // Components carry a numeric id from the destination; rich text and other
+    // object arrays do not, and omitting those breaks required fields.
+    const destHoldsComponents =
+      dest.length > 0 &&
+      dest.every((d) => d && typeof d === "object" && typeof d.id === "number");
+    if (destHoldsComponents) {
+      // Writing replaces the whole list, and entries are matched by position.
+      // Any difference in length or in the component at a given position means
+      // something the destination has would be dropped, so leave it alone and
+      // let an editor or a later pass deal with it.
+      const shapeDiffers =
+        dest.length !== value.length ||
+        value.some((v, i) => (v?.__component ?? null) !== (dest[i]?.__component ?? null));
+      if (shapeDiffers) {
+        zonesPreserved += 1;
+        return undefined;
+      }
+    }
     return value.map((item, i) => withDestinationId(item, dest[i]));
   }
   if (!value || typeof value !== "object") return value;
@@ -260,7 +285,30 @@ function withDestinationId(value, dest) {
   }
   for (const [key, item] of Object.entries(value)) {
     if (key === "__component") continue;
-    out[key] = withDestinationId(item, dest[key]);
+    const next = withDestinationId(item, dest[key]);
+    if (next !== undefined) out[key] = next;
+  }
+
+  // Supplying a component's id preserves the scalars we leave out, but not its
+  // relations: those are replaced, so a relation this bundle omits would be
+  // cleared. Put the destination's own back.
+  const asRef = (v) =>
+    v && typeof v === "object" && typeof v.documentId === "string" ? v.documentId : undefined;
+  for (const [key, item] of Object.entries(dest)) {
+    if (key in out || key === "id" || key === "__component") continue;
+    if (Array.isArray(item)) {
+      const refs = item.map(asRef).filter(Boolean);
+      if (refs.length === item.length && refs.length) {
+        out[key] = refs;
+        relationsRestored += 1;
+      }
+    } else {
+      const ref = asRef(item);
+      if (ref) {
+        out[key] = ref;
+        relationsRestored += 1;
+      }
+    }
   }
   return out;
 }
@@ -269,7 +317,8 @@ function attachIds(payload, dest) {
   if (!payload || typeof payload !== "object" || !dest) return payload;
   const out = {};
   for (const [key, value] of Object.entries(payload)) {
-    out[key] = withDestinationId(value, dest[key]);
+    const next = withDestinationId(value, dest[key]);
+    if (next !== undefined) out[key] = next;
   }
   return out;
 }
@@ -402,7 +451,7 @@ const counts = Object.fromEntries(
   Object.entries(report).map(([key, value]) => [key, value.length]),
 );
 console.log(
-  `\nRESULT ${JSON.stringify({ mode: APPLY ? "APPLY" : "DRY-RUN", ...counts, pricesOmitted, droppedMedia, droppedRelations, partialRelations, idsAttached })}`,
+  `\nRESULT ${JSON.stringify({ mode: APPLY ? "APPLY" : "DRY-RUN", ...counts, pricesOmitted, droppedMedia, droppedRelations, partialRelations, zonesPreserved, relationsRestored, idsAttached })}`,
 );
 
 for (const key of ["skippedDrift", "skippedMissingDoc", "blocked", "skippedPrice", "failed"]) {
