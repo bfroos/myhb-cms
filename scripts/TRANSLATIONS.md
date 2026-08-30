@@ -49,6 +49,15 @@ node scripts/inject-translations.mjs --file=translations-full.ndjson --apply \
 | `--skip-price-records` | leave out the 314 entries that carry a price field |
 | `--state=<file>` | record what was written, so a later pass knows its own work |
 
+Start each destination with a fresh, empty state file. A file left over from
+staging or an earlier run names documents whose recorded `updatedAt` no longer
+matches, and those entries fall back to normal drift protection.
+
+`partialRelations` in the result counts relation fields left untouched because
+some of their targets did not exist yet; a later pass sets them once the targets
+are imported. `idsAttached` counts the destination components preserved rather
+than recreated.
+
 Roll out in batches: one content type and one locale at a time, check the site,
 then widen. Records the script could not read on the destination are counted as
 `blocked` and never written - a denied read is never treated as "does not
@@ -108,5 +117,7 @@ node scripts/export-translations.mjs \
   --out=../_local/translations-full.ndjson
 ```
 
-`api::price.price` is never exported, and price-like fields are stripped from
-every other type.
+Price and Product types are deliberately left out of the bundle, which is why no
+monetary amount can travel. The exporter itself has no such prohibition - it
+exports whatever `--types` asks for - so that exclusion lives in how it is
+invoked, not in the script.

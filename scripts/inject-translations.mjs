@@ -175,9 +175,20 @@ let droppedRelations = 0;
 // empty array clears a relation, a null clears a field, and an empty object
 // empties a component - so all three are omitted instead of sent, and the
 // destination keeps its own value.
+let partialRelations = 0;
+
 function resolve(value, locale) {
   if (Array.isArray(value)) {
+    // Setting a relation replaces the whole set, so sending only the members we
+    // could resolve would silently drop the rest. If any member is missing the
+    // field is omitted entirely and the destination keeps what it has; a later
+    // pass sets it once every target exists.
+    const before = droppedRelations;
     const items = value.map((v) => resolve(v, locale)).filter((v) => v !== undefined);
+    if (droppedRelations > before && items.length) {
+      partialRelations += 1;
+      return undefined;
+    }
     return items.length ? items : undefined;
   }
   if (value === null) return undefined;
@@ -271,20 +282,22 @@ if (STATE && fs.existsSync(STATE)) {
   for (const line of fs.readFileSync(STATE, "utf8").split(String.fromCharCode(10)).filter(Boolean)) {
     try {
       const e = JSON.parse(line);
-      priorWrites.set(`${e.uid}|${e.documentId}|${e.locale}`, new Date(e.at));
+      priorWrites.set(`${e.uid}|${e.documentId}|${e.locale}`, e.at);
     } catch {}
   }
   console.log(`state: ${priorWrites.size} entries written by a previous pass`);
 }
-const recordWrite = (record) => {
-  if (!STATE) return;
+// Store the updatedAt Strapi itself returned. Comparing against that exactly
+// removes both clock skew and the race where an edit lands moments after ours.
+const recordWrite = (record, updatedAt) => {
+  if (!STATE || !updatedAt) return;
   fs.appendFileSync(
     STATE,
     JSON.stringify({
       uid: record.uid,
       documentId: record.documentId,
       locale: record.locale,
-      at: new Date().toISOString(),
+      at: updatedAt,
     }) + String.fromCharCode(10),
   );
 };
@@ -352,9 +365,7 @@ for (const record of records) {
     // Our own earlier write is not drift. Anything changed after that write is,
     // so an editor who touched it since is still protected.
     const ours = priorWrites.get(`${record.uid}|${documentId}|${locale}`);
-    const changedSinceOurWrite =
-      ours && new Date(existing.updatedAt).getTime() > ours.getTime() + 5000;
-    if (ours && !changedSinceOurWrite) {
+    if (ours && existing.updatedAt === ours) {
       // fall through and write
     } else if (new Date(existing.updatedAt) > against) {
       report.skippedDrift.push(
@@ -384,14 +395,14 @@ for (const record of records) {
     continue;
   }
   (existing ? report.updated : report.created).push(label);
-  recordWrite(record);
+  recordWrite(record, put.body?.data?.updatedAt);
 }
 
 const counts = Object.fromEntries(
   Object.entries(report).map(([key, value]) => [key, value.length]),
 );
 console.log(
-  `\nRESULT ${JSON.stringify({ mode: APPLY ? "APPLY" : "DRY-RUN", ...counts, pricesOmitted, droppedMedia, droppedRelations })}`,
+  `\nRESULT ${JSON.stringify({ mode: APPLY ? "APPLY" : "DRY-RUN", ...counts, pricesOmitted, droppedMedia, droppedRelations, partialRelations, idsAttached })}`,
 );
 
 for (const key of ["skippedDrift", "skippedMissingDoc", "blocked", "skippedPrice", "failed"]) {
