@@ -14,7 +14,7 @@ const LIMIT = Number(arg("limit", "0")) || Infinity;
 const ONLY_LOCALES = arg("locales", "").split(",").filter(Boolean);
 const ONLY_TYPES = arg("types", "").split(",").filter(Boolean);
 const BASELINE = arg("baseline", "");
-const ALLOW_PRICE_RECORDS = has("allow-price-records");
+const SKIP_PRICE_RECORDS = has("skip-price-records");
 
 const URL_BASE = (process.env.STRAPI_URL || "").replace(/\/+$/, "");
 const TOKEN = process.env.STRAPI_API_TOKEN;
@@ -272,10 +272,10 @@ for (const record of records) {
   const { apiPath, documentId, locale, name, snapshotAt } = record;
   const label = `${locale} ${name ?? apiPath}`;
 
-  // Writing a component without its id makes Strapi delete and recreate it, so
-  // any field this bundle omits - prices among them - is lost. Rather than try
-  // to reconstruct them, entries that carry a price are not written at all.
-  if ((record.prices?.length ?? 0) > 0 && !ALLOW_PRICE_RECORDS) {
+  // Component ids are now carried over, so a price the destination holds is no
+  // longer lost when its component is written. Skipping these is available for
+  // a cautious first run, but it would leave out 89% of treatment pages.
+  if ((record.prices?.length ?? 0) > 0 && SKIP_PRICE_RECORDS) {
     report.skippedPrice.push(`${label} (${record.prices.length} price field(s))`);
     continue;
   }

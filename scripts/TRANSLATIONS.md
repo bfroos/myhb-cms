@@ -32,7 +32,8 @@ Then apply:
 ```
 STRAPI_URL=https://your-instance.strapiapp.com \
 STRAPI_API_TOKEN=xxx \
-node scripts/inject-translations.mjs --file=translations-full.ndjson --apply
+node scripts/inject-translations.mjs --file=translations-full.ndjson --apply \
+  --baseline=2026-08-29T17:00:00Z
 ```
 
 ### Flags
@@ -43,7 +44,9 @@ node scripts/inject-translations.mjs --file=translations-full.ndjson --apply
 | `--locales=en,fr` | restrict to these locales |
 | `--types=api::faq.faq` | restrict to these content types |
 | `--limit=20` | first N records, for a trial run |
-| `--force` | ignore the drift check (see below) |
+| `--force` | ignore the drift check entirely (see below) |
+| `--baseline=<iso date>` | required for `--apply`: when the destination was copied |
+| `--skip-price-records` | leave out the 314 entries that carry a price field |
 
 Roll out in batches: one content type and one locale at a time, check the site,
 then widen. Records the script could not read on the destination are counted as
@@ -64,17 +67,29 @@ exist".
   destination changed after that is skipped and listed under `skippedDrift`.
   The check reads the draft, so unpublished edits count too.
 
-  Without `--baseline` it falls back to each record's own timestamp, which is
-  weaker: that timestamp moves whenever the translation is edited locally, so it
-  can sit after a destination change it should have caught. `--force` disables
-  the check entirely — read the skip list first.
+  `--apply` refuses without it. `--force` disables the check entirely and is the
+  only way to apply without a baseline — read the skip list before using it.
+
+  A second pass with `--force` will also overwrite entries a real editor
+  changed, not just the ones this importer wrote in the first pass. There is no
+  way yet to tell those two apart, so treat `--force` as a deliberate decision
+  rather than a routine step.
 
 ## Prices
 
-Prices are stripped at export and never travel. The destination keeps whatever
-it already holds, and a locale with no price of its own falls back to the German
-one in the frontend. The dry run lists the fields it left alone as
+No price records and no products are exported, so no monetary amount can be
+overwritten. Price-like fields on other types are stripped too, and counted as
 `pricesOmitted`.
+
+Stripping alone is not what protects them. Strapi deletes and recreates a
+component sent without its id, which would take the destination's price with it,
+so the injector reads the destination's draft and sends its component ids back.
+Verify it on the first run: count non-null price columns before and after, and
+confirm nothing decreased.
+
+That protection reaches the entry's own components, not components nested inside
+them. A field only the destination holds, two levels deep, can still be lost when
+its parent component is rewritten.
 
 ## Exporting
 

@@ -36,6 +36,7 @@ const populateBuilder = app.plugin("content-manager").service("populate-builder"
 // uid -> { path, localized }. The injector needs this to check whether a
 // relation target exists in the destination locale before sending it.
 const legend = {};
+const nonLocalized = new Set();
 const noteTarget = (uid) => {
   if (legend[uid] || !uid) return;
   const ct = app.contentType(uid);
@@ -93,6 +94,13 @@ function portable(value, schema, path, prices) {
 
     const attr = schema?.attributes?.[key];
     if (!attr) continue;
+
+    // Strapi synchronises non-localized attributes across every locale after a
+    // write, so sending one from a translation would change German too.
+    if (attr.pluginOptions?.i18n?.localized === false) {
+      nonLocalized.add(key);
+      continue;
+    }
 
     const next = path ? `${path}.${key}` : key;
 
