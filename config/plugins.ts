@@ -28,22 +28,28 @@ export default ({ env }) => ({
     enabled: true,
     resolve: "./src/plugins/amount-cents",
   },
-  translate: {
-    enabled: env.bool("TRANSLATE_ENABLED", false),
-    resolve: "./node_modules/strapi-plugin-translate",
-    config: {
-      provider: "deepl",
-      providerOptions: {
-        apiKey: env("DEEPL_API_KEY"),
-        // strapi-provider-translate-deepl@1.3.0-next.4 has a hardcoded
-        // allowlist of target locales in its parseLocale() switch-case, and
-        // it's stale: "AR" (Arabic) is missing even though DeepL's actual API
-        // supports it. localeMap is the documented escape hatch — an entry
-        // here is checked before the allowlist throws "unsupported locale".
-        localeMap: {
-          AR: "AR",
+  // Declared only when enabled. Strapi resolves every declared plugin's path
+  // before it filters on `enabled`, so leaving this in place with
+  // enabled:false still aborts boot when the package is not installed.
+  ...(env.bool("TRANSLATE_ENABLED", false)
+    ? {
+        translate: {
+          enabled: true,
+          resolve: "./node_modules/strapi-plugin-translate",
+          config: {
+            provider: "deepl",
+            providerOptions: {
+              apiKey: env("DEEPL_API_KEY"),
+              // strapi-provider-translate-deepl@1.3.0-next.4 has a hardcoded
+              // allowlist of target locales in its parseLocale() switch-case,
+              // and it's stale: "AR" is missing even though DeepL supports it.
+              // localeMap is the documented escape hatch.
+              localeMap: {
+                AR: "AR",
+              },
+            },
+          },
         },
-      },
-    },
-  },
+      }
+    : {}),
 });

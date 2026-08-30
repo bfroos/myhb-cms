@@ -9,7 +9,10 @@ be committed.
 ## Injecting
 
 Needs a Content API token with **findOne** and **update** on the imported
-content types, and **find** on Upload.
+content types, **find** on Upload, and **find** on every content type those
+entries link to (treatments, employees, cities, locations, faqs, reviews,
+stories, products). The script checks each relation target before sending it
+and refuses to write if it cannot read one.
 
 `findOne` matters: it is how the script reads the destination entry to decide
 whether it exists and whether it has been edited since the snapshot. Production
@@ -56,9 +59,15 @@ exist".
   in every instance, so media travels as a documentId and is re-resolved on
   arrival. An asset the destination does not have is left empty rather than
   guessed at, and counted as `droppedMedia`.
-- **Revert an editor's work.** Every record carries the `updatedAt` it was
-  captured at. If the destination entry has been edited since, it is skipped and
-  listed under `skippedDrift`. `--force` overrides this — check the list first.
+- **Revert an editor's work**, given a correct `--baseline`. Pass the time you
+  copied the destination, e.g. `--baseline=2026-08-29T17:00:00Z`. Anything the
+  destination changed after that is skipped and listed under `skippedDrift`.
+  The check reads the draft, so unpublished edits count too.
+
+  Without `--baseline` it falls back to each record's own timestamp, which is
+  weaker: that timestamp moves whenever the translation is edited locally, so it
+  can sit after a destination change it should have caught. `--force` disables
+  the check entirely — read the skip list first.
 
 ## Prices
 

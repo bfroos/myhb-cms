@@ -1209,6 +1209,7 @@ export interface LocationAboutItem extends Struct.ComponentSchema {
     headline: Schema.Attribute.String;
     intro: Schema.Attribute.Text;
     media: Schema.Attribute.Media<'images' | 'videos'>;
+    poster: Schema.Attribute.Media<'images'>;
   };
 }
 
@@ -1615,6 +1616,7 @@ export interface TreatmentPageAbout extends Struct.ComponentSchema {
     headline: Schema.Attribute.String;
     intro: Schema.Attribute.Text;
     media: Schema.Attribute.Media<'images' | 'videos'>;
+    poster: Schema.Attribute.Media<'images'>;
   };
 }
 

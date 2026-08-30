@@ -13,6 +13,7 @@ const FORCE = has("force");
 const LIMIT = Number(arg("limit", "0")) || Infinity;
 const ONLY_LOCALES = arg("locales", "").split(",").filter(Boolean);
 const ONLY_TYPES = arg("types", "").split(",").filter(Boolean);
+const BASELINE = arg("baseline", "");
 
 const URL_BASE = (process.env.STRAPI_URL || "").replace(/\/+$/, "");
 const TOKEN = process.env.STRAPI_API_TOKEN;
@@ -23,6 +24,12 @@ if (!URL_BASE) {
 }
 if (!TOKEN && APPLY) {
   console.error("Set STRAPI_API_TOKEN (Content API token with update rights).");
+  process.exit(1);
+}
+
+const baselineAt = BASELINE ? new Date(BASELINE) : null;
+if (BASELINE && Number.isNaN(baselineAt.getTime())) {
+  console.error(`--baseline is not a valid date: ${BASELINE}`);
   process.exit(1);
 }
 
@@ -120,6 +127,7 @@ for (const record of records) {
 }
 
 const resolvableRelations = new Map();
+const unlistableTargets = new Set();
 for (const [key, ids] of wantedRelations) {
   const [uid, locale] = key.split("|");
   const meta = legend[uid];
@@ -135,11 +143,28 @@ for (const [key, ids] of wantedRelations) {
     for (const row of body.data) if (row?.documentId) found.add(row.documentId);
   }
   if (listable) resolvableRelations.set(key, found);
+  else unlistableTargets.add(key);
 }
 
 const relationTotal = [...wantedRelations.values()].reduce((n, s) => n + s.size, 0);
 const relationFound = [...resolvableRelations.values()].reduce((n, s) => n + s.size, 0);
 console.log(`relations: ${relationFound}/${relationTotal} resolvable in their locale`);
+
+// A target we cannot inspect must stop the run rather than be sent unchecked:
+// writing an unverified relation is exactly what this preflight exists to avoid.
+if (unlistableTargets.size) {
+  console.error("");
+  console.error("Could not check these relation targets on the destination:");
+  for (const key of unlistableTargets) {
+    const [uid, locale] = key.split("|");
+    console.error(`  ${uid} (locale ${locale}) - token needs find on ${legend[uid]?.path ?? uid}`);
+  }
+  if (APPLY) {
+    console.error("Refusing to write. Grant the missing read permission and re-run.");
+    process.exit(1);
+  }
+  console.error("Dry run continues, but --apply would refuse.");
+}
 
 let droppedMedia = 0;
 let droppedRelations = 0;
@@ -178,6 +203,15 @@ const report = {
 };
 let pricesOmitted = 0;
 
+if (!BASELINE && !FORCE) {
+  console.log(
+    "warning: no --baseline given, falling back to each record's own updatedAt.",
+  );
+  console.log(
+    "         Pass --baseline=<when you copied the destination> for a real drift check.",
+  );
+}
+
 console.log(`\n${APPLY ? "APPLYING" : "DRY RUN"} ${records.length} records -> ${URL_BASE}\n`);
 
 for (const record of records) {
@@ -186,7 +220,12 @@ for (const record of records) {
   const target =
     record.kind === "singleType" ? `/api/${apiPath}` : `/api/${apiPath}/${documentId}`;
 
-  const current = await api(`${target}?locale=${locale}&status=published`);
+  // The draft holds the most recent edit, so reading only the published
+  // version would miss an editor's unpublished work and overwrite it.
+  let current = await api(`${target}?locale=${locale}&status=draft`);
+  if (current.status === 404 || (current.ok && !current.body?.data)) {
+    current = await api(`${target}?locale=${locale}&status=published`);
+  }
 
   if (current.status === 404) {
     const german = await api(`${target}?locale=de&status=published`);
@@ -198,10 +237,14 @@ for (const record of records) {
 
   const existing = current.ok ? current.body?.data : null;
 
-  if (existing && !FORCE && snapshotAt && existing.updatedAt) {
-    if (new Date(existing.updatedAt) > new Date(snapshotAt)) {
+  // Compare against when the destination was copied locally, not against the
+  // record's own updatedAt: that timestamp moves every time the translation is
+  // edited locally, which would mask a destination change made in between.
+  const against = baselineAt ?? (snapshotAt ? new Date(snapshotAt) : null);
+  if (existing && !FORCE && against && existing.updatedAt) {
+    if (new Date(existing.updatedAt) > against) {
       report.skippedDrift.push(
-        `${label} (destination ${existing.updatedAt} > snapshot ${snapshotAt})`,
+        `${label} (destination ${existing.updatedAt} > ${baselineAt ? "baseline" : "snapshot"} ${against.toISOString()})`,
       );
       continue;
     }

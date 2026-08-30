@@ -140,9 +140,21 @@ for (const uid of TYPES) {
     let missing = 0;
 
     for (const source of scope) {
-      const entry = await docs
-        .findOne({ documentId: source.documentId, locale, status: "published", populate })
-        .catch(() => null);
+      // findOne returns null when the locale simply does not exist. Anything
+      // that throws is a real fault and must not be filed as "no translation".
+      let entry;
+      try {
+        entry = await docs.findOne({
+          documentId: source.documentId,
+          locale,
+          status: "published",
+          populate,
+        });
+      } catch (error) {
+        throw new Error(
+          `export failed on ${uid} ${source.documentId} (${locale}): ${error.message}`,
+        );
+      }
 
       if (!entry) { missing += 1; continue; }
 
@@ -172,7 +184,9 @@ for (const uid of TYPES) {
 }
 
 const out = fs.createWriteStream(OUT, { encoding: "utf8" });
-out.write(JSON.stringify({ __legend: legend }) + "\n");
+out.write(
+  JSON.stringify({ __legend: legend, __exportedAt: new Date().toISOString() }) + "\n",
+);
 for (const row of rows) out.write(row + "\n");
 out.end();
 await new Promise((resolve) => out.on("finish", resolve));
