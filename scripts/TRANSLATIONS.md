@@ -47,6 +47,7 @@ node scripts/inject-translations.mjs --file=translations-full.ndjson --apply \
 | `--force` | ignore the drift check entirely (see below) |
 | `--baseline=<iso date>` | required for `--apply`: when the destination was copied |
 | `--skip-price-records` | leave out the 314 entries that carry a price field |
+| `--state=<file>` | record what was written, so a later pass knows its own work |
 
 Roll out in batches: one content type and one locale at a time, check the site,
 then widen. Records the script could not read on the destination are counted as
@@ -70,10 +71,14 @@ exist".
   `--apply` refuses without it. `--force` disables the check entirely and is the
   only way to apply without a baseline — read the skip list before using it.
 
-  A second pass with `--force` will also overwrite entries a real editor
-  changed, not just the ones this importer wrote in the first pass. There is no
-  way yet to tell those two apart, so treat `--force` as a deliberate decision
-  rather than a routine step.
+  A second pass would otherwise see its own first-pass writes as drift. Pass
+  `--state=<file>` to both passes: the importer records what it wrote and
+  recognises that later, while anything changed *after* that write is still
+  skipped. Keep the file between passes - without it the second pass cannot tell
+  its own work from an editor's, and `--force` becomes the only option.
+
+  `--force` remains the blunt instrument: it overwrites editor changes too. With
+  `--state` you should not need it.
 
 ## Prices
 
@@ -87,9 +92,10 @@ so the injector reads the destination's draft and sends its component ids back.
 Verify it on the first run: count non-null price columns before and after, and
 confirm nothing decreased.
 
-That protection reaches the entry's own components, not components nested inside
-them. A field only the destination holds, two levels deep, can still be lost when
-its parent component is rewritten.
+This reaches nested components too. The bundle records which attributes are
+components, the importer populates those on the destination and carries their
+ids down, so a repeatable component inside a component keeps whatever the
+destination holds. `idsAttached` in the result shows how many were preserved.
 
 ## Exporting
 
