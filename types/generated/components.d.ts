@@ -10,7 +10,7 @@ export interface BlocksAwards extends Struct.ComponentSchema {
     elevated: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     eyebrow: Schema.Attribute.String;
     headline: Schema.Attribute.String;
-    items: Schema.Attribute.JSON;
+    items: Schema.Attribute.Component<'shared.icon-heading-text', true>;
     themeClass: Schema.Attribute.Enumeration<
       ['theme-light', 'theme-soft', 'theme-neutral', 'theme-strong']
     > &
@@ -27,7 +27,6 @@ export interface BlocksBeforeAfter extends Struct.ComponentSchema {
   attributes: {
     elevated: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     headline: Schema.Attribute.String;
-    pairs: Schema.Attribute.JSON;
     pairsMedia: Schema.Attribute.Component<'blocks.before-after-pair', true>;
     themeClass: Schema.Attribute.Enumeration<
       ['theme-light', 'theme-soft', 'theme-neutral', 'theme-strong']
@@ -57,7 +56,7 @@ export interface BlocksBenefitGrid extends Struct.ComponentSchema {
     icon: 'layout';
   };
   attributes: {
-    items: Schema.Attribute.JSON;
+    items: Schema.Attribute.Component<'shared.icon-heading-text', true>;
     themeClass: Schema.Attribute.Enumeration<
       ['theme-light', 'theme-soft', 'theme-neutral', 'theme-strong']
     > &
@@ -212,8 +211,8 @@ export interface BlocksFinalCta extends Struct.ComponentSchema {
   attributes: {
     elevated: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     headline: Schema.Attribute.String;
-    primaryCta: Schema.Attribute.JSON;
-    secondaryCta: Schema.Attribute.JSON;
+    primaryCta: Schema.Attribute.Component<'shared.button', false>;
+    secondaryCta: Schema.Attribute.Component<'shared.button', false>;
     text: Schema.Attribute.Text;
     themeClass: Schema.Attribute.Enumeration<
       ['theme-light', 'theme-soft', 'theme-neutral', 'theme-strong']
@@ -230,7 +229,7 @@ export interface BlocksGuarantees extends Struct.ComponentSchema {
   };
   attributes: {
     elevated: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
-    items: Schema.Attribute.JSON;
+    items: Schema.Attribute.Component<'shared.icon-heading-text', true>;
     themeClass: Schema.Attribute.Enumeration<
       ['theme-light', 'theme-soft', 'theme-neutral', 'theme-strong']
     > &
@@ -497,8 +496,12 @@ export interface BlocksPressLogo extends Struct.ComponentSchema {
     icon: 'image';
   };
   attributes: {
+    link: Schema.Attribute.String;
     logo: Schema.Attribute.Media<'images'>;
     name: Schema.Attribute.String & Schema.Attribute.Required;
+    noFollow: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    openInNewWindow: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<true>;
   };
 }
 
@@ -512,7 +515,6 @@ export interface BlocksPressLogos extends Struct.ComponentSchema {
     elevated: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     eyebrow: Schema.Attribute.String;
     logoItems: Schema.Attribute.Component<'blocks.press-logo', true>;
-    logos: Schema.Attribute.JSON;
     themeClass: Schema.Attribute.Enumeration<
       ['theme-light', 'theme-soft', 'theme-neutral', 'theme-strong']
     > &
@@ -523,18 +525,27 @@ export interface BlocksPressLogos extends Struct.ComponentSchema {
 export interface BlocksPriceOverview extends Struct.ComponentSchema {
   collectionName: 'components_blocks_price_overviews';
   info: {
+    description: 'Displays treatments or product categories with pricing';
     displayName: 'Price Overview';
     icon: 'layout';
   };
   attributes: {
-    cta: Schema.Attribute.JSON;
+    cta: Schema.Attribute.Component<'shared.button', false>;
     elevated: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     headline: Schema.Attribute.String;
-    items: Schema.Attribute.JSON;
+    priceNote: Schema.Attribute.Text;
+    product_categories: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::product-category.product-category'
+    >;
     themeClass: Schema.Attribute.Enumeration<
       ['theme-light', 'theme-soft', 'theme-neutral', 'theme-strong']
     > &
       Schema.Attribute.DefaultTo<'theme-light'>;
+    treatments: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::treatment.treatment'
+    >;
   };
 }
 
@@ -545,22 +556,15 @@ export interface BlocksPriceTeaser extends Struct.ComponentSchema {
     icon: 'layout';
   };
   attributes: {
-    cta: Schema.Attribute.JSON;
-    currency: Schema.Attribute.String;
-    elevated: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    cta: Schema.Attribute.Component<'shared.button', false>;
     eyebrow: Schema.Attribute.String;
     footnote: Schema.Attribute.String;
     headline: Schema.Attribute.String;
-    items: Schema.Attribute.JSON;
-    limit: Schema.Attribute.Integer;
-    locale: Schema.Attribute.String;
-    source: Schema.Attribute.Enumeration<['manual', 'context']> &
-      Schema.Attribute.DefaultTo<'manual'>;
     subline: Schema.Attribute.String;
-    themeClass: Schema.Attribute.Enumeration<
-      ['theme-light', 'theme-soft', 'theme-neutral', 'theme-strong']
-    > &
-      Schema.Attribute.DefaultTo<'theme-light'>;
+    treatments: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::treatment.treatment'
+    >;
   };
 }
 
@@ -696,7 +700,7 @@ export interface BlocksQuickInfo extends Struct.ComponentSchema {
   attributes: {
     elevated: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     headline: Schema.Attribute.String;
-    items: Schema.Attribute.JSON;
+    items: Schema.Attribute.Component<'shared.icon-heading-text', true>;
     themeClass: Schema.Attribute.Enumeration<
       ['theme-light', 'theme-soft', 'theme-neutral', 'theme-strong']
     > &
@@ -734,7 +738,7 @@ export interface BlocksSeoCollapsible extends Struct.ComponentSchema {
   };
   attributes: {
     elevated: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
-    items: Schema.Attribute.JSON;
+    items: Schema.Attribute.Component<'shared.collabsible-item', true>;
     openFirst: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     themeClass: Schema.Attribute.Enumeration<
       ['theme-light', 'theme-soft', 'theme-neutral', 'theme-strong']
@@ -918,7 +922,7 @@ export interface BlocksTrustBar extends Struct.ComponentSchema {
   };
   attributes: {
     elevated: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
-    items: Schema.Attribute.JSON;
+    items: Schema.Attribute.Component<'shared.icon-heading-text', true>;
     themeClass: Schema.Attribute.Enumeration<
       ['theme-light', 'theme-soft', 'theme-neutral', 'theme-strong']
     > &
@@ -1153,6 +1157,36 @@ export interface GlobalSeo extends Struct.ComponentSchema {
   };
 }
 
+export interface LocationTreatmentPageBlockRef extends Struct.ComponentSchema {
+  collectionName: 'components_location_treatment_page_block_refs';
+  info: {
+    displayName: 'Block Ref';
+  };
+  attributes: {
+    key: Schema.Attribute.Enumeration<
+      [
+        'hero',
+        'locationContact',
+        'aboutLocation',
+        'locationDirections',
+        'tableOfContents',
+        'about',
+        'reviews',
+        'treatmentDetails',
+        'treatmentPlan',
+        'benefits',
+        'suitability',
+        'medicalTeamHighlight',
+        'treatmentProcess',
+        'relatedTreatments',
+        'faq',
+        'blocks',
+      ]
+    > &
+      Schema.Attribute.Required;
+  };
+}
+
 export interface LocationAbout extends Struct.ComponentSchema {
   collectionName: 'components_location_abouts';
   info: {
@@ -1175,6 +1209,7 @@ export interface LocationAboutItem extends Struct.ComponentSchema {
     headline: Schema.Attribute.String;
     intro: Schema.Attribute.Text;
     media: Schema.Attribute.Media<'images' | 'videos'>;
+    poster: Schema.Attribute.Media<'images'>;
   };
 }
 
@@ -1264,7 +1299,7 @@ export interface SharedButton extends Struct.ComponentSchema {
     label: Schema.Attribute.String & Schema.Attribute.Required;
     location: Schema.Attribute.Relation<'oneToOne', 'api::location.location'>;
     method: Schema.Attribute.Enumeration<
-      ['action', 'external-link', 'internal-link']
+      ['action', 'external-link', 'internal-link', 'app-booking']
     > &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<'action'>;
@@ -1552,15 +1587,9 @@ export interface SharedSeo extends Struct.ComponentSchema {
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<false>;
     keywords: Schema.Attribute.Text;
-    metaDescription: Schema.Attribute.Text &
-      Schema.Attribute.SetMinMaxLength<{
-        maxLength: 160;
-      }>;
+    metaDescription: Schema.Attribute.Text;
     metaRobots: Schema.Attribute.String;
-    metaTitle: Schema.Attribute.String &
-      Schema.Attribute.SetMinMaxLength<{
-        maxLength: 70;
-      }>;
+    metaTitle: Schema.Attribute.String;
     openGraph: Schema.Attribute.Component<'shared.open-graph', false>;
   };
 }
@@ -1587,6 +1616,7 @@ export interface TreatmentPageAbout extends Struct.ComponentSchema {
     headline: Schema.Attribute.String;
     intro: Schema.Attribute.Text;
     media: Schema.Attribute.Media<'images' | 'videos'>;
+    poster: Schema.Attribute.Media<'images'>;
   };
 }
 
@@ -1618,12 +1648,16 @@ export interface TreatmentPageFaq extends Struct.ComponentSchema {
 export interface TreatmentPageHero extends Struct.ComponentSchema {
   collectionName: 'components_treatment_page_heroes';
   info: {
+    description: '';
     displayName: 'Hero';
   };
   attributes: {
     cover: Schema.Attribute.Media<'images'>;
     headline: Schema.Attribute.String;
     headlineSuffix: Schema.Attribute.String;
+    introductionText: Schema.Attribute.Text;
+    showBookingButton: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<true>;
     showDiscount: Schema.Attribute.Boolean &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<false>;
@@ -1885,7 +1919,7 @@ export interface TreatmentPlanTreatmentPlanStepAds
 }
 
 declare module '@strapi/strapi' {
-  export module Public {
+  export namespace Public {
     export interface ComponentSchemas {
       'blocks.awards': BlocksAwards;
       'blocks.before-after': BlocksBeforeAfter;
@@ -1949,6 +1983,7 @@ declare module '@strapi/strapi' {
       'global.ecommerce': GlobalEcommerce;
       'global.marketing': GlobalMarketing;
       'global.seo': GlobalSeo;
+      'location-treatment-page.block-ref': LocationTreatmentPageBlockRef;
       'location.about': LocationAbout;
       'location.about-item': LocationAboutItem;
       'location.contact': LocationContact;
