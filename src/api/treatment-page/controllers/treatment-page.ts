@@ -28,6 +28,7 @@ import {
   isOverridden,
   toBlockRefKeys,
 } from "../../../utils/locationTreatmentPageBlocks";
+import { getAvailableTreatmentPathKeys } from "../../../utils/locationTreatmentAvailability";
 
 const SEO_TREATMENT_PAGE_UID = "api::treatment-page.treatment-page";
 const ADS_TREATMENT_PAGE_UID = "api::treatment-ads-page.treatment-ads-page";
@@ -617,10 +618,21 @@ export default factories.createCoreController(
         openingStatus: locationOpenStatus,
       };
 
+      // SEO tree only: treatments that have their own treatment-page.
+      const availableTreatmentPathKeys =
+        treatmentPageUid === SEO_TREATMENT_PAGE_UID
+          ? await getAvailableTreatmentPathKeys(strapi, {
+              locationType: (location as any).type,
+              locale,
+              status,
+            })
+          : undefined;
+
       return {
         data: {
           location: locationWithStatus,
           treatmentPage: treatmentPageWithAncestors,
+          availableTreatmentPathKeys,
         },
       };
     },
