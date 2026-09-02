@@ -49,7 +49,10 @@ function buildRelatedTreatmentsPopulate(
     [key: string]: unknown;
   };
   return {
-    fields: ["headline"],
+    fields:
+      relationKey === "treatmentPages"
+        ? ["headline", "linkTarget"]
+        : ["headline"],
     populate: {
       [relationKey]: {
         populate: {
