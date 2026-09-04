@@ -558,6 +558,15 @@ export const blockPromoFloatingStickerPopulate = {
   },
 } as const;
 
+export const blockYoutubeVideoPopulate = {
+  populate: {
+    poster: mediaPopulate,
+    cardSettings: {
+      populate: "*",
+    },
+  },
+} as const;
+
 export const allBlocksPopulate = {
   on: {
     "blocks.benefits-list": blockBenefitsListPopulate,
@@ -570,6 +579,7 @@ export const allBlocksPopulate = {
     "blocks.location-map": blockLocationMapPopulate,
     "blocks.media-bento": blockMediaBentoPopulate,
     "blocks.media-card": mediaCardPopulate,
+    "blocks.youtube-video": blockYoutubeVideoPopulate,
     "blocks.my-club": blockMyClubPopulate,
     "blocks.page-header": blockPageHeaderPopulate,
     "blocks.process-steps": blockProcessStepsPopulate,
@@ -620,6 +630,7 @@ export const locationsPageBlocksPopulate = {
     "blocks.highlights-strip": blockHighlightsStripPopulate,
     "blocks.media-bento": blockMediaBentoPopulate,
     "blocks.media-card": mediaCardPopulate,
+    "blocks.youtube-video": blockYoutubeVideoPopulate,
     "blocks.my-club": blockMyClubPopulate,
     "blocks.process-steps": blockProcessStepsPopulate,
     "blocks.text-content": blockTextContentPopulate,
@@ -638,6 +649,7 @@ export const generalPageBlocksPopulate = {
     "blocks.location-map": blockLocationMapPopulate,
     "blocks.media-bento": blockMediaBentoPopulate,
     "blocks.media-card": mediaCardPopulate,
+    "blocks.youtube-video": blockYoutubeVideoPopulate,
     "blocks.page-header": blockPageHeaderPopulate,
     "blocks.process-steps": blockProcessStepsPopulate,
     "blocks.product-category-price-overview":
@@ -675,6 +687,7 @@ export const editorialBlocksPopulate = {
     "blocks.highlights-strip": blockHighlightsStripPopulate,
     "blocks.media-bento": blockMediaBentoPopulate,
     "blocks.media-card": mediaCardPopulate,
+    "blocks.youtube-video": blockYoutubeVideoPopulate,
     "blocks.my-club": blockMyClubPopulate,
     "blocks.process-steps": blockProcessStepsPopulate,
     "blocks.text-content": blockTextContentPopulate,
@@ -702,6 +715,7 @@ export const homepageBlocksPopulate = {
     "blocks.location-map": blockLocationMapPopulate,
     "blocks.media-bento": blockMediaBentoPopulate,
     "blocks.media-card": mediaCardPopulate,
+    "blocks.youtube-video": blockYoutubeVideoPopulate,
     "blocks.my-club": blockMyClubPopulate,
     "blocks.process-steps": blockProcessStepsPopulate,
     "blocks.product-category-price-overview":

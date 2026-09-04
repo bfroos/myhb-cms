@@ -92,6 +92,7 @@
         "blocks.faq",
         "blocks.faq-accordion",
         "blocks.media-card",
+        "blocks.youtube-video",
         "blocks.media-bento"
       ]
     },

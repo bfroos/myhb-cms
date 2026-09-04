@@ -11,6 +11,7 @@ import {
   mediaCardPopulate,
   blockMediaBentoPopulate,
   landingBlockPopulate,
+  blockYoutubeVideoPopulate,
 } from "../../../utils/queries/blocks";
 import { getPreviewStatus } from "../../../utils/previewStatus";
 
@@ -58,6 +59,7 @@ export default factories.createCoreController(
                 "blocks.faq-accordion": landingBlockPopulate as object,
                 "blocks.media-card": mediaCardPopulate as object,
                 "blocks.media-bento": blockMediaBentoPopulate as object,
+                "blocks.youtube-video": blockYoutubeVideoPopulate as object,
               },
             },
             seo: {

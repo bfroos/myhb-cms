@@ -62,6 +62,7 @@
         "blocks.location-map",
         "blocks.media-bento",
         "blocks.media-card",
+        "blocks.youtube-video",
         "blocks.my-club",
         "blocks.page-header",
         "blocks.process-steps",

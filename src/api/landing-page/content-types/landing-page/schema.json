@@ -75,7 +75,8 @@
         "blocks.promo-banner",
         "blocks.promo-strip",
         "blocks.promo-hero",
-        "blocks.promo-floating-sticker"
+        "blocks.promo-floating-sticker",
+        "blocks.youtube-video"
       ]
     },
     "seo": {
