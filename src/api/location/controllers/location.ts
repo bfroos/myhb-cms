@@ -14,16 +14,7 @@ import {
 import { treatmentTeaserPopulate } from "../../../utils/queries/ui";
 import { mediaPopulate } from "../../../utils/queries/strapi";
 import { getPreviewStatus } from "../../../utils/previewStatus";
-
-// Mapping von LocationType zu erlaubten TreatmentTypes
-const locationTypeToTreatmentTypes: Record<
-  "lounge" | "center" | "clinic",
-  ("minimally-invasive" | "abulatory" | "operational")[]
-> = {
-  lounge: ["minimally-invasive"],
-  center: ["minimally-invasive", "abulatory"],
-  clinic: ["minimally-invasive", "abulatory", "operational"],
-};
+import { locationTypeToTreatmentTypes } from "../../../utils/locationTreatmentAvailability";
 
 export default factories.createCoreController(
   "api::location.location",

@@ -8,6 +8,14 @@
     "headline": {
       "type": "string"
     },
+    "linkTarget": {
+      "type": "enumeration",
+      "enum": [
+        "auto",
+        "overregional"
+      ],
+      "default": "auto"
+    },
     "treatmentPages": {
       "type": "relation",
       "relation": "oneToMany",

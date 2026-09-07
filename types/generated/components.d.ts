@@ -1705,6 +1705,8 @@ export interface TreatmentPageRelatedServices extends Struct.ComponentSchema {
   };
   attributes: {
     headline: Schema.Attribute.String;
+    linkTarget: Schema.Attribute.Enumeration<['auto', 'overregional']> &
+      Schema.Attribute.DefaultTo<'auto'>;
     treatmentPages: Schema.Attribute.Relation<
       'oneToMany',
       'api::treatment-page.treatment-page'
