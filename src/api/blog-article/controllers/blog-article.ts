@@ -6,13 +6,7 @@ import { factories } from "@strapi/strapi";
 import type { Context } from "koa";
 import { mediaPopulate } from "../../../utils/queries/strapi";
 import { seoPopulate } from "../../../utils/queries/components";
-import {
-  blockFaqBlockPopulate,
-  mediaCardPopulate,
-  blockMediaBentoPopulate,
-  landingBlockPopulate,
-  blockYoutubeVideoPopulate,
-} from "../../../utils/queries/blocks";
+import { allBlocksPopulate } from "../../../utils/queries/blocks";
 import { getPreviewStatus } from "../../../utils/previewStatus";
 
 export default factories.createCoreController(
@@ -55,11 +49,7 @@ export default factories.createCoreController(
                 "blog.cta": {
                   populate: "*",
                 },
-                "blocks.faq": blockFaqBlockPopulate as object,
-                "blocks.faq-accordion": landingBlockPopulate as object,
-                "blocks.media-card": mediaCardPopulate as object,
-                "blocks.media-bento": blockMediaBentoPopulate as object,
-                "blocks.youtube-video": blockYoutubeVideoPopulate as object,
+                ...(allBlocksPopulate.on as object),
               },
             },
             seo: {

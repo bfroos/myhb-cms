@@ -145,6 +145,18 @@ export const blockMediaBentoPopulate = {
   },
 } as const;
 
+// Captions are per-image here, so this cannot reuse mediaPopulate.
+export const blockGalleryPopulate = {
+  populate: {
+    images: {
+      fields: ["mime", "url", "width", "height", "alternativeText", "caption"],
+    },
+    cardSettings: {
+      populate: "*",
+    },
+  },
+} as const;
+
 export const mediaCardPopulate = {
   populate: {
     media: mediaPopulate,
@@ -575,6 +587,7 @@ export const allBlocksPopulate = {
     "blocks.employee": blockEmployeePopulate,
     "blocks.employee-list": blockEmployeeListPopulate,
     "blocks.faq": blockFaqBlockPopulate,
+    "blocks.gallery": blockGalleryPopulate,
     "blocks.highlights-strip": blockHighlightsStripPopulate,
     "blocks.location-map": blockLocationMapPopulate,
     "blocks.media-bento": blockMediaBentoPopulate,

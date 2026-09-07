@@ -1,0 +1,57 @@
+{
+  "collectionName": "components_blocks_galleries",
+  "info": {
+    "displayName": "Gallery",
+    "icon": "landscape"
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string",
+      "required": false
+    },
+    "intro": {
+      "type": "text"
+    },
+    "images": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "columns": {
+      "type": "enumeration",
+      "required": true,
+      "default": "3",
+      "enum": [
+        "2",
+        "3",
+        "4"
+      ]
+    },
+    "aspectRatio": {
+      "type": "enumeration",
+      "required": true,
+      "default": "1-1",
+      "enum": [
+        "1-1",
+        "4-3",
+        "3-4",
+        "16-9",
+        "original"
+      ]
+    },
+    "showCaptions": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    },
+    "cardSettings": {
+      "type": "component",
+      "component": "shared.card-design",
+      "repeatable": false
+    }
+  },
+  "config": {}
+}

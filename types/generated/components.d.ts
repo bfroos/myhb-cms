@@ -221,6 +221,31 @@ export interface BlocksFinalCta extends Struct.ComponentSchema {
   };
 }
 
+export interface BlocksGallery extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_galleries';
+  info: {
+    displayName: 'Gallery';
+    icon: 'landscape';
+  };
+  attributes: {
+    aspectRatio: Schema.Attribute.Enumeration<
+      ['1-1', '4-3', '3-4', '16-9', 'original']
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'1-1'>;
+    cardSettings: Schema.Attribute.Component<'shared.card-design', false>;
+    columns: Schema.Attribute.Enumeration<['2', '3', '4']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'3'>;
+    headline: Schema.Attribute.String;
+    images: Schema.Attribute.Media<'images', true>;
+    intro: Schema.Attribute.Text;
+    showCaptions: Schema.Attribute.Boolean &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<false>;
+  };
+}
+
 export interface BlocksGuarantees extends Struct.ComponentSchema {
   collectionName: 'components_blocks_guaranteess';
   info: {
@@ -946,6 +971,24 @@ export interface BlocksTrustGrid extends Struct.ComponentSchema {
     itemsPosition: Schema.Attribute.Enumeration<['aside', 'below']> &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<'aside'>;
+  };
+}
+
+export interface BlocksYoutubeVideo extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_youtube_videos';
+  info: {
+    displayName: 'YouTube Video';
+    icon: 'play';
+  };
+  attributes: {
+    aspectRatio: Schema.Attribute.Enumeration<['16-9', '9-16', '4-3', '1-1']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'16-9'>;
+    cardSettings: Schema.Attribute.Component<'shared.card-design', false>;
+    headline: Schema.Attribute.String;
+    intro: Schema.Attribute.Text;
+    poster: Schema.Attribute.Media<'images'>;
+    videoUrl: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
 
@@ -1934,6 +1977,7 @@ declare module '@strapi/strapi' {
       'blocks.faq': BlocksFaq;
       'blocks.faq-accordion': BlocksFaqAccordion;
       'blocks.final-cta': BlocksFinalCta;
+      'blocks.gallery': BlocksGallery;
       'blocks.guarantees': BlocksGuarantees;
       'blocks.highlights-strip': BlocksHighlightsStrip;
       'blocks.landing-hero': BlocksLandingHero;
@@ -1969,6 +2013,7 @@ declare module '@strapi/strapi' {
       'blocks.treatment-teasers': BlocksTreatmentTeasers;
       'blocks.trust-bar': BlocksTrustBar;
       'blocks.trust-grid': BlocksTrustGrid;
+      'blocks.youtube-video': BlocksYoutubeVideo;
       'blog.call-to-action': BlogCallToAction;
       'blog.callout': BlogCallout;
       'blog.cta': BlogCta;
