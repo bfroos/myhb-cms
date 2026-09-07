@@ -87,7 +87,10 @@ export default {
       const allPages = await strapi.documents(treatmentPageUid).findMany({
         locale: requestedLocale,
         status,
-        fields: ["id", "name", "slug"],
+        // pathKey traegt den vollen Pfad inkl. Ancestors ("hyaluron/lippen-
+        // aufspritzen"). Ohne ihn kennt das Frontend nur den eigenen slug des
+        // Kindes und baut daraus /behandlungen/{slug} - das gibt es nicht.
+        fields: ["id", "name", "slug", "pathKey"],
         filters: {
           showInMenu: { $eq: true },
         },
