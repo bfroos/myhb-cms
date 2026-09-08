@@ -2002,6 +2002,12 @@ export interface ApiLocationTreatmentPageLocationTreatmentPage
           localized: true;
         };
       }>;
+    seo: Schema.Attribute.Component<'shared.seo', false> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     suitability: Schema.Attribute.Component<
       'treatment-page.suitability',
       false
