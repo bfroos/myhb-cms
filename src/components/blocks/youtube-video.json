@@ -1,0 +1,46 @@
+{
+  "collectionName": "components_blocks_youtube_videos",
+  "info": {
+    "displayName": "YouTube Video",
+    "icon": "play"
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string",
+      "required": false
+    },
+    "intro": {
+      "type": "text"
+    },
+    "videoUrl": {
+      "type": "string",
+      "required": true
+    },
+    "poster": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "aspectRatio": {
+      "type": "enumeration",
+      "required": true,
+      "default": "16-9",
+      "enum": [
+        "16-9",
+        "9-16",
+        "4-3",
+        "1-1"
+      ]
+    },
+    "cardSettings": {
+      "type": "component",
+      "component": "shared.card-design",
+      "repeatable": false
+    }
+  },
+  "config": {}
+}
