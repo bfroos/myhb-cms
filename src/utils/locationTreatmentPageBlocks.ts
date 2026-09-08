@@ -20,11 +20,13 @@ export const LOCATION_TREATMENT_PAGE_UID =
 
 /**
  * Steuerfelder: gleiche Component wie ein Block-Ref, aber KEIN Inhaltsblock.
- * Duerfen nie als Override auf die Basisseite gemappt werden.
+ * Duerfen nie als Override auf die Basisseite gemappt werden. `seo` ist
+ * ebenfalls kein Block und wird separat ausgeliefert (siehe Controller).
  */
 const NON_BLOCK_COMPONENT_KEYS = new Set<string>([
   "blockOrder",
   "hiddenBlocks",
+  "seo",
 ]);
 
 let cachedKeys: string[] | null = null;

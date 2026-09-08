@@ -9,6 +9,7 @@ import {
   allBlocksPopulate,
   blockTreatmentTeasersPopulate,
 } from "../../../utils/queries/blocks";
+import { seoPopulate } from "../../../utils/queries/components";
 import {
   treatmentAdsPagePopulateForFindByLocationAndPath,
   treatmentAdsPagePopulateForFindByPath,
@@ -82,6 +83,7 @@ function getOverridePopulate(strapi: any, siteMode?: string) {
   return {
     blockOrder: true,
     hiddenBlocks: true,
+    seo: seoPopulate as object,
     blocks: allBlocksPopulate as object,
     ...Object.fromEntries(
       getOverridableBlockKeys(strapi)
@@ -125,12 +127,14 @@ type LocationOverrideResult = {
   override: Record<string, any> | null;
   blockOrder: string[] | null;
   hiddenBlocks: string[] | null;
+  seo: Record<string, any> | null;
 };
 
 const EMPTY_OVERRIDE_RESULT: LocationOverrideResult = {
   override: null,
   blockOrder: null,
   hiddenBlocks: null,
+  seo: null,
 };
 
 /**
@@ -187,6 +191,7 @@ async function findLocationOverride(
       override,
       blockOrder: toBlockRefKeys((override as any).blockOrder),
       hiddenBlocks: toBlockRefKeys((override as any).hiddenBlocks),
+      seo: (override as any).seo ?? null,
     };
   }
 
@@ -211,10 +216,12 @@ async function findLocationOverride(
       populate: { blockOrder: true, hiddenBlocks: true } as any,
     });
 
+  // seo ist lokalisiert - kein Fallback auf die Default-Locale.
   return {
     override: null,
     blockOrder: toBlockRefKeys((fallback as any)?.blockOrder),
     hiddenBlocks: toBlockRefKeys((fallback as any)?.hiddenBlocks),
+    seo: null,
   };
 }
 
@@ -587,7 +594,12 @@ export default factories.createCoreController(
         });
       }
 
-      const { override, blockOrder, hiddenBlocks } = await findLocationOverride(
+      const {
+        override,
+        blockOrder,
+        hiddenBlocks,
+        seo,
+      } = await findLocationOverride(
         strapi,
         {
           siteMode,
@@ -628,11 +640,13 @@ export default factories.createCoreController(
             })
           : undefined;
 
+      // Standort-spezifisches SEO; null = nicht gepflegt, Frontend generiert.
       return {
         data: {
           location: locationWithStatus,
           treatmentPage: treatmentPageWithAncestors,
           availableTreatmentPathKeys,
+          seo,
         },
       };
     },
