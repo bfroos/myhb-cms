@@ -14,7 +14,7 @@
       "type": "text"
     },
     "videoUrl": {
-      "type": "string",
+      "type": "text",
       "required": true
     },
     "poster": {
@@ -23,17 +23,6 @@
       "required": false,
       "allowedTypes": [
         "images"
-      ]
-    },
-    "aspectRatio": {
-      "type": "enumeration",
-      "required": true,
-      "default": "16-9",
-      "enum": [
-        "16-9",
-        "9-16",
-        "4-3",
-        "1-1"
       ]
     },
     "cardSettings": {
