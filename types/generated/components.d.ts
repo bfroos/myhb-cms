@@ -981,11 +981,15 @@ export interface BlocksYoutubeVideo extends Struct.ComponentSchema {
     icon: 'play';
   };
   attributes: {
+    aspectRatio: Schema.Attribute.Enumeration<['16-9', '9-16', '4-3', '1-1']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'16-9'>;
     cardSettings: Schema.Attribute.Component<'shared.card-design', false>;
+    embedCode: Schema.Attribute.Text;
     headline: Schema.Attribute.String;
     intro: Schema.Attribute.Text;
     poster: Schema.Attribute.Media<'images'>;
-    videoUrl: Schema.Attribute.Text & Schema.Attribute.Required;
+    videoUrl: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
 
