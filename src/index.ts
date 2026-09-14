@@ -5,6 +5,7 @@ import {
   cascadeUpdateDescendants,
 } from "./utils/treatmentPagePathUtils";
 import { runAsInternalTreatmentPageOp } from "./utils/treatmentPageDeleteGuard";
+import { createFaqSetSyncMiddleware } from "./utils/faqSetSync";
 
 // ============================================================================
 // Helper Functions
@@ -606,6 +607,9 @@ export default {
         }
         return next();
       });
+
+      // Middleware 5: German FAQ sets are the master list for every locale
+      strapi.documents.use(createFaqSetSyncMiddleware(strapi));
     }
   },
 
