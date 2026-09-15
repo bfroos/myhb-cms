@@ -5,7 +5,7 @@ export const locationTypeToTreatmentTypes: Record<
 > = {
   lounge: ["minimally-invasive"],
   center: ["minimally-invasive", "abulatory"],
-  clinic: ["minimally-invasive", "abulatory", "operational"],
+  clinic: ["abulatory", "operational"],
 };
 
 type AvailabilityParams = {
