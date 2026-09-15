@@ -17,6 +17,10 @@
       "type": "string",
       "required": true
     },
+    "embedCode": {
+      "type": "text",
+      "required": false
+    },
     "poster": {
       "type": "media",
       "multiple": false,

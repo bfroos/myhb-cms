@@ -985,6 +985,7 @@ export interface BlocksYoutubeVideo extends Struct.ComponentSchema {
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<'16-9'>;
     cardSettings: Schema.Attribute.Component<'shared.card-design', false>;
+    embedCode: Schema.Attribute.Text;
     headline: Schema.Attribute.String;
     intro: Schema.Attribute.Text;
     poster: Schema.Attribute.Media<'images'>;
