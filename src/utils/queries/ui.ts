@@ -15,7 +15,14 @@ export const reviewTeaserPopulate = {
 };
 
 export const locationTeaserPopulate = {
-  fields: ["name", "slug", "newOpeningDate", "timezone", "calendlyUrl"],
+  fields: [
+    "name",
+    "slug",
+    "newOpeningDate",
+    "timezone",
+    "calendlyUrl",
+    "appBookingUrl",
+  ],
   filters: {
     city: {
       id: { $notNull: true },

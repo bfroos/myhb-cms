@@ -51,6 +51,7 @@ export default factories.createCoreController(
             "newOpeningDate",
             "timezone",
             "calendlyUrl",
+            "appBookingUrl",
             "type",
           ],
           filters: {
@@ -101,7 +102,14 @@ export default factories.createCoreController(
         .findMany({
           locale,
           status,
-          fields: ["name", "slug", "newOpeningDate", "timezone", "calendlyUrl"],
+          fields: [
+            "name",
+            "slug",
+            "newOpeningDate",
+            "timezone",
+            "calendlyUrl",
+            "appBookingUrl",
+          ],
           filters: {
             calendlyUrl: {
               $notNull: true,

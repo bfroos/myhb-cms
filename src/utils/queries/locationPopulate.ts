@@ -11,6 +11,7 @@ export const locationFieldsForPage = [
   "showDiscount",
   "type",
   "calendlyUrl",
+  "appBookingUrl",
 ];
 
 export const locationFieldsForAdsPage = [
@@ -23,6 +24,7 @@ export const locationFieldsForAdsPage = [
   "showDiscount",
   "type",
   "calendlyUrl",
+  "appBookingUrl",
 ];
 
 export const locationPopulateForPage = {

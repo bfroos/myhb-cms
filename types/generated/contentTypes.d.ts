@@ -2082,6 +2082,12 @@ export interface ApiLocationLocation extends Struct.CollectionTypeSchema {
           localized: true;
         };
       }>;
+    appBookingUrl: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
     address: Schema.Attribute.Component<'shared.address', false> &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
