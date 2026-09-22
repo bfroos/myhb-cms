@@ -53,6 +53,17 @@ export default factories.createCoreController(
             "calendlyUrl",
             "appBookingUrl",
             "type",
+            // Der Buchungsdialog der Website zeigt je Standort die Google-Note
+            // und faellt bei gesperrter Buchung auf einen Kontaktweg zurueck.
+            // Der Code dafuer steht dort seit 07.09.2026, blieb aber wirkungslos,
+            // weil diese Antwort die Felder nicht mitgab (bfroos/myhb-store#78).
+            "googlePlaceId",
+            // Sperre der Redaktion: "hier nimmt gerade niemand Termine an".
+            // Nicht als Filter, sondern als Feld -- ein gesperrter Standort soll
+            // im Waehler sichtbar bleiben und eine Telefonnummer zeigen, statt
+            // spurlos zu verschwinden (myhb-store#141: 70 Klicks in zwei Wochen
+            // allein auf die MediaPark-Klinik, null Buchungen).
+            "isBookingAllowed",
           ],
           filters: {
             ...(allowedLocationTypesForTreatment && {
@@ -76,6 +87,10 @@ export default factories.createCoreController(
               fields: ["lat", "long"],
             },
             buildingImage: mediaPopulate as object,
+            // Telefon und WhatsApp fuer den Fallback ohne Online-Buchung.
+            contact: {
+              fields: ["phoneNumber", "whatsAppNumber"],
+            },
           },
         });
 
