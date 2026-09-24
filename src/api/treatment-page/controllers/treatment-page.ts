@@ -25,6 +25,7 @@ import {
 import { getPreviewStatus } from "../../../utils/previewStatus";
 import {
   LOCATION_TREATMENT_PAGE_UID,
+  LOCATION_TREATMENT_ADS_PAGE_UID,
   getOverridableBlockKeys,
   isOverridden,
   toBlockRefKeys,
@@ -48,6 +49,12 @@ function getTreatmentPagePopulateForFindByLocationAndPath(siteMode?: string) {
   return siteMode === "ads"
     ? treatmentAdsPagePopulateForFindByLocationAndPath
     : treatmentPagePopulateForFindByLocationAndPath;
+}
+
+function getLocationOverrideUid(siteMode?: string): string {
+  return siteMode === "ads"
+    ? LOCATION_TREATMENT_ADS_PAGE_UID
+    : LOCATION_TREATMENT_PAGE_UID;
 }
 
 // ---------------------------------------------------------------------------
@@ -79,6 +86,7 @@ function getOverridePopulate(strapi: any, siteMode?: string) {
   const base = getTreatmentPagePopulateForFindByLocationAndPath(
     siteMode
   ) as Record<string, unknown>;
+  const overrideUid = getLocationOverrideUid(siteMode);
 
   return {
     blockOrder: true,
@@ -86,7 +94,7 @@ function getOverridePopulate(strapi: any, siteMode?: string) {
     seo: seoPopulate as object,
     blocks: allBlocksPopulate as object,
     ...Object.fromEntries(
-      getOverridableBlockKeys(strapi)
+      getOverridableBlockKeys(strapi, overrideUid)
         .filter((key) => base[key])
         .map((key) => [key, base[key]])
     ),
@@ -99,11 +107,12 @@ function getOverridePopulate(strapi: any, siteMode?: string) {
  */
 function pickOverriddenBlocks(
   strapi: any,
-  override: Record<string, any> | null
+  override: Record<string, any> | null,
+  siteMode?: string
 ) {
   if (!override) return {};
   return Object.fromEntries(
-    getOverridableBlockKeys(strapi)
+    getOverridableBlockKeys(strapi, getLocationOverrideUid(siteMode))
       .filter((key) => isOverridden(override[key]))
       .map((key) => [key, override[key]])
   );
@@ -137,16 +146,6 @@ const EMPTY_OVERRIDE_RESULT: LocationOverrideResult = {
   seo: null,
 };
 
-/**
- * Laedt den Standort-Override fuer eine Behandlungsseite.
- *
- * - Ads-Modus: es gibt nichts zu laden. Die Relation des Overrides zeigt
- *   ausschliesslich auf api::treatment-page.treatment-page; die Ads-Seiten sind
- *   ein eigener Content-Type. Frueher wurde ueber pathKey gefiltert, wodurch
- *   ein SEO-Override auf einer Ads-Seite landen konnte (gleiche pathKeys).
- * - Gefiltert wird ueber die documentId der bereits aufgeloesten
- *   Behandlungsseite: eindeutig, kein zusaetzlicher String-Join.
- */
 async function findLocationOverride(
   strapi: any,
   params: {
@@ -165,9 +164,11 @@ async function findLocationOverride(
     locationDocumentId,
   } = params;
 
-  if (siteMode === "ads" || !treatmentPageDocumentId || !locationDocumentId) {
+  if (!treatmentPageDocumentId || !locationDocumentId) {
     return EMPTY_OVERRIDE_RESULT;
   }
+
+  const overrideUid = getLocationOverrideUid(siteMode);
 
   const filters = {
     treatmentPage: { documentId: { $eq: treatmentPageDocumentId } },
@@ -175,7 +176,7 @@ async function findLocationOverride(
   };
 
   const override = await strapi
-    .documents(LOCATION_TREATMENT_PAGE_UID as any)
+    .documents(overrideUid as any)
     .findFirst({
       locale,
       status,
@@ -207,7 +208,7 @@ async function findLocationOverride(
   }
 
   const fallback = await strapi
-    .documents(LOCATION_TREATMENT_PAGE_UID as any)
+    .documents(overrideUid as any)
     .findFirst({
       locale: defaultLocale,
       status,
@@ -613,7 +614,7 @@ export default factories.createCoreController(
       // Add ancestors to treatmentPage
       const treatmentPageWithAncestors = {
         ...treatmentPage,
-        ...pickOverriddenBlocks(strapi, override),
+        ...pickOverriddenBlocks(strapi, override, siteMode),
         blockOrder,
         hiddenBlocks,
         ancestors,

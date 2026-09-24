@@ -19,8 +19,6 @@
  * wenigstens stabil und reproduzierbar aufgeloest wird.
  */
 
-import { LOCATION_TREATMENT_PAGE_UID } from "./locationTreatmentPageBlocks";
-
 type RelationRef = { documentId: string } | { id: number } | null;
 
 function scalarToRef(value: string | number): RelationRef {
@@ -52,9 +50,9 @@ function toRelationRef(value: any): RelationRef {
   return null;
 }
 
-async function loadCurrentRow(strapi: any, rowId: number) {
+async function loadCurrentRow(strapi: any, uid: string, rowId: number) {
   try {
-    return await strapi.db.query(LOCATION_TREATMENT_PAGE_UID).findOne({
+    return await strapi.db.query(uid).findOne({
       where: { id: rowId },
       select: ["id", "documentId"],
       populate: {
@@ -71,7 +69,10 @@ async function loadCurrentRow(strapi: any, rowId: number) {
  * Wirft, wenn fuer dieselbe Kombination aus Standort und Behandlungsseite
  * bereits ein ANDERES Dokument existiert.
  */
-export async function assertNoDuplicateOverride(event: any): Promise<void> {
+export async function assertNoDuplicateOverride(
+  event: any,
+  uid: string
+): Promise<void> {
   const strapi = (global as any).strapi;
   if (!strapi?.db) return;
 
@@ -89,7 +90,7 @@ export async function assertNoDuplicateOverride(event: any): Promise<void> {
   // Bei Updates stehen Relationen/documentId oft nicht im Payload -> aus der
   // bestehenden Zeile nachladen.
   if (whereId !== undefined && (!locationRef || !treatmentPageRef || !documentId)) {
-    const current = await loadCurrentRow(strapi, whereId);
+    const current = await loadCurrentRow(strapi, uid, whereId);
     if (current) {
       locationRef = locationRef ?? toRelationRef(current.location);
       treatmentPageRef = treatmentPageRef ?? toRelationRef(current.treatmentPage);
@@ -103,7 +104,7 @@ export async function assertNoDuplicateOverride(event: any): Promise<void> {
   // Komfort-Guard; es geht hier nicht um Datenverlust).
   if (!locationRef || !treatmentPageRef) return;
 
-  const rows = await strapi.db.query(LOCATION_TREATMENT_PAGE_UID).findMany({
+  const rows = await strapi.db.query(uid).findMany({
     select: ["id", "documentId"],
     where: {
       location: locationRef,
@@ -124,7 +125,7 @@ export async function assertNoDuplicateOverride(event: any): Promise<void> {
   const conflictLabel = String(conflicts[0]?.documentId ?? conflicts[0]?.id);
 
   throw new Error(
-    "[location-treatment-page] Fuer diese Kombination aus Standort und " +
+    `[${uid}] Fuer diese Kombination aus Standort und ` +
       "Behandlungsseite existiert bereits ein Override (" +
       conflictLabel +
       "). Pro Standort x Behandlungsseite ist nur EIN Datensatz erlaubt - " +
