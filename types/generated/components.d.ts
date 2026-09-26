@@ -240,6 +240,11 @@ export interface BlocksGallery extends Struct.ComponentSchema {
     headline: Schema.Attribute.String;
     images: Schema.Attribute.Media<'images', true>;
     intro: Schema.Attribute.Text;
+    items: Schema.Attribute.Component<'shared.before-after-item', true>;
+    layout: Schema.Attribute.Enumeration<['grid', 'slider']> &
+      Schema.Attribute.DefaultTo<'grid'>;
+    mode: Schema.Attribute.Enumeration<['images', 'before-after']> &
+      Schema.Attribute.DefaultTo<'images'>;
     showCaptions: Schema.Attribute.Boolean &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<false>;
@@ -1325,6 +1330,19 @@ export interface SharedAddress extends Struct.ComponentSchema {
   };
 }
 
+export interface SharedBeforeAfterItem extends Struct.ComponentSchema {
+  collectionName: 'components_shared_before_after_items';
+  info: {
+    displayName: 'Before After Item';
+    icon: 'landscape';
+  };
+  attributes: {
+    after: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
+    before: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
+    caption: Schema.Attribute.String;
+  };
+}
+
 export interface SharedButton extends Struct.ComponentSchema {
   collectionName: 'components_shared_buttons';
   info: {
@@ -2038,6 +2056,7 @@ declare module '@strapi/strapi' {
       'product.variant': ProductVariant;
       'product.volume': ProductVolume;
       'shared.address': SharedAddress;
+      'shared.before-after-item': SharedBeforeAfterItem;
       'shared.button': SharedButton;
       'shared.card-design': SharedCardDesign;
       'shared.collabsible-item': SharedCollabsibleItem;
