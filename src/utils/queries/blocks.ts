@@ -145,11 +145,19 @@ export const blockMediaBentoPopulate = {
   },
 } as const;
 
+const galleryImageFields = ["mime", "url", "width", "height", "alternativeText", "caption"];
+
 // Captions are per-image here, so this cannot reuse mediaPopulate.
 export const blockGalleryPopulate = {
   populate: {
     images: {
-      fields: ["mime", "url", "width", "height", "alternativeText", "caption"],
+      fields: galleryImageFields,
+    },
+    items: {
+      populate: {
+        before: { fields: galleryImageFields },
+        after: { fields: galleryImageFields },
+      },
     },
     cardSettings: {
       populate: "*",
