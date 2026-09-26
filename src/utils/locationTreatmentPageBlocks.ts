@@ -18,6 +18,9 @@
 export const LOCATION_TREATMENT_PAGE_UID =
   "api::location-treatment-page.location-treatment-page";
 
+export const LOCATION_TREATMENT_ADS_PAGE_UID =
+  "api::location-treatment-ads-page.location-treatment-ads-page";
+
 /**
  * Steuerfelder: gleiche Component wie ein Block-Ref, aber KEIN Inhaltsblock.
  * Duerfen nie als Override auf die Basisseite gemappt werden. `seo` ist
@@ -29,19 +32,18 @@ const NON_BLOCK_COMPONENT_KEYS = new Set<string>([
   "seo",
 ]);
 
-let cachedKeys: string[] | null = null;
+const cachedKeysByUid = new Map<string, string[]>();
 
-/**
- * Alle Keys des Override-Content-Types, die einen Block der Basisseite
- * ersetzen koennen. Ergebnis wird prozessweit gecacht (Schema ist statisch).
- */
-export function getOverridableBlockKeys(strapi: any): string[] {
-  if (cachedKeys) return cachedKeys;
+export function getOverridableBlockKeys(
+  strapi: any,
+  uid: string = LOCATION_TREATMENT_PAGE_UID
+): string[] {
+  const cached = cachedKeysByUid.get(uid);
+  if (cached) return cached;
 
-  const attributes =
-    strapi?.contentType?.(LOCATION_TREATMENT_PAGE_UID)?.attributes ?? {};
+  const attributes = strapi?.contentType?.(uid)?.attributes ?? {};
 
-  cachedKeys = Object.entries(attributes)
+  const keys = Object.entries(attributes)
     .filter(([key, attribute]: [string, any]) => {
       if (NON_BLOCK_COMPONENT_KEYS.has(key)) return false;
       return (
@@ -50,7 +52,8 @@ export function getOverridableBlockKeys(strapi: any): string[] {
     })
     .map(([key]) => key);
 
-  return cachedKeys;
+  cachedKeysByUid.set(uid, keys);
+  return keys;
 }
 
 /**

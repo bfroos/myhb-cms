@@ -1850,6 +1850,216 @@ export interface ApiLandingPageLandingPage extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiLocationTreatmentAdsPageLocationTreatmentAdsPage
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'location_treatment_ads_pages';
+  info: {
+    displayName: 'Location Treatment Ads Page';
+    pluralName: 'location-treatment-ads-pages';
+    singularName: 'location-treatment-ads-page';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  pluginOptions: {
+    i18n: {
+      localized: true;
+    };
+  };
+  attributes: {
+    about: Schema.Attribute.Component<'treatment-page.about', false> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    benefits: Schema.Attribute.Component<'treatment-page.benefits', false> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    blockOrder: Schema.Attribute.Component<
+      'location-treatment-page.block-ref',
+      true
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    blocks: Schema.Attribute.DynamicZone<
+      [
+        'blocks.benefits-list',
+        'blocks.comparison-block',
+        'blocks.employee',
+        'blocks.faq',
+        'blocks.highlights-strip',
+        'blocks.media-bento',
+        'blocks.media-card',
+        'blocks.youtube-video',
+        'blocks.process-steps',
+        'blocks.text-content',
+        'blocks.trust-grid',
+        'blocks.location-map',
+        'blocks.landing-hero',
+        'blocks.trust-bar',
+        'blocks.quick-info',
+        'blocks.before-after',
+        'blocks.benefit-grid',
+        'blocks.seo-collapsible',
+        'blocks.doctor',
+        'blocks.price-overview',
+        'blocks.price-teaser',
+        'blocks.faq-accordion',
+        'blocks.local-section',
+        'blocks.location-card',
+        'blocks.final-cta',
+        'blocks.mobile-sticky-cta',
+        'blocks.landing-reviews',
+        'blocks.press-logos',
+        'blocks.guarantees',
+        'blocks.awards',
+        'blocks.live-counter',
+        'blocks.promo-banner',
+        'blocks.promo-strip',
+        'blocks.promo-hero',
+        'blocks.promo-floating-sticker',
+      ]
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    faq: Schema.Attribute.Component<'treatment-page.faq', false> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    hero: Schema.Attribute.Component<'treatment-page.hero', false> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    hiddenBlocks: Schema.Attribute.Component<
+      'location-treatment-page.block-ref',
+      true
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    locale: Schema.Attribute.String;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::location-treatment-ads-page.location-treatment-ads-page'
+    >;
+    location: Schema.Attribute.Relation<'manyToOne', 'api::location.location'> &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    medicalTeamHighlight: Schema.Attribute.Component<
+      'treatment-page.medical-team-highlight',
+      false
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    publishedAt: Schema.Attribute.DateTime;
+    relatedTreatments: Schema.Attribute.Component<
+      'treatment-page.related-ads-services',
+      false
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    reviews: Schema.Attribute.Component<'treatment-page.reviews', false> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    seo: Schema.Attribute.Component<'shared.seo', false> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    suitability: Schema.Attribute.Component<
+      'treatment-page.suitability',
+      false
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    tableOfContents: Schema.Attribute.Component<
+      'treatment-page.table-of-contents',
+      false
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    treatmentDetails: Schema.Attribute.Component<
+      'treatment-page.treatment-details',
+      false
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    treatmentPage: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::treatment-ads-page.treatment-ads-page'
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    treatmentPlan: Schema.Attribute.Component<
+      'treatment-page.treatment-plan-ads',
+      false
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    treatmentProcess: Schema.Attribute.Component<
+      'treatment-page.treatment-process',
+      false
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiLocationTreatmentPageLocationTreatmentPage
   extends Struct.CollectionTypeSchema {
   collectionName: 'location_treatment_pages';
@@ -2082,13 +2292,13 @@ export interface ApiLocationLocation extends Struct.CollectionTypeSchema {
           localized: true;
         };
       }>;
-    appBookingUrl: Schema.Attribute.String &
+    address: Schema.Attribute.Component<'shared.address', false> &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: false;
         };
       }>;
-    address: Schema.Attribute.Component<'shared.address', false> &
+    appBookingUrl: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: false;
@@ -4216,6 +4426,7 @@ declare module '@strapi/strapi' {
       'api::job-page.job-page': ApiJobPageJobPage;
       'api::job.job': ApiJobJob;
       'api::landing-page.landing-page': ApiLandingPageLandingPage;
+      'api::location-treatment-ads-page.location-treatment-ads-page': ApiLocationTreatmentAdsPageLocationTreatmentAdsPage;
       'api::location-treatment-page.location-treatment-page': ApiLocationTreatmentPageLocationTreatmentPage;
       'api::location.location': ApiLocationLocation;
       'api::locations-page.locations-page': ApiLocationsPageLocationsPage;
