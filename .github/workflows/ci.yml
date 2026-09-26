@@ -1,0 +1,27 @@
+# Prueft jeden PR und jeden Push auf main, bevor Strapi Cloud baut:
+# - npm ci schlaegt fehl, sobald package-lock.json nicht zu package.json passt
+#   (das war vom Strapi-Upgrade auf 5.50.1 bis zum 26.09.2026 der Fall)
+# - typecheck faengt Typfehler in Controllern, Populates und Lifecycles
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run typecheck
