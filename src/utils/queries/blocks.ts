@@ -521,17 +521,6 @@ export const blockLandingHeroPopulate = {
   },
 } as const;
 
-export const blockBeforeAfterPopulate = {
-  populate: {
-    pairsMedia: {
-      populate: {
-        beforeImage: mediaPopulate,
-        afterImage: mediaPopulate,
-      },
-    },
-  },
-} as const;
-
 export const blockDoctorLandingPopulate = {
   populate: {
     imageMedia: mediaPopulate,
@@ -613,7 +602,6 @@ export const allBlocksPopulate = {
     "blocks.landing-hero": blockLandingHeroPopulate,
     "blocks.trust-bar": blockTrustBarPopulate,
     "blocks.quick-info": blockQuickInfoPopulate,
-    "blocks.before-after": blockBeforeAfterPopulate,
     "blocks.benefit-grid": blockBenefitGridPopulate,
     "blocks.seo-collapsible": blockSeoCollapsiblePopulate,
     "blocks.doctor": blockDoctorLandingPopulate,

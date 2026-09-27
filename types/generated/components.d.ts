@@ -18,37 +18,6 @@ export interface BlocksAwards extends Struct.ComponentSchema {
   };
 }
 
-export interface BlocksBeforeAfter extends Struct.ComponentSchema {
-  collectionName: 'components_blocks_before_afters';
-  info: {
-    displayName: 'Before After';
-    icon: 'layout';
-  };
-  attributes: {
-    elevated: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
-    headline: Schema.Attribute.String;
-    pairsMedia: Schema.Attribute.Component<'blocks.before-after-pair', true>;
-    themeClass: Schema.Attribute.Enumeration<
-      ['theme-light', 'theme-soft', 'theme-neutral', 'theme-strong']
-    > &
-      Schema.Attribute.DefaultTo<'theme-light'>;
-  };
-}
-
-export interface BlocksBeforeAfterPair extends Struct.ComponentSchema {
-  collectionName: 'components_blocks_before_after_pairs';
-  info: {
-    displayName: 'Before After Pair';
-    icon: 'images';
-  };
-  attributes: {
-    afterAlt: Schema.Attribute.String;
-    afterImage: Schema.Attribute.Media<'images'>;
-    beforeAlt: Schema.Attribute.String;
-    beforeImage: Schema.Attribute.Media<'images'>;
-  };
-}
-
 export interface BlocksBenefitGrid extends Struct.ComponentSchema {
   collectionName: 'components_blocks_benefit_grids';
   info: {
@@ -1968,8 +1937,6 @@ declare module '@strapi/strapi' {
   export namespace Public {
     export interface ComponentSchemas {
       'blocks.awards': BlocksAwards;
-      'blocks.before-after': BlocksBeforeAfter;
-      'blocks.before-after-pair': BlocksBeforeAfterPair;
       'blocks.benefit-grid': BlocksBenefitGrid;
       'blocks.benefits-list': BlocksBenefitsList;
       'blocks.comparison-block': BlocksComparisonBlock;
