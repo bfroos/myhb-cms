@@ -342,6 +342,7 @@ export const blockStoriesPopulate = {
       fields: ["title", "subtitle"],
       populate: {
         video: mediaPopulate,
+        poster: mediaPopulate,
       },
     },
     cardSettings: {

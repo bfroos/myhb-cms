@@ -3,7 +3,7 @@ export const mediaPopulate = {
 } as const;
 
 export const mediaWithDatePopulate = {
-  fields: ["mime", "url", "width", "height", "alternativeText", "createdAt"],
+  fields: [...mediaPopulate.fields, "createdAt"],
 } as const;
 
 export const mediaLightPopulate = {
