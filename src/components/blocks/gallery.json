@@ -20,19 +20,6 @@
         "images"
       ]
     },
-    "mode": {
-      "type": "enumeration",
-      "default": "images",
-      "enum": [
-        "images",
-        "before-after"
-      ]
-    },
-    "items": {
-      "type": "component",
-      "component": "shared.before-after-item",
-      "repeatable": true
-    },
     "layout": {
       "type": "enumeration",
       "default": "grid",

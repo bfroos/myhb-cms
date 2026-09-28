@@ -153,12 +153,6 @@ export const blockGalleryPopulate = {
     images: {
       fields: galleryImageFields,
     },
-    items: {
-      populate: {
-        before: { fields: galleryImageFields },
-        after: { fields: galleryImageFields },
-      },
-    },
     cardSettings: {
       populate: "*",
     },

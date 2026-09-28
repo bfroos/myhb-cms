@@ -240,11 +240,8 @@ export interface BlocksGallery extends Struct.ComponentSchema {
     headline: Schema.Attribute.String;
     images: Schema.Attribute.Media<'images', true>;
     intro: Schema.Attribute.Text;
-    items: Schema.Attribute.Component<'shared.before-after-item', true>;
     layout: Schema.Attribute.Enumeration<['grid', 'slider']> &
       Schema.Attribute.DefaultTo<'grid'>;
-    mode: Schema.Attribute.Enumeration<['images', 'before-after']> &
-      Schema.Attribute.DefaultTo<'images'>;
     showCaptions: Schema.Attribute.Boolean &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<false>;
@@ -986,15 +983,13 @@ export interface BlocksYoutubeVideo extends Struct.ComponentSchema {
     icon: 'play';
   };
   attributes: {
-    aspectRatio: Schema.Attribute.Enumeration<['16-9', '9-16', '4-3', '1-1']> &
-      Schema.Attribute.Required &
-      Schema.Attribute.DefaultTo<'16-9'>;
+    aspectRatio: Schema.Attribute.Enumeration<['auto', '16-9', '9-16']> &
+      Schema.Attribute.DefaultTo<'auto'>;
     cardSettings: Schema.Attribute.Component<'shared.card-design', false>;
-    embedCode: Schema.Attribute.Text;
     headline: Schema.Attribute.String;
     intro: Schema.Attribute.Text;
     poster: Schema.Attribute.Media<'images'>;
-    videoUrl: Schema.Attribute.String & Schema.Attribute.Required;
+    video: Schema.Attribute.Text & Schema.Attribute.Required;
   };
 }
 
@@ -1327,19 +1322,6 @@ export interface SharedAddress extends Struct.ComponentSchema {
     houseNumber: Schema.Attribute.String;
     postalCode: Schema.Attribute.String;
     street: Schema.Attribute.String;
-  };
-}
-
-export interface SharedBeforeAfterItem extends Struct.ComponentSchema {
-  collectionName: 'components_shared_before_after_items';
-  info: {
-    displayName: 'Before After Item';
-    icon: 'landscape';
-  };
-  attributes: {
-    after: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
-    before: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
-    caption: Schema.Attribute.String;
   };
 }
 
@@ -2056,7 +2038,6 @@ declare module '@strapi/strapi' {
       'product.variant': ProductVariant;
       'product.volume': ProductVolume;
       'shared.address': SharedAddress;
-      'shared.before-after-item': SharedBeforeAfterItem;
       'shared.button': SharedButton;
       'shared.card-design': SharedCardDesign;
       'shared.collabsible-item': SharedCollabsibleItem;
