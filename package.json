@@ -6,6 +6,7 @@
   "scripts": {
     "prebuild": "npm -w amount-cents run build",
     "build": "strapi build",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
     "console": "strapi console",
     "deploy": "strapi deploy",
     "dev": "strapi develop",
