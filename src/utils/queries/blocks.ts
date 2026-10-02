@@ -571,6 +571,44 @@ export const blockYoutubeVideoPopulate = {
   },
 } as const;
 
+// Aerzteteam (blocks.doctor-team): Employee je Karte nur sichtbar + aktiv,
+// sonst kommt die Relation leer an und die Karte faellt auf die
+// manuellen Felder zurueck (oder entfaellt ohne Namen).
+export const blockDoctorTeamPopulate = {
+  populate: {
+    doctors: {
+      populate: {
+        image: mediaPopulate,
+        employee: {
+          filters: {
+            hideFromPublic: {
+              $eq: false,
+            },
+            isActive: {
+              $eq: true,
+            },
+          },
+          fields: [
+            "firstName",
+            "lastName",
+            "academicTitle",
+            "role",
+            "employeeType",
+            "slug",
+          ],
+          populate: {
+            photo: mediaPopulate,
+          },
+        },
+      },
+    },
+    cta: sharedButtonPopulate as object,
+    cardSettings: {
+      populate: "*",
+    },
+  },
+};
+
 export const allBlocksPopulate = {
   on: {
     "blocks.benefits-list": blockBenefitsListPopulate,
@@ -605,6 +643,7 @@ export const allBlocksPopulate = {
     "blocks.benefit-grid": blockBenefitGridPopulate,
     "blocks.seo-collapsible": blockSeoCollapsiblePopulate,
     "blocks.doctor": blockDoctorLandingPopulate,
+    "blocks.doctor-team": blockDoctorTeamPopulate,
     "blocks.price-overview": blockPriceOverviewPopulate,
     "blocks.price-teaser": blockPriceTeaserPopulate,
     "blocks.faq-accordion": landingBlockPopulate,
@@ -727,6 +766,7 @@ export const homepageBlocksPopulate = {
     "blocks.reviews": blockReviewsPopulate,
     "blocks.stories": blockStoriesPopulate,
     "blocks.text-content": blockTextContentPopulate,
+    "blocks.treatment-hero": blockTreatmentHeroPopulate,
     "blocks.treatment-teasers": blockTreatmentTeasersPopulate,
     "blocks.trust-grid": blockTrustGridPopulate,
   },

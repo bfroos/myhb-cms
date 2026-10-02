@@ -1,0 +1,36 @@
+{
+  "collectionName": "components_shared_doctor_cards",
+  "info": {
+    "displayName": "Doctor Card",
+    "icon": "user",
+    "description": "Ärzt:in: Employee verknüpfen; Name, Rolle und Bild überschreiben optional die Employee-Daten"
+  },
+  "options": {},
+  "attributes": {
+    "employee": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::employee.employee"
+    },
+    "name": {
+      "type": "string"
+    },
+    "role": {
+      "type": "string"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "imageAlt": {
+      "type": "string"
+    },
+    "profileLink": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

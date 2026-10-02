@@ -1,0 +1,40 @@
+{
+  "collectionName": "components_blocks_doctor_teams",
+  "info": {
+    "displayName": "Doctor Team",
+    "icon": "users",
+    "description": "Ärzteteam-Section: Headline, Intro, Ärzt:innen (Employee oder manuell), Trust-Text, CTA"
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    },
+    "doctors": {
+      "type": "component",
+      "component": "shared.doctor-card",
+      "repeatable": true
+    },
+    "trustText": {
+      "type": "text"
+    },
+    "showCta": {
+      "type": "boolean",
+      "default": true
+    },
+    "cta": {
+      "type": "component",
+      "component": "shared.button",
+      "repeatable": false
+    },
+    "cardSettings": {
+      "type": "component",
+      "component": "shared.card-design",
+      "repeatable": false
+    }
+  },
+  "config": {}
+}
