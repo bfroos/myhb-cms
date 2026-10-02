@@ -344,8 +344,8 @@ export interface BlocksLocationCard extends Struct.ComponentSchema {
     elevated: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     googleMapsApiKey: Schema.Attribute.String;
     hours: Schema.Attribute.JSON;
-    lat: Schema.Attribute.Decimal;
-    lng: Schema.Attribute.Decimal;
+    lat: Schema.Attribute.Float;
+    lng: Schema.Attribute.Float;
     phone: Schema.Attribute.String;
     placeId: Schema.Attribute.String;
     whatsapp: Schema.Attribute.String;
