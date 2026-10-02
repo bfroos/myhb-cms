@@ -215,6 +215,7 @@
         "blocks.benefit-grid",
         "blocks.seo-collapsible",
         "blocks.doctor",
+        "blocks.doctor-team",
         "blocks.price-overview",
         "blocks.price-teaser",
         "blocks.faq-accordion",
