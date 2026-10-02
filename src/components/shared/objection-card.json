@@ -1,0 +1,32 @@
+{
+  "collectionName": "components_shared_objection_cards",
+  "info": {
+    "displayName": "Objection Card",
+    "icon": "message",
+    "description": "Einwand + Antwort. {preis} = Preiszeile der Seite, {rabatt} = z. B. „20 %“ (Karte entfällt ohne Rabatt, z. B. Variante B)"
+  },
+  "options": {},
+  "attributes": {
+    "icon": {
+      "type": "customField",
+      "customField": "plugin::strapi-plugin-iconhub.iconhub",
+      "options": {
+        "storeIconData": true,
+        "storeIconName": true
+      }
+    },
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "text": {
+      "type": "text"
+    },
+    "link": {
+      "type": "component",
+      "component": "shared.button",
+      "repeatable": false
+    }
+  },
+  "config": {}
+}

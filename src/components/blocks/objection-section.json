@@ -1,0 +1,37 @@
+{
+  "collectionName": "components_blocks_objection_sections",
+  "info": {
+    "displayName": "Objection Section",
+    "icon": "question",
+    "description": "„Noch unsicher?“: Einwände mit Antwort. Platzhalter im Text: {preis}, {rabatt}"
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string"
+    },
+    "subheadline": {
+      "type": "string"
+    },
+    "items": {
+      "type": "component",
+      "component": "shared.objection-card",
+      "repeatable": true
+    },
+    "showCta": {
+      "type": "boolean",
+      "default": true
+    },
+    "cta": {
+      "type": "component",
+      "component": "shared.button",
+      "repeatable": false
+    },
+    "cardSettings": {
+      "type": "component",
+      "component": "shared.card-design",
+      "repeatable": false
+    }
+  },
+  "config": {}
+}
