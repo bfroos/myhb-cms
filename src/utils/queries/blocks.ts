@@ -766,7 +766,6 @@ export const homepageBlocksPopulate = {
     "blocks.reviews": blockReviewsPopulate,
     "blocks.stories": blockStoriesPopulate,
     "blocks.text-content": blockTextContentPopulate,
-    "blocks.treatment-hero": blockTreatmentHeroPopulate,
     "blocks.treatment-teasers": blockTreatmentTeasersPopulate,
     "blocks.trust-grid": blockTrustGridPopulate,
   },
