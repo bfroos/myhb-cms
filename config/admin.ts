@@ -17,6 +17,13 @@ const getPreviewPathname = (uid: string, { locale, document }: { locale: string;
       if (!citySlug || !locationSlug) return "/standorte";
       return `/standorte/${citySlug}/${locationSlug}`;
     }
+    case "api::location-treatment-page.location-treatment-page": {
+      const citySlug = document?.location?.city?.slug;
+      const locationSlug = document?.location?.slug;
+      const pathKey = document?.treatmentPage?.pathKey;
+      if (!citySlug || !locationSlug || !pathKey) return null;
+      return `/standorte/${citySlug}/${locationSlug}/${pathKey}`;
+    }
     case "api::treatment-page.treatment-page": {
       // treatment-page has no location field; use pathKey (e.g. "botox" or "hyaluron/lippen-aufspritzen")
       const pathKey = document?.pathKey;
@@ -77,6 +84,11 @@ function getPopulate(uid: string): Record<string, any> {
   switch (uid) {
     case "api::location.location":
       return { city: { fields: ["slug"] } };
+    case "api::location-treatment-page.location-treatment-page":
+      return {
+        location: { fields: ["slug"], populate: { city: { fields: ["slug"] } } },
+        treatmentPage: { fields: ["pathKey"] },
+      };
     case "api::treatment-page.treatment-page":
       // No relations needed - pathKey is a direct string field
       return {};
@@ -150,6 +162,7 @@ export default ({ env }) => {
         async handler(uid: string, { documentId, locale, status }: { documentId: string; locale: string; status: string }) {
           const document = await strapi.documents(uid as any).findOne({
             documentId,
+            locale,
             populate: getPopulate(uid),
           });
 
