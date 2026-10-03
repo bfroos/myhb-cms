@@ -609,6 +609,22 @@ export const blockDoctorTeamPopulate = {
   },
 };
 
+// "Noch unsicher?" (blocks.objection-section): Iconhub-Feld ist ein
+// customField (JSON, kommt ohne Populate mit); nur Link und CTA populieren.
+export const blockObjectionSectionPopulate = {
+  populate: {
+    items: {
+      populate: {
+        link: sharedButtonPopulate as object,
+      },
+    },
+    cta: sharedButtonPopulate as object,
+    cardSettings: {
+      populate: "*",
+    },
+  },
+};
+
 export const allBlocksPopulate = {
   on: {
     "blocks.benefits-list": blockBenefitsListPopulate,
@@ -644,6 +660,7 @@ export const allBlocksPopulate = {
     "blocks.seo-collapsible": blockSeoCollapsiblePopulate,
     "blocks.doctor": blockDoctorLandingPopulate,
     "blocks.doctor-team": blockDoctorTeamPopulate,
+    "blocks.objection-section": blockObjectionSectionPopulate,
     "blocks.price-overview": blockPriceOverviewPopulate,
     "blocks.price-teaser": blockPriceTeaserPopulate,
     "blocks.faq-accordion": landingBlockPopulate,
