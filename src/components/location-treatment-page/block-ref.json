@@ -24,7 +24,10 @@
         "treatmentProcess",
         "relatedTreatments",
         "faq",
-        "blocks"
+        "blocks",
+        "dynamicBlock1",
+        "dynamicBlock2",
+        "dynamicBlock3"
       ]
     }
   },
