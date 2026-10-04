@@ -1908,6 +1908,7 @@ export interface ApiLocationTreatmentAdsPageLocationTreatmentAdsPage
         'blocks.benefit-grid',
         'blocks.seo-collapsible',
         'blocks.doctor',
+        'blocks.doctor-team',
         'blocks.price-overview',
         'blocks.price-teaser',
         'blocks.faq-accordion',
@@ -1924,6 +1925,7 @@ export interface ApiLocationTreatmentAdsPageLocationTreatmentAdsPage
         'blocks.promo-strip',
         'blocks.promo-hero',
         'blocks.promo-floating-sticker',
+        'blocks.my-club',
       ]
     > &
       Schema.Attribute.SetPluginOptions<{

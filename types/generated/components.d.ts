@@ -107,6 +107,24 @@ export interface BlocksDoctor extends Struct.ComponentSchema {
   };
 }
 
+export interface BlocksDoctorTeam extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_doctor_teams';
+  info: {
+    description: '\u00C4rzteteam-Section: Headline, Intro, \u00C4rzt:innen (Employee oder manuell), Trust-Text, CTA';
+    displayName: 'Doctor Team';
+    icon: 'users';
+  };
+  attributes: {
+    cardSettings: Schema.Attribute.Component<'shared.card-design', false>;
+    cta: Schema.Attribute.Component<'shared.button', false>;
+    description: Schema.Attribute.Text;
+    doctors: Schema.Attribute.Component<'shared.doctor-card', true>;
+    headline: Schema.Attribute.String;
+    showCta: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    trustText: Schema.Attribute.Text;
+  };
+}
+
 export interface BlocksEmployee extends Struct.ComponentSchema {
   collectionName: 'components_blocks_employees';
   info: {
@@ -1194,6 +1212,9 @@ export interface LocationTreatmentPageBlockRef extends Struct.ComponentSchema {
         'relatedTreatments',
         'faq',
         'blocks',
+        'dynamicBlock1',
+        'dynamicBlock2',
+        'dynamicBlock3',
       ]
     > &
       Schema.Attribute.Required;
@@ -1406,6 +1427,23 @@ export interface SharedCoordinates extends Struct.ComponentSchema {
         },
         number
       >;
+  };
+}
+
+export interface SharedDoctorCard extends Struct.ComponentSchema {
+  collectionName: 'components_shared_doctor_cards';
+  info: {
+    description: '\u00C4rzt:in: Employee verkn\u00FCpfen; Name, Rolle und Bild \u00FCberschreiben optional die Employee-Daten';
+    displayName: 'Doctor Card';
+    icon: 'user';
+  };
+  attributes: {
+    employee: Schema.Attribute.Relation<'oneToOne', 'api::employee.employee'>;
+    image: Schema.Attribute.Media<'images'>;
+    imageAlt: Schema.Attribute.String;
+    name: Schema.Attribute.String;
+    profileLink: Schema.Attribute.String;
+    role: Schema.Attribute.String;
   };
 }
 
@@ -1942,6 +1980,7 @@ declare module '@strapi/strapi' {
       'blocks.comparison-block': BlocksComparisonBlock;
       'blocks.directions': BlocksDirections;
       'blocks.doctor': BlocksDoctor;
+      'blocks.doctor-team': BlocksDoctorTeam;
       'blocks.employee': BlocksEmployee;
       'blocks.employee-list': BlocksEmployeeList;
       'blocks.faq': BlocksFaq;
@@ -2009,6 +2048,7 @@ declare module '@strapi/strapi' {
       'shared.card-design': SharedCardDesign;
       'shared.collabsible-item': SharedCollabsibleItem;
       'shared.coordinates': SharedCoordinates;
+      'shared.doctor-card': SharedDoctorCard;
       'shared.heading-content-item': SharedHeadingContentItem;
       'shared.icon-heading-content': SharedIconHeadingContent;
       'shared.icon-heading-text': SharedIconHeadingText;
