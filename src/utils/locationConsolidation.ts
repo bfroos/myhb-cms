@@ -112,12 +112,29 @@ export async function loadConsolidationContext(
   const value = Promise.all([
     loadCityLocations(strapi, params),
     loadEffectiveTypeIndex(strapi, params),
-  ]).then(([cityLocations, typeIndex]) => ({ cityLocations, typeIndex }));
+  ])
+    .then(([cityLocations, typeIndex]) => ({ cityLocations, typeIndex }))
+    .catch((error: unknown) => {
+      // Fail-open: Ohne Kontext entscheidet die Regel ueberall "unchanged",
+      // die Seiten verhalten sich also wie vor der Konsolidierung, statt mit
+      // einem Fehler zu antworten. Nicht cachen, naechster Aufruf versucht es
+      // erneut.
+      strapi?.log?.error?.(
+        `[locationConsolidation] Kontext nicht ladbar, Konsolidierung aus: ${
+          (error as Error)?.message ?? error
+        }`,
+      );
+      contextCache.delete(key);
+      return EMPTY_CONTEXT();
+    });
   contextCache.set(key, { expiresAt: Date.now() + CONTEXT_TTL_MS, value });
-  // Fehlgeschlagene Ladungen nicht cachen.
-  value.catch(() => contextCache.delete(key));
   return value;
 }
+
+const EMPTY_CONTEXT = (): ConsolidationContext => ({
+  cityLocations: [],
+  typeIndex: new Map(),
+});
 
 export function decideForLocation(
   ctx: ConsolidationContext,
