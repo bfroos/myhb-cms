@@ -15,6 +15,70 @@ import { treatmentTeaserPopulate } from "../../../utils/queries/ui";
 import { mediaPopulate } from "../../../utils/queries/strapi";
 import { getPreviewStatus } from "../../../utils/previewStatus";
 import { locationTypeToTreatmentTypes } from "../../../utils/locationTreatmentAvailability";
+import {
+  filterPathKeysForLocation,
+  loadConsolidationContext,
+  siblingPathKeysForLocation,
+} from "../../../utils/locationConsolidation";
+import {
+  decideLocationTreatment,
+  topCategoryOf,
+} from "../../../utils/locationTreatmentRouting";
+
+type SiblingLocationHint = {
+  citySlug: string;
+  locationSlug: string;
+  locationName: string;
+  treatmentTypes: string[];
+  /** Hauptkategorien (pathKey Segment 1), die dort statt hier angeboten werden. */
+  categoryPathKeys: string[];
+};
+
+/**
+ * Hinweis fuer die Standortseite: Welche Hauptkategorien bietet in dieser
+ * Stadt ein anderer Standort an? Köln Arcaden -> MediaPark
+ * ("schoenheitsoperationen"), MediaPark -> Köln Arcaden (Botox, Hyaluron, ...).
+ * Ziel ist jeweils der Kategorie-Hub am anderen Standort, nie eine Redirect-URL.
+ */
+function buildSiblingLocationHints(
+  consolidation: Awaited<ReturnType<typeof loadConsolidationContext>>,
+  location: any
+): SiblingLocationHint[] {
+  const allPathKeys = Array.from(consolidation.typeIndex.keys());
+  const sibling = siblingPathKeysForLocation(consolidation, location, allPathKeys);
+  const byLocation = new Map<string, SiblingLocationHint>();
+  for (const [pathKey, locationPathKey] of Object.entries(sibling)) {
+    const [citySlug, locationSlug] = locationPathKey.split("/");
+    const target = consolidation.cityLocations.find(
+      (candidate) =>
+        candidate.citySlug === citySlug && candidate.slug === locationSlug
+    );
+    if (!target) continue;
+    const hint =
+      byLocation.get(locationPathKey) ??
+      ({
+        citySlug,
+        locationSlug,
+        locationName: target.name ?? locationSlug,
+        treatmentTypes: [],
+        categoryPathKeys: [],
+      } as SiblingLocationHint);
+    const type = consolidation.typeIndex.get(pathKey);
+    if (type && !hint.treatmentTypes.includes(type)) hint.treatmentTypes.push(type);
+    const category = topCategoryOf(pathKey);
+    // Nur Kategorien mit eigener Hub-Seite, die der Zielstandort bedient.
+    if (
+      category &&
+      consolidation.typeIndex.has(category) &&
+      sibling[category] === locationPathKey &&
+      !hint.categoryPathKeys.includes(category)
+    ) {
+      hint.categoryPathKeys.push(category);
+    }
+    byLocation.set(locationPathKey, hint);
+  }
+  return Array.from(byLocation.values());
+}
 
 export default factories.createCoreController(
   "api::location.location",
@@ -22,6 +86,10 @@ export default factories.createCoreController(
     async findBookableLocations(ctx: Context) {
       const { locale } = ctx.query as { locale?: string };
       const { treatmentType } = ctx.query as { treatmentType?: string };
+      // Optional: pathKey der Behandlungsseite. Fuer die Konsolidierung gilt
+      // dann deren effektiver Typ (z. B. Facelift = OP, auch wenn die
+      // Behandlung in Strapi als minimally-invasive gepflegt ist).
+      const { pathKey } = ctx.query as { pathKey?: string };
       const status = getPreviewStatus(ctx);
 
       const allowedLocationTypesForTreatment = treatmentType
@@ -102,9 +170,39 @@ export default factories.createCoreController(
         ),
       }));
 
-      const filteredLocations = mappedLocations.filter(
+      const openLocations = mappedLocations.filter(
         (location) => location.openingStatus !== "comingSoon"
       );
+
+      // Standort-Konsolidierung: Bedient in derselben Stadt ein anderer
+      // Standort diese Behandlungsart (Köln: nichtoperativ -> Arcaden,
+      // OP -> MediaPark), taucht der abgebende Standort fuer diese
+      // Behandlungsart nicht mehr auf (Standort-Kacheln auf /behandlungen,
+      // Buchungsdialog). Ohne treatmentType: unveraendert.
+      let filteredLocations = openLocations;
+      if (allowedLocationTypesForTreatment && treatmentType) {
+        const consolidation = await loadConsolidationContext(strapi, {
+          locale,
+          status,
+        });
+        const consolidationType =
+          (pathKey && consolidation.typeIndex.get(pathKey)) || treatmentType;
+        filteredLocations = openLocations.filter((location: any) => {
+          const ref = {
+            documentId: location.documentId,
+            slug: location.slug,
+            type: location.type,
+            citySlug: location.city?.slug,
+          };
+          return (
+            decideLocationTreatment(
+              ref,
+              consolidation.cityLocations,
+              consolidationType as any
+            ).kind !== "redirect"
+          );
+        });
+      }
 
       return { data: filteredLocations };
     },
@@ -237,9 +335,31 @@ export default factories.createCoreController(
           },
         });
 
-      const treatmentPages = (treatments || [])
+      const allTreatmentPages = (treatments || [])
         .map((treatment: any) => treatment.treatmentPage)
         .filter((page: any) => page !== null && page !== undefined);
+
+      // Standort-Konsolidierung: nur Behandlungen, die DIESER Standort in
+      // seiner Stadt bedient (Kacheln + Sitemap). Was ein Geschwister-
+      // Standort bedient, kommt als Hinweis (siblingLocations) zurueck.
+      const consolidation = await loadConsolidationContext(strapi, {
+        locale,
+        status,
+      });
+      const servedPathKeys = new Set(
+        filterPathKeysForLocation(
+          consolidation,
+          location,
+          allTreatmentPages.map((page: any) => page.pathKey).filter(Boolean)
+        )
+      );
+      const treatmentPages = allTreatmentPages.filter(
+        (page: any) => !page.pathKey || servedPathKeys.has(page.pathKey)
+      );
+      const siblingLocations = buildSiblingLocationHints(
+        consolidation,
+        location
+      );
 
       const topCategorySlugs = Array.from(
         new Set(
@@ -304,6 +424,7 @@ export default factories.createCoreController(
           location,
           locationOpenStatus,
           treatmentPages: treatmentPagesWithTopCategory,
+          siblingLocations,
         },
       };
     },
