@@ -58,11 +58,17 @@ export async function loadCityLocations(
     populate: { city: { fields: ["slug"] } },
     limit: 500,
   });
-  return (locations || [])
-    .map(toCityLocationRef)
-    .filter((location: CityLocationRef | null): location is CityLocationRef =>
-      Boolean(location),
-    );
+  // Je documentId nur ein Eintrag: Doppelte Zeilen (bei einer Abfrage ueber
+  // REST mit locale=en kamen die Köln Arcaden sechsmal) liessen sonst zwei
+  // "bedienende" Standorte entstehen, und die Umleitung fiele still weg.
+  const byDocumentId = new Map<string, CityLocationRef>();
+  for (const location of locations || []) {
+    const ref = toCityLocationRef(location);
+    if (ref && !byDocumentId.has(ref.documentId)) {
+      byDocumentId.set(ref.documentId, ref);
+    }
+  }
+  return Array.from(byDocumentId.values());
 }
 
 export async function loadEffectiveTypeIndex(
@@ -87,15 +93,30 @@ export async function loadEffectiveTypeIndex(
   );
 }
 
+// Kurzer Cache je locale/status: Der Kontext wird bei jeder Standort-
+// Behandlungsseite, with-treatments und jedem Oeffnen des Buchungsdialogs
+// (bookable) gebraucht, aendert sich aber nur bei Redaktionsarbeit.
+const CONTEXT_TTL_MS = 60_000;
+const contextCache = new Map<
+  string,
+  { expiresAt: number; value: Promise<ConsolidationContext> }
+>();
+
 export async function loadConsolidationContext(
   strapi: any,
   params: LoadParams,
 ): Promise<ConsolidationContext> {
-  const [cityLocations, typeIndex] = await Promise.all([
+  const key = `${params.locale ?? ""}:${params.status ?? ""}`;
+  const cached = contextCache.get(key);
+  if (cached && cached.expiresAt > Date.now()) return cached.value;
+  const value = Promise.all([
     loadCityLocations(strapi, params),
     loadEffectiveTypeIndex(strapi, params),
-  ]);
-  return { cityLocations, typeIndex };
+  ]).then(([cityLocations, typeIndex]) => ({ cityLocations, typeIndex }));
+  contextCache.set(key, { expiresAt: Date.now() + CONTEXT_TTL_MS, value });
+  // Fehlgeschlagene Ladungen nicht cachen.
+  value.catch(() => contextCache.delete(key));
+  return value;
 }
 
 export function decideForLocation(
