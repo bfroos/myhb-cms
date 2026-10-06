@@ -1,22 +1,29 @@
+import { LOCATION_TYPE_TO_TREATMENT_TYPES } from "./locationTreatmentRouting";
+import {
+  filterPathKeysForLocation,
+  type ConsolidationContext,
+} from "./locationConsolidation";
+
 // Which treatments a location offers - decided by the location type.
-export const locationTypeToTreatmentTypes: Record<
-  "lounge" | "center" | "clinic",
-  ("minimally-invasive" | "abulatory" | "operational")[]
-> = {
-  lounge: ["minimally-invasive"],
-  center: ["minimally-invasive", "abulatory"],
-  clinic: ["minimally-invasive", "abulatory", "operational"],
-};
+// (Quelle: locationTreatmentRouting.ts; hier nur fuer bestehende Importe.)
+export const locationTypeToTreatmentTypes = LOCATION_TYPE_TO_TREATMENT_TYPES;
 
 type AvailabilityParams = {
   locationType?: string | null;
   locale?: string;
   status?: "published" | "draft";
+  /**
+   * Standort + Konsolidierungskontext: Behandlungen, die in derselben Stadt
+   * ein anderer Standort bedient (Köln: OPs -> MediaPark, nichtoperativ ->
+   * Arcaden), fallen heraus. Ohne beides: Verhalten wie bisher.
+   */
+  location?: any;
+  consolidation?: ConsolidationContext;
 };
 
 export async function getAvailableTreatmentPathKeys(
   strapi: any,
-  { locationType, locale, status }: AvailabilityParams
+  { locationType, locale, status, location, consolidation }: AvailabilityParams
 ): Promise<string[]> {
   const allowedTreatmentTypes =
     locationTypeToTreatmentTypes[
@@ -50,7 +57,7 @@ export async function getAvailableTreatmentPathKeys(
       },
     });
 
-  return Array.from(
+  const pathKeys: string[] = Array.from(
     new Set(
       (treatments || [])
         .map((treatment: any) => treatment?.treatmentPage?.pathKey)
@@ -60,4 +67,9 @@ export async function getAvailableTreatmentPathKeys(
         )
     )
   );
+
+  if (location && consolidation) {
+    return filterPathKeysForLocation(consolidation, location, pathKeys);
+  }
+  return pathKeys;
 }
