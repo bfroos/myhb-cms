@@ -31,6 +31,11 @@ import {
   toBlockRefKeys,
 } from "../../../utils/locationTreatmentPageBlocks";
 import { getAvailableTreatmentPathKeys } from "../../../utils/locationTreatmentAvailability";
+import {
+  decideForLocation,
+  loadConsolidationContext,
+  siblingPathKeysForLocation,
+} from "../../../utils/locationConsolidation";
 
 const SEO_TREATMENT_PAGE_UID = "api::treatment-page.treatment-page";
 const ADS_TREATMENT_PAGE_UID = "api::treatment-ads-page.treatment-ads-page";
@@ -562,6 +567,30 @@ export default factories.createCoreController(
         return;
       }
 
+      // Standort-Konsolidierung (nur SEO-Baum; go. bleibt unberuehrt): Bedient
+      // in derselben Stadt ein anderer Standort diese Behandlungsart, liefert
+      // die API statt der Seite das Ziel. Das Frontend antwortet darauf mit
+      // einem 301 (Köln: OPs -> MediaPark, nichtoperativ -> Köln Arcaden).
+      const consolidation =
+        treatmentPageUid === SEO_TREATMENT_PAGE_UID
+          ? await loadConsolidationContext(strapi, { locale, status })
+          : null;
+      if (consolidation) {
+        const decision = decideForLocation(consolidation, location, pathKey);
+        if (decision.kind === "redirect") {
+          return {
+            data: {
+              redirect: {
+                citySlug: decision.target.citySlug,
+                locationSlug: decision.target.slug,
+                treatmentPathKey: pathKey,
+                statusCode: 301,
+              },
+            },
+          };
+        }
+      }
+
       // Fetch ancestor treatmentPages if ancestorSlugs exist
       let ancestors: Array<{ slug: string; name: string }> = [];
       if (
@@ -631,15 +660,30 @@ export default factories.createCoreController(
         openingStatus: locationOpenStatus,
       };
 
-      // SEO tree only: treatments that have their own treatment-page.
+      // SEO tree only: treatments that have their own treatment-page and are
+      // served at THIS location (Konsolidierung: Geschwister-Standorte der
+      // Stadt uebernehmen ihre Behandlungsart).
       const availableTreatmentPathKeys =
         treatmentPageUid === SEO_TREATMENT_PAGE_UID
           ? await getAvailableTreatmentPathKeys(strapi, {
               locationType: (location as any).type,
               locale,
               status,
+              location,
+              consolidation: consolidation ?? undefined,
             })
           : undefined;
+
+      // pathKey -> "city/location" fuer Behandlungen, die ein anderer Standort
+      // derselben Stadt bedient. Das Frontend verlinkt dorthin statt auf
+      // /behandlungen (z. B. Arcaden-Seite -> MediaPark-Haartransplantation).
+      const cityTreatmentLocations = consolidation
+        ? siblingPathKeysForLocation(
+            consolidation,
+            location,
+            Array.from(consolidation.typeIndex.keys()),
+          )
+        : undefined;
 
       // Standort-spezifisches SEO; null = nicht gepflegt, Frontend generiert.
       return {
@@ -647,6 +691,7 @@ export default factories.createCoreController(
           location: locationWithStatus,
           treatmentPage: treatmentPageWithAncestors,
           availableTreatmentPathKeys,
+          cityTreatmentLocations,
           seo,
         },
       };
