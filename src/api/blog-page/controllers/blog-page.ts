@@ -28,12 +28,21 @@ export default factories.createCoreController(
         });
 
       // Fetch all categories for navigation
+      // TSEO-Regression 07.10.2026: localizations (locale + slug) mitliefern.
+      // Der Store baut daraus die hreflang-Alternates der Kategorieseiten;
+      // Kategorie-Slugs sind je Sprache verschieden (haare / hair / cheveux).
+      // Rein additiv: bestehende Felder bleiben unveraendert.
       const categories = await strapi
         .documents("api::blog-category.blog-category")
         .findMany({
           locale,
           status,
           fields: ["name", "slug"],
+          populate: {
+            localizations: {
+              fields: ["locale", "slug"],
+            },
+          },
         });
 
       // Build filters for articles
