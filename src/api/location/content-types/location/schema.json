@@ -215,6 +215,16 @@
       "required": true,
       "default": false
     },
+    "showFrenchPage": {
+      "type": "boolean",
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      },
+      "default": false,
+      "required": false
+    },
     "timezone": {
       "type": "string",
       "pluginOptions": {

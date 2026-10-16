@@ -9,6 +9,9 @@ export const locationFieldsForPage = [
   "description",
   "isBookingAllowed",
   "showDiscount",
+  // Standortseite zusaetzlich auf Franzoesisch (/fr/lieux/...), sonst nur
+  // Deutsch (TSEO-01). Erst Saarbruecken, Benjamin 16.10.2026.
+  "showFrenchPage",
   "type",
   "calendlyUrl",
   "appBookingUrl",
