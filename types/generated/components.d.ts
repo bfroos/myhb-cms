@@ -1258,6 +1258,27 @@ export interface LocationContact extends Struct.ComponentSchema {
   };
 }
 
+export interface LocationLocalFacts extends Struct.ComponentSchema {
+  collectionName: 'components_location_local_facts';
+  info: {
+    description: 'Belegte Fakten zum Standort fuer Stadtseiten (E24, Konzept 3.2). Fuer alle Behandlungen gleich.';
+    displayName: 'Local Facts';
+  };
+  attributes: {
+    accessibility: Schema.Attribute.Text;
+    checkedAt: Schema.Attribute.Date;
+    district: Schema.Attribute.String;
+    factsSource: Schema.Attribute.String;
+    languages: Schema.Attribute.String;
+    localFaqSet: Schema.Attribute.Relation<'oneToOne', 'api::faq-set.faq-set'>;
+    parking: Schema.Attribute.Text;
+    placeInCenter: Schema.Attribute.String;
+    serviceArea: Schema.Attribute.String;
+    serviceAreaText: Schema.Attribute.Text;
+    wayInCenter: Schema.Attribute.Text;
+  };
+}
+
 export interface ProductVariant extends Struct.ComponentSchema {
   collectionName: 'components_product_variants';
   info: {
@@ -2041,6 +2062,7 @@ declare module '@strapi/strapi' {
       'location.about': LocationAbout;
       'location.about-item': LocationAboutItem;
       'location.contact': LocationContact;
+      'location.local-facts': LocationLocalFacts;
       'product.variant': ProductVariant;
       'product.volume': ProductVolume;
       'shared.address': SharedAddress;
