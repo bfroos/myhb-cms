@@ -2374,6 +2374,12 @@ export interface ApiLocationLocation extends Struct.CollectionTypeSchema {
       }> &
       Schema.Attribute.DefaultTo<true>;
     jobs: Schema.Attribute.Relation<'manyToMany', 'api::job.job'>;
+    localFacts: Schema.Attribute.Component<'location.local-facts', false> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     locale: Schema.Attribute.String;
     localizations: Schema.Attribute.Relation<
       'oneToMany',

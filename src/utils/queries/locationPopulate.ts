@@ -85,6 +85,15 @@ export const locationPopulateForPage = {
       },
     },
   },
+  // Belegte Standort-Fakten fuer Stadtseiten (E24, bfroos/myhb-store#312)
+  localFacts: {
+    populate: {
+      localFaqSet: {
+        fields: ["internalLabel"],
+        populate: { faqs: { fields: ["question", "answer"] } },
+      },
+    },
+  },
   about: {
     populate: {
       comingSoon: {

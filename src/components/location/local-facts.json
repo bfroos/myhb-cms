@@ -1,0 +1,46 @@
+{
+  "collectionName": "components_location_local_facts",
+  "info": {
+    "displayName": "Local Facts",
+    "description": "Belegte Fakten zum Standort fuer Stadtseiten (E24, Konzept 3.2). Fuer alle Behandlungen gleich."
+  },
+  "options": {},
+  "attributes": {
+    "district": {
+      "type": "string"
+    },
+    "placeInCenter": {
+      "type": "string"
+    },
+    "wayInCenter": {
+      "type": "text"
+    },
+    "parking": {
+      "type": "text"
+    },
+    "accessibility": {
+      "type": "text"
+    },
+    "serviceAreaText": {
+      "type": "text"
+    },
+    "serviceArea": {
+      "type": "string"
+    },
+    "languages": {
+      "type": "string"
+    },
+    "factsSource": {
+      "type": "string"
+    },
+    "checkedAt": {
+      "type": "date"
+    },
+    "localFaqSet": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::faq-set.faq-set"
+    }
+  },
+  "config": {}
+}

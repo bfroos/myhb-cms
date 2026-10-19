@@ -234,6 +234,16 @@
       },
       "default": "Europe/Berlin",
       "required": true
+    },
+    "localFacts": {
+      "type": "component",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "location.local-facts",
+      "repeatable": false
     }
   }
 }
