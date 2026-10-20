@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_lead_funnel_options",
+  "info": {
+    "displayName": "Funnel Option",
+    "description": "Antwort im Anfrage-Funnel (E28)"
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    }
+  },
+  "config": {}
+}

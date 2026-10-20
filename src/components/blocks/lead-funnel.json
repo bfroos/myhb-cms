@@ -1,0 +1,46 @@
+{
+  "collectionName": "components_blocks_lead_funnels",
+  "info": {
+    "displayName": "Lead Funnel",
+    "icon": "question",
+    "description": "Anfrage-Funnel für OP-Landingpages; Anfrage geht ins Lead-Board der App (E28)"
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string"
+    },
+    "behandlung": {
+      "type": "string",
+      "required": true
+    },
+    "steps": {
+      "type": "component",
+      "component": "lead.funnel-step",
+      "repeatable": true
+    },
+    "contactHeadline": {
+      "type": "string"
+    },
+    "consentText": {
+      "type": "text"
+    },
+    "footnote": {
+      "type": "string"
+    },
+    "submitLabel": {
+      "type": "string"
+    },
+    "thankYouHeadline": {
+      "type": "string"
+    },
+    "thankYouText": {
+      "type": "text"
+    },
+    "anchor": {
+      "type": "string",
+      "default": "anfrage"
+    }
+  },
+  "config": {}
+}
