@@ -2,7 +2,7 @@
  * Einmalig: Verknuepfungen und fehlende Bilder der deutschen Fassung in die
  * Uebersetzungen uebernehmen (myhb-store#343, 20.10.2026).
  *
- * 65 Eintraege (Blogartikel, Aerzte, Aerzteseite). Je Eintrag nur die
+ * Zweiter Lauf: 7 freie Seiten (Behandlungs-Kacheln). Erster Lauf (65 Eintraege) ist erledigt. Je Eintrag nur die
  * Felder aus sprachenSpiegelnDaten.ts; Bloecke ohne Aenderung tragen nur
  * __component + id und behalten ihren Inhalt. Geschrieben wird nur, wenn der
  * Entwurf noch genau der gemessene ist (updatedAt gleich) und Entwurf und
@@ -15,7 +15,7 @@
  */
 import { SPIEGEL } from "./sprachenSpiegelnDaten";
 
-const STORE_KEY = "sprachen-spiegeln-2026-10-20";
+const STORE_KEY = "sprachen-kacheln-2026-10-20";
 const LOG = "[sprachen-spiegeln]";
 
 function iso(value: unknown): string | null {
