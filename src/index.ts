@@ -5,7 +5,6 @@ import {
   cascadeUpdateDescendants,
 } from "./utils/treatmentPagePathUtils";
 import { runAsInternalTreatmentPageOp } from "./utils/treatmentPageDeleteGuard";
-import { scheduleSprachenSpiegeln } from "./oneShot/sprachenSpiegeln";
 
 // ============================================================================
 // Helper Functions
@@ -619,7 +618,6 @@ export default {
    */
   bootstrap({ strapi }: any) {
     // Component sanitization is handled by Document Service Middleware in register()
-    // Einmalig: Bilder/Verknuepfungen in Uebersetzungen spiegeln (myhb-store#343)
-    scheduleSprachenSpiegeln(strapi);
+    // No additional setup needed here
   },
 };
