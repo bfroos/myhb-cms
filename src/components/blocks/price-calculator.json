@@ -1,0 +1,74 @@
+{
+  "collectionName": "components_blocks_price_calculators",
+  "info": {
+    "displayName": "Price Calculator",
+    "icon": "calculator",
+    "description": "Preisrechner (Grafts × Preis je Methode) für OP-Landingpages (E28)"
+  },
+  "options": {},
+  "attributes": {
+    "eyebrow": {
+      "type": "string"
+    },
+    "headline": {
+      "type": "string"
+    },
+    "text": {
+      "type": "text"
+    },
+    "areas": {
+      "type": "component",
+      "component": "lead.calc-area",
+      "repeatable": true
+    },
+    "minUnits": {
+      "type": "integer",
+      "default": 300
+    },
+    "maxUnits": {
+      "type": "integer",
+      "default": 3000
+    },
+    "stepUnits": {
+      "type": "integer",
+      "default": 50
+    },
+    "defaultUnits": {
+      "type": "integer",
+      "default": 1500
+    },
+    "unitLabel": {
+      "type": "string",
+      "default": "Grafts"
+    },
+    "methods": {
+      "type": "component",
+      "component": "lead.calc-method",
+      "repeatable": true
+    },
+    "extras": {
+      "type": "component",
+      "component": "lead.calc-extra",
+      "repeatable": true
+    },
+    "showInstallments": {
+      "type": "boolean",
+      "default": false
+    },
+    "installmentMonths": {
+      "type": "string",
+      "default": "6,12,24,36"
+    },
+    "downPaymentCent": {
+      "type": "integer",
+      "default": 0
+    },
+    "footnote": {
+      "type": "text"
+    },
+    "ctaLabel": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

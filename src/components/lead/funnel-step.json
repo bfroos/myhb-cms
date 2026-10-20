@@ -1,0 +1,32 @@
+{
+  "collectionName": "components_lead_funnel_steps",
+  "info": {
+    "displayName": "Funnel Step",
+    "description": "Eine Frage im Anfrage-Funnel (E28)"
+  },
+  "options": {},
+  "attributes": {
+    "question": {
+      "type": "string",
+      "required": true
+    },
+    "fieldKey": {
+      "type": "string"
+    },
+    "layout": {
+      "type": "enumeration",
+      "enum": [
+        "tiles",
+        "list",
+        "grid"
+      ],
+      "default": "list"
+    },
+    "options": {
+      "type": "component",
+      "component": "lead.funnel-option",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

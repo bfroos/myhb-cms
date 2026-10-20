@@ -609,8 +609,33 @@ export const blockDoctorTeamPopulate = {
   },
 };
 
+// E28 (myhb-app/myhb-os#1638/#1639): Anfrage-Funnel und Preisrechner
+export const blockLeadFunnelPopulate = {
+  populate: {
+    steps: {
+      populate: {
+        options: {
+          populate: {
+            image: mediaPopulate,
+          },
+        },
+      },
+    },
+  },
+} as const;
+
+export const blockPriceCalculatorPopulate = {
+  populate: {
+    areas: true,
+    methods: true,
+    extras: true,
+  },
+} as const;
+
 export const allBlocksPopulate = {
   on: {
+    "blocks.lead-funnel": blockLeadFunnelPopulate,
+    "blocks.price-calculator": blockPriceCalculatorPopulate,
     "blocks.benefits-list": blockBenefitsListPopulate,
     "blocks.comparison-block": blockComparisonBlockPopulate,
     "blocks.directions": blockDirectionsPopulate,

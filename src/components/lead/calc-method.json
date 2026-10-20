@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_lead_calc_methods",
+  "info": {
+    "displayName": "Rechner Methode",
+    "description": "Methode mit Preis je Graft in Cent (E28)"
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "pricePerGraftCent": {
+      "type": "integer",
+      "required": true,
+      "min": 0
+    },
+    "hint": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

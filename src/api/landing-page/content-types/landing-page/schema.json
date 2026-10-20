@@ -76,7 +76,9 @@
         "blocks.promo-hero",
         "blocks.promo-floating-sticker",
         "blocks.youtube-video",
-        "blocks.gallery"
+        "blocks.gallery",
+        "blocks.lead-funnel",
+        "blocks.price-calculator"
       ]
     },
     "seo": {
