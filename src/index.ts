@@ -5,7 +5,7 @@ import {
   cascadeUpdateDescendants,
 } from "./utils/treatmentPagePathUtils";
 import { runAsInternalTreatmentPageOp } from "./utils/treatmentPageDeleteGuard";
-import { scheduleSprachenAufraeumen } from "./oneShot/sprachenAufraeumen";
+import { scheduleProdukte } from "./oneShot/produkte";
 
 // ============================================================================
 // Helper Functions
@@ -619,7 +619,7 @@ export default {
    */
   bootstrap({ strapi }: any) {
     // Component sanitization is handled by Document Service Middleware in register()
-    // Einmalig: leere Entwuerfe verwerfen (myhb-store#343)
-    scheduleSprachenAufraeumen(strapi);
+    // Einmalig: Produkte fr/nl (myhb-store#343)
+    scheduleProdukte(strapi);
   },
 };
