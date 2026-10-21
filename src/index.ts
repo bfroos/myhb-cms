@@ -5,7 +5,6 @@ import {
   cascadeUpdateDescendants,
 } from "./utils/treatmentPagePathUtils";
 import { runAsInternalTreatmentPageOp } from "./utils/treatmentPageDeleteGuard";
-import { scheduleSprachenAnlegen } from "./oneShot/sprachenAnlegen";
 
 // ============================================================================
 // Helper Functions
@@ -619,7 +618,6 @@ export default {
    */
   bootstrap({ strapi }: any) {
     // Component sanitization is handled by Document Service Middleware in register()
-    // Einmalig: 8 Behandlungsseiten in fr/nl anlegen (myhb-store#343)
-    scheduleSprachenAnlegen(strapi);
+    // No additional setup needed here
   },
 };
