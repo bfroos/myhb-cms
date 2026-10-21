@@ -123,6 +123,15 @@ export default ({ env }) => {
       promoteEE: env.bool("FLAG_PROMOTE_EE", true),
     },
 
+    // KI in Strapi aus (21.10.2026, myhb-store#343): Die KI-Uebersetzung hat beim
+    // Speichern der deutschen Fassung die Entwuerfe aller anderen Sprachen
+    // ueberschrieben, mit verbrauchtem Guthaben leer (149 kaputte Entwuerfe).
+    // Wieder einschalten nur mit STRAPI_AI_ENABLED=true und danach
+    // Entwuerfe pruefen (messung/drafts.py).
+    ai: {
+      enabled: env.bool("STRAPI_AI_ENABLED", false),
+    },
+
     // ADMIN PANEL CSP (CRITICAL FOR THUMBNAIL PREVIEW!)
     contentSecurityPolicy: {
       useDefaults: true,
