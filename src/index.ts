@@ -5,6 +5,7 @@ import {
   cascadeUpdateDescendants,
 } from "./utils/treatmentPagePathUtils";
 import { runAsInternalTreatmentPageOp } from "./utils/treatmentPageDeleteGuard";
+import { scheduleRestluecken } from "./oneShot/restluecken";
 
 // ============================================================================
 // Helper Functions
@@ -618,6 +619,7 @@ export default {
    */
   bootstrap({ strapi }: any) {
     // Component sanitization is handled by Document Service Middleware in register()
-    // No additional setup needed here
+    // Einmalig: restliche Sprachluecken (myhb-store#343)
+    scheduleRestluecken(strapi);
   },
 };
