@@ -5,6 +5,7 @@ import {
   cascadeUpdateDescendants,
 } from "./utils/treatmentPagePathUtils";
 import { runAsInternalTreatmentPageOp } from "./utils/treatmentPageDeleteGuard";
+import { scheduleAdressen } from "./oneShot/adressen";
 
 // ============================================================================
 // Helper Functions
@@ -618,6 +619,7 @@ export default {
    */
   bootstrap({ strapi }: any) {
     // Component sanitization is handled by Document Service Middleware in register()
-    // No additional setup needed here
+    // Einmalig: Adressen der Sprachfassungen (myhb-store#343)
+    scheduleAdressen(strapi);
   },
 };
