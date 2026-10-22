@@ -16,6 +16,22 @@
       "allowedTypes": [
         "images"
       ]
+    },
+    "illustration": {
+      "type": "enumeration",
+      "enum": [
+        "scheitel",
+        "haaransatz",
+        "schlaefen",
+        "duenner",
+        "geheimratsecken",
+        "tonsur",
+        "oberkopf",
+        "licht"
+      ]
+    },
+    "hint": {
+      "type": "string"
     }
   },
   "config": {}

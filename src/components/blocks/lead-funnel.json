@@ -40,6 +40,42 @@
     "anchor": {
       "type": "string",
       "default": "anfrage"
+    },
+    "variant": {
+      "type": "enumeration",
+      "enum": [
+        "card",
+        "hero"
+      ],
+      "default": "card"
+    },
+    "eyebrow": {
+      "type": "string"
+    },
+    "heroHeadline": {
+      "type": "text"
+    },
+    "heroText": {
+      "type": "text"
+    },
+    "checks": {
+      "type": "json"
+    },
+    "trustItems": {
+      "type": "json"
+    },
+    "heroImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "resultTitle": {
+      "type": "string"
+    },
+    "resultNote": {
+      "type": "text"
     }
   },
   "config": {}

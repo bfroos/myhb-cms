@@ -621,6 +621,7 @@ export const blockLeadFunnelPopulate = {
         },
       },
     },
+    heroImage: mediaPopulate,
   },
 } as const;
 
@@ -636,6 +637,10 @@ export const allBlocksPopulate = {
   on: {
     "blocks.lead-funnel": blockLeadFunnelPopulate,
     "blocks.price-calculator": blockPriceCalculatorPopulate,
+    "blocks.stat-strip": landingBlockPopulate,
+    "blocks.comparison-table": { populate: { images: mediaPopulate } },
+    "blocks.info-cards": landingBlockPopulate,
+    "blocks.steps-timeline": landingBlockPopulate,
     "blocks.benefits-list": blockBenefitsListPopulate,
     "blocks.comparison-block": blockComparisonBlockPopulate,
     "blocks.directions": blockDirectionsPopulate,

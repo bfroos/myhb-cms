@@ -1,0 +1,27 @@
+{
+  "collectionName": "components_blocks_info_cards",
+  "info": {
+    "displayName": "Info Cards",
+    "icon": "apps",
+    "description": "Überschrift + 2-3 Karten mit Titel, Text, Zusatz (E28)"
+  },
+  "options": {},
+  "attributes": {
+    "eyebrow": {
+      "type": "string"
+    },
+    "headline": {
+      "type": "string"
+    },
+    "text": {
+      "type": "text"
+    },
+    "anchor": {
+      "type": "string"
+    },
+    "items": {
+      "type": "json"
+    }
+  },
+  "config": {}
+}

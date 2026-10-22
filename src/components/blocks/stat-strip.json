@@ -1,0 +1,15 @@
+{
+  "collectionName": "components_blocks_stat_strips",
+  "info": {
+    "displayName": "Stat Strip",
+    "icon": "chartBubble",
+    "description": "Zahlenleiste mit 3-4 Werten (E28)"
+  },
+  "options": {},
+  "attributes": {
+    "items": {
+      "type": "json"
+    }
+  },
+  "config": {}
+}
