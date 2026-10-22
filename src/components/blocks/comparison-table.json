@@ -1,0 +1,46 @@
+{
+  "collectionName": "components_blocks_comparison_tables",
+  "info": {
+    "displayName": "Comparison Table",
+    "icon": "layout",
+    "description": "Vergleichstabelle wir/andere mit Bild-Mosaik (E28)"
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string"
+    },
+    "text": {
+      "type": "text"
+    },
+    "images": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "rowsLabel": {
+      "type": "string",
+      "default": "Leistungen"
+    },
+    "oursLabel": {
+      "type": "string",
+      "default": "MY HEALTH & BEAUTY"
+    },
+    "otherLabel": {
+      "type": "string"
+    },
+    "rows": {
+      "type": "json"
+    },
+    "ctaLabel": {
+      "type": "string"
+    },
+    "ctaAnchor": {
+      "type": "string",
+      "default": "anfrage"
+    }
+  },
+  "config": {}
+}

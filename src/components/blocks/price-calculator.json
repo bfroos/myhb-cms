@@ -68,6 +68,15 @@
     },
     "ctaLabel": {
       "type": "string"
+    },
+    "minPriceCent": {
+      "type": "integer",
+      "default": 0,
+      "min": 0
+    },
+    "anchor": {
+      "type": "string",
+      "default": "rechner"
     }
   },
   "config": {}
