@@ -215,6 +215,7 @@
         "blocks.benefit-grid",
         "blocks.seo-collapsible",
         "blocks.doctor",
+        "blocks.doctor-team",
         "blocks.price-overview",
         "blocks.price-teaser",
         "blocks.faq-accordion",
@@ -230,7 +231,8 @@
         "blocks.promo-banner",
         "blocks.promo-strip",
         "blocks.promo-hero",
-        "blocks.promo-floating-sticker"
+        "blocks.promo-floating-sticker",
+        "blocks.my-club"
       ]
     }
   }
