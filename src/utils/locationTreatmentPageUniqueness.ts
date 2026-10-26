@@ -19,6 +19,8 @@
  * wenigstens stabil und reproduzierbar aufgeloest wird.
  */
 
+import { errors } from "@strapi/utils";
+
 type RelationRef = { documentId: string } | { id: number } | null;
 
 function scalarToRef(value: string | number): RelationRef {
@@ -124,7 +126,7 @@ export async function assertNoDuplicateOverride(
 
   const conflictLabel = String(conflicts[0]?.documentId ?? conflicts[0]?.id);
 
-  throw new Error(
+  throw new errors.ApplicationError(
     `[${uid}] Fuer diese Kombination aus Standort und ` +
       "Behandlungsseite existiert bereits ein Override (" +
       conflictLabel +
