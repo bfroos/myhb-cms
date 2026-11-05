@@ -5,6 +5,7 @@ import {
   cascadeUpdateDescendants,
 } from "./utils/treatmentPagePathUtils";
 import { runAsInternalTreatmentPageOp } from "./utils/treatmentPageDeleteGuard";
+import { scheduleUeberschriften } from "./oneShot/ueberschriften";
 
 // ============================================================================
 // Helper Functions
@@ -618,6 +619,7 @@ export default {
    */
   bootstrap({ strapi }: any) {
     // Component sanitization is handled by Document Service Middleware in register()
-    // No additional setup needed here
+    // Einmalig: Ueberschriften auf richtiges Deutsch (myhb-store#396)
+    scheduleUeberschriften(strapi);
   },
 };
